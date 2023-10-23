@@ -1,0 +1,76 @@
+name: "Cargo Cache"
+description: ""
+branding:
+  icon: "archive"
+  color: "gray-dark"
+inputs:
+  action:
+    description: ""
+    required: false
+    default: "check"
+  cache-key:
+    description: ""
+    required: false
+    default: ${{ github.event.repository.name }}-${{ github.sha }}-cargo
+
+outputs:
+  cache-hit:
+    description: "Cache Hit"
+    value: ${{ steps.check-cache.outputs.cache-hit }}
+runs:
+  using: "composite"
+  steps:
+    ## Perform a lookup to check if the cache already exists
+    - name: Check Cache
+      if: |
+        inputs.action == 'check'
+      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+      id: check-cache
+      with:
+        lookup-only: true
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        # key: ${{ github.event.repository.name }}-cargo
+        key: ${{ inputs.cache-key }}
+
+    ## Restore cargo cache data
+    ##   - use wretry action, to retry on a failed upload 3x
+    - name: Restore Cache
+      if: |
+        inputs.action == 'restore'
+      id: restore-cache
+      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+      with:
+        action: actions/cache/restore@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with: |
+          fail-on-cache-miss: true
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ inputs.cache-key }}
+        attempt_limit: 3
+        attempt_delay: 10000
+
+    ## Restore cargo cache data
+    ##   - use wretry action, to retry on a failed upload 3x
+    - name: Save Cache
+      if: |
+        inputs.action == 'save'
+      id: save-cache
+      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+      with:
+        action: actions/cache/save@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        with: |
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ inputs.cache-key }}
+        attempt_limit: 3
+        attempt_delay: 10000
