@@ -1,0 +1,57 @@
+name: "Docker image build defaults"
+description: "Defaults for building docker images"
+branding:
+  icon: "box"
+  color: "gray-dark"
+
+runs:
+  using: "composite"
+  steps:
+    ## cleanup runner
+    - name: Cleanup Runner
+      id: runner_cleanup
+      uses: wileyj/actions/cleanup@main
+      # uses: stacks-network/runner-cleanup@main
+
+    ## Checkout the code
+    - name: Checkout the latest code
+      id: git_checkout
+      uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
+
+    ## Set some vars to be used in the build process
+    - name: Set Vars
+      id: set_vars
+      run: |
+        event=${{ github.event_name }}
+        case ${event} in
+          pull_request|pull_request_target|pull_request_review)
+            echo "[PR]: true"
+            branch=${{ github.event.pull_request.head.ref }}
+            ;;
+          *)
+            echo "[PR]: false"
+            branch=${GITHUB_REF#refs/heads/}
+            ;;
+        esac
+        echo "BRANCH_NAME=$branch" >> $GITHUB_ENV
+        echo "GITHUB_SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+        echo "GITHUB_REF_SHORT=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        echo "DOCKER_PUSH=${{ (secrets.DOCKERHUB_USERNAME != '') && (secrets.DOCKERHUB_PASSWORD != '') }}" >> $GITHUB_ENV
+
+    ## Setup QEMU for multi-arch builds
+    - name: Set up QEMU
+      id: docker_qemu
+      uses: docker/setup-qemu-action@2b82ce82d56a2a04d2637cd93a637ae1b359c0a7 # v2.2.0
+
+    ## Setup docker buildx
+    - name: Set up Docker Buildx
+      id: docker_buildx
+      uses: docker/setup-buildx-action@4c0219f9ac95b02789c1075625400b2acbff50b1 # v2.9.1
+
+    ## Login to dockerhub
+    - name: Login to DockerHub
+      id: docker_login
+      uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
