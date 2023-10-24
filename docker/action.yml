@@ -4,6 +4,15 @@ branding:
   icon: "box"
   color: "gray-dark"
 
+inputs:
+  username:
+    description: "Docker username"
+    required: true
+    default: ""
+  password:
+    description: "Docker password"
+    required: true
+    default: ""
 runs:
   using: "composite"
   steps:
