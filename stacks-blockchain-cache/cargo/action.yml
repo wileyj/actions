@@ -3,19 +3,30 @@ description: "Rust Cargo cache"
 branding:
   icon: "archive"
   color: "gray-dark"
+
 inputs:
   action:
     description: ""
     required: false
     default: "check"
+  retries:
+    description: ""
+    required: false
+    default: "3"
+  retry-delay:
+    description: ""
+    required: false
+    default: "10000"
   cache-key:
     description: ""
     required: false
     default: ${{ github.event.repository.name }}-${{ github.sha }}-cargo
+
 outputs:
   cache-hit:
     description: "Cache Hit"
     value: ${{ steps.check-cache.outputs.cache-hit }}
+
 runs:
   using: "composite"
   steps:
@@ -32,10 +43,10 @@ runs:
           ~/.cargo/registry/index/
           ~/.cargo/registry/cache/
           ~/.cargo/git/db/
-        # key: ${{ github.event.repository.name }}-cargo
         key: ${{ inputs.cache-key }}
+
     ## Restore cargo cache data
-    ##   - use wretry action, to retry on a failed upload 3x
+    ##   - use wretry action, to retry on a failed upload
     - name: Restore Cache
       if: |
         inputs.action == 'restore'
@@ -51,10 +62,13 @@ runs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
           key: ${{ inputs.cache-key }}
-        attempt_limit: 3
-        attempt_delay: 10000
+        # attempt_limit: 3
+        # attempt_delay: 10000
+        attempt_limit: ${{ inputs.retries}}
+        attempt_delay: ${{ inputs.retry-delay}}
+
     ## Restore cargo cache data
-    ##   - use wretry action, to retry on a failed upload 3x
+    ##   - use wretry action, to retry on a failed upload
     - name: Save Cache
       if: |
         inputs.action == 'save'
@@ -69,5 +83,7 @@ runs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
           key: ${{ inputs.cache-key }}
-        attempt_limit: 3
-        attempt_delay: 10000
+        # attempt_limit: 3
+        # attempt_delay: 10000
+        attempt_limit: ${{ inputs.retries}}
+        attempt_delay: ${{ inputs.retry-delay}}
