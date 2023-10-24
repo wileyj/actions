@@ -1,5 +1,5 @@
 name: "Bitcoin Cache"
-description: ""
+description: "Bitcoin binary cache"
 branding:
   icon: "archive"
   color: "gray-dark"
@@ -16,7 +16,6 @@ inputs:
     description: ""
     required: false
     default: ${{ github.event.repository.name }}-${{ github.sha }}-bitcoin-binaries
-
 outputs:
   cache-hit:
     description: "Cache Hit"
@@ -34,7 +33,6 @@ runs:
         lookup-only: true
         path: /tmp/bitcoin
         key: ${{ inputs.cache-key }}
-
     ## Restore bitcoin cache data
     ##   - use wretry action, to retry on a failed upload 3x
     - name: Restore Cache
@@ -50,7 +48,6 @@ runs:
           key: ${{ inputs.cache-key }}
         attempt_limit: 3
         attempt_delay: 10000
-
     ## Restore bitcoin cache data
     ##   - use wretry action, to retry on a failed upload 3x
     - name: Save Cache

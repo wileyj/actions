@@ -27,5 +27,5 @@ jobs:
     steps:
       - name: Cleanup Runner
         id: runner_cleanup
-        uses: stacks-network/runner-cleanup@main
+        uses: wileyj/actions/cleanup@main
 ```

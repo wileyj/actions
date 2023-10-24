@@ -1,5 +1,5 @@
 name: "Cargo Cache"
-description: ""
+description: "Rust Cargo cache"
 branding:
   icon: "archive"
   color: "gray-dark"
@@ -12,7 +12,6 @@ inputs:
     description: ""
     required: false
     default: ${{ github.event.repository.name }}-${{ github.sha }}-cargo
-
 outputs:
   cache-hit:
     description: "Cache Hit"
@@ -35,7 +34,6 @@ runs:
           ~/.cargo/git/db/
         # key: ${{ github.event.repository.name }}-cargo
         key: ${{ inputs.cache-key }}
-
     ## Restore cargo cache data
     ##   - use wretry action, to retry on a failed upload 3x
     - name: Restore Cache
@@ -55,7 +53,6 @@ runs:
           key: ${{ inputs.cache-key }}
         attempt_limit: 3
         attempt_delay: 10000
-
     ## Restore cargo cache data
     ##   - use wretry action, to retry on a failed upload 3x
     - name: Save Cache

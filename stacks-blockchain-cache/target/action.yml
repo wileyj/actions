@@ -1,5 +1,5 @@
 name: "Cargo Target Cache"
-description: ""
+description: "Cargo Target data cache"
 branding:
   icon: "archive"
   color: "gray-dark"
@@ -12,7 +12,6 @@ inputs:
     description: ""
     required: false
     default: ${{ github.event.repository.name }}-${{ github.sha }}-target
-
 outputs:
   cache-hit:
     description: "Cache Hit"
@@ -30,7 +29,6 @@ runs:
         lookup-only: true
         path: ./target
         key: ${{ inputs.cache-key }}
-
     ## Restore cargo cache data
     ##   - use wretry action, to retry on a failed upload 3x
     - name: Restore Cache
@@ -46,7 +44,6 @@ runs:
           key: ${{ inputs.cache-key }}
         attempt_limit: 3
         attempt_delay: 10000
-
     ## Restore cargo target cache data
     ##   - use wretry action, to retry on a failed upload 3x
     - name: Save Cache
