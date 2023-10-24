@@ -24,7 +24,7 @@ inputs:
   cache-key:
     description: "Cache Key name"
     required: false
-    default: ${{ github.event.repository.name }}-${{ github.sha }}-bitcoin-binaries
+    default: ${{ github.event.repository.name }}-${{ github.sha }}-target
 
 outputs:
   cache-hit:
