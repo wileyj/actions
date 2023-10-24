@@ -45,7 +45,7 @@ runs:
         echo "BRANCH_NAME=$branch" >> $GITHUB_ENV
         echo "GITHUB_SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
         echo "GITHUB_REF_SHORT=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-        echo "DOCKER_PUSH=${{ (secrets.DOCKERHUB_USERNAME != '') && (secrets.DOCKERHUB_PASSWORD != '') }}" >> $GITHUB_ENV
+        echo "DOCKER_PUSH=${{ (inputs.username != '') && (inputs.password != '') }}" >> $GITHUB_ENV
 
     ## Setup QEMU for multi-arch builds
     - name: Set up QEMU
@@ -62,5 +62,5 @@ runs:
       id: docker_login
       uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
