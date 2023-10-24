@@ -30,6 +30,7 @@ runs:
     ## Set some vars to be used in the build process
     - name: Set Vars
       id: set_vars
+      shell: bash
       run: |
         event=${{ github.event_name }}
         case ${event} in
