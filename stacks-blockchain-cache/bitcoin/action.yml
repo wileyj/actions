@@ -3,23 +3,34 @@ description: "Bitcoin binary cache"
 branding:
   icon: "archive"
   color: "gray-dark"
+
 inputs:
   action:
-    description: ""
+    description: "Type of operation (check,restore,save)"
     required: false
     default: "check"
   fail-on-cache-miss:
-    description: ""
+    description: "Fail workflow if cache is not restorable"
     required: false
     default: "true"
+  retries:
+    description: "Number of attemps"
+    required: false
+    default: "3"
+  retry-delay:
+    description: "Time to wait to retry"
+    required: false
+    default: "10000"
   cache-key:
-    description: ""
+    description: "Cache Key name"
     required: false
     default: ${{ github.event.repository.name }}-${{ github.sha }}-bitcoin-binaries
+
 outputs:
   cache-hit:
     description: "Cache Hit"
     value: ${{ steps.check-cache.outputs.cache-hit }}
+
 runs:
   using: "composite"
   steps:
@@ -33,8 +44,9 @@ runs:
         lookup-only: true
         path: /tmp/bitcoin
         key: ${{ inputs.cache-key }}
+
     ## Restore bitcoin cache data
-    ##   - use wretry action, to retry on a failed upload 3x
+    ##   - use wretry action, to retry on a failed upload
     - name: Restore Cache
       if: |
         inputs.action == 'restore'
@@ -43,13 +55,14 @@ runs:
       with:
         action: actions/cache/restore@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         with: |
-          fail-on-cache-miss: true
+          fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
           path: /tmp/bitcoin
           key: ${{ inputs.cache-key }}
-        attempt_limit: 3
-        attempt_delay: 10000
+        attempt_limit: ${{ inputs.retries}}
+        attempt_delay: ${{ inputs.retry-delay}}
+
     ## Restore bitcoin cache data
-    ##   - use wretry action, to retry on a failed upload 3x
+    ##   - use wretry action, to retry on a failed upload
     - name: Save Cache
       if: |
         inputs.action == 'save'
@@ -60,5 +73,5 @@ runs:
         with: |
           path: /tmp/bitcoin
           key: ${{ inputs.cache-key }}
-        attempt_limit: 3
-        attempt_delay: 10000
+        attempt_limit: ${{ inputs.retries}}
+        attempt_delay: ${{ inputs.retry-delay}}

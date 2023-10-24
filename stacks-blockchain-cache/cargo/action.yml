@@ -6,21 +6,25 @@ branding:
 
 inputs:
   action:
-    description: ""
+    description: "Type of operation (check,restore,save)"
     required: false
     default: "check"
+  fail-on-cache-miss:
+    description: "Fail workflow if cache is not restorable"
+    required: false
+    default: "true"
   retries:
-    description: ""
+    description: "Number of attemps"
     required: false
     default: "3"
   retry-delay:
-    description: ""
+    description: "Time to wait to retry"
     required: false
     default: "10000"
   cache-key:
-    description: ""
+    description: "Cache Key name"
     required: false
-    default: ${{ github.event.repository.name }}-${{ github.sha }}-cargo
+    default: ${{ github.event.repository.name }}-${{ github.sha }}-bitcoin-binaries
 
 outputs:
   cache-hit:
@@ -55,15 +59,13 @@ runs:
       with:
         action: actions/cache/restore@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         with: |
-          fail-on-cache-miss: true
+          fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
           path: |
             ~/.cargo/bin/
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
           key: ${{ inputs.cache-key }}
-        # attempt_limit: 3
-        # attempt_delay: 10000
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}
 
@@ -83,7 +85,5 @@ runs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
           key: ${{ inputs.cache-key }}
-        # attempt_limit: 3
-        # attempt_delay: 10000
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}
