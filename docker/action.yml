@@ -7,11 +7,11 @@ branding:
 inputs:
   username:
     description: "Docker username"
-    required: true
+    required: false
     default: ""
   password:
     description: "Docker password"
-    required: true
+    required: false
     default: ""
 runs:
   using: "composite"
@@ -60,6 +60,9 @@ runs:
 
     ## Login to dockerhub
     - name: Login to DockerHub
+      if: |
+        inputs.username != '' &&
+        inputs.password != ''
       id: docker_login
       uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2.2.0
       with:
