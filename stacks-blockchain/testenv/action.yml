@@ -64,7 +64,7 @@ runs:
     ## Restore nextest test archive cache data
     - name: Restore Test Archive Cache
       if: |
-        inputs.genesis == 'true'
+        inputs.genesis != 'true'
       id: restore_test_cache
       uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
       with:
@@ -73,7 +73,7 @@ runs:
     ## Restore nextest genesis test archive cache data
     - name: Restore Genesis Test Archive Cache
       if: |
-        inputs.genesis != 'true'
+        inputs.genesis == 'true'
       id: restore_genesis_test_cache
       uses: wileyj/actions/stacks-blockchain/cache/genesis-test-archive@main
       with:
