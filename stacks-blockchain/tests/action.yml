@@ -1,0 +1,80 @@
+name: "Stacks Blockchain Tests"
+description: "Stacks Blockchain Tests"
+branding:
+  icon: "archive"
+  color: "gray-dark"
+
+inputs:
+  genesis:
+    description: "Restore genesis archvie"
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    ## cleanup runner
+    - name: Cleanup Runner
+      id: runner_cleanup
+      uses: wileyj/actions/cleanup@main
+
+    ## Checkout the code
+    - name: Checkout the latest code
+      id: git_checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    ## Install rust toolchain (llvm-tools-preview)
+    - name: Setup Rust Toolchain
+      id: setup_rust_toolchain
+      uses: actions-rust-lang/setup-rust-toolchain@f3c84ee10bf5a86e7a5d607d487bf17d57670965 # v1.5.0
+      with:
+        toolchain: stable
+        components: llvm-tools-preview
+        cache: false
+
+    ## Restore cargo cache data
+    - name: Restore Cargo Cache
+      id: restore_cargo_cache
+      uses: wileyj/actions/stacks-blockchain/cache/cargo@main
+      with:
+        action: restore
+
+    ## Restore nextest target cache data
+    - name: Restore Target Cache
+      id: restore_target_cache
+      uses: wileyj/actions/stacks-blockchain/cache/target@main
+      with:
+        action: restore
+
+    ## Restore bitcoin cache data
+    - name: Restore Bitcoin Binary Cache
+      id: restore_bitcoin_cache
+      uses: wileyj/actions/stacks-blockchain/cache/bitcoin@main
+      with:
+        action: restore
+
+    ## Symlink bitoind to $PATH
+    - name: Link Bitcoin Binary
+      id: bitcoin_binary
+      shell: bash
+      run: |
+        sudo ln -s /tmp/bitcoin/bin/bitcoind /bin/
+        ls -al /bin/bitcoind
+
+    ## Restore nextest test archive cache data
+    - name: Restore Test Archive Cache
+      if: |
+        inputs.genesis == 'true'
+      id: restore_test_cache
+      uses: wileyj/runner-cache/test-archive@main
+      with:
+        action: restore
+
+    ## Restore nextest genesis test archive cache data
+    - name: Restore Genesis Test Archive Cache
+      if: |
+        inputs.genesis != 'true'
+      id: restore_genesis_test_cache
+      uses: wileyj/actions/stacks-blockchain/cache/genesis-test-archive@main
+      with:
+        action: restore

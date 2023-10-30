@@ -1,5 +1,5 @@
-name: "Cargo Target Cache"
-description: "Cargo Target data cache"
+name: "Genesis Test Archive Cache"
+description: "Nextest binary archive for genesis tests"
 branding:
   icon: "archive"
   color: "gray-dark"
@@ -24,7 +24,7 @@ inputs:
   cache-key:
     description: "Cache Key name"
     required: false
-    default: ${{ github.event.repository.name }}-${{ github.sha }}-target
+    default: ${{ github.event.repository.name }}-${{ github.sha }}-genesis-test-archive
 
 outputs:
   cache-hit:
@@ -38,11 +38,11 @@ runs:
     - name: Check Cache
       if: |
         inputs.action == 'check'
-      uses: actions/cache@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+      uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
       id: check-cache
       with:
         lookup-only: true
-        path: ./target
+        path: /tmp/genesis_archive.tar.zst
         key: ${{ inputs.cache-key }}
 
     ## Restore cargo cache data
@@ -51,29 +51,27 @@ runs:
       if: |
         inputs.action == 'restore'
       id: restore-cache
-      # uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
-      uses: wileyj/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
         action: actions/cache/restore@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
         with: |
           fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
-          path: ./target
+          path: /tmp/genesis_archive.tar.zst
           key: ${{ inputs.cache-key }}
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}
 
-    ## Restore cargo target cache data
+    ## Restore cargo cache data
     ##   - use wretry action, to retry on a failed upload
     - name: Save Cache
       if: |
         inputs.action == 'save'
       id: save-cache
-      # uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
-      uses: wileyj/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
-        action: actions/cache/save@88522ab9f39a2ea568f7027eddc7d8d8bc9d59c8 # v3.3.1
+        action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with: |
-          path: ./target
+          path: /tmp/genesis_archive.tar.zst
           key: ${{ inputs.cache-key }}
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}

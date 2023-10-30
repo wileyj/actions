@@ -1,4 +1,4 @@
-# Target Cache action
+# Test Archive Cache action
 
 ## Documentation
 
@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Check Cache
         id: check_cache
-        uses: wileyj/actions/stacks-blockchain-cache/target@main
+        uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
 ```
 
 ### Restore Cache
@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Restore Cache
       id: restore_cache
-      uses: wileyj/actions/stacks-blockchain-cache/target@main
+      uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
       with:
         action: restore
 ```
@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: Save Cache
       id: save_cache
-      uses: wileyj/actions/stacks-blockchain-cache/target@main
+      uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
       with:
         action: save
 ```
