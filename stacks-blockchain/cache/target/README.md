@@ -1,4 +1,4 @@
-# Target Cache action
+# Cargo Target Cache action
 
 ## Documentation
 
