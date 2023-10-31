@@ -78,8 +78,8 @@ runs:
       id: install-bitcoin
       shell: bash
       run: |
-        curl -LSf -# https://github.com/stacks-network/bitcoin/releases/download/v${BTC_VERSION}/bitcoin-${BTC_VERSION}-x86_64-linux-gnu.tar.gz | tar zxf - -C /tmp
-        mv /tmp/bitcoin-${BTC_VERSION} /tmp/bitcoin
+        curl -LSf -# https://github.com/stacks-network/bitcoin/releases/download/v${{ inputs.btc-version }}/bitcoin-${{ inputs.btc-version }}-x86_64-linux-gnu.tar.gz | tar zxf - -C /tmp
+        mv /tmp/bitcoin-${{ inputs.btc-version }} /tmp/bitcoin
 
     - name: Save Cache
       if: |
