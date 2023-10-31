@@ -83,7 +83,8 @@ runs:
 
     - name: Save Cache
       if: |
-        inputs.action == 'save'
+        inputs.action == 'save' &&
+        steps.check-cache.outputs.cache-hit != 'true'
       id: save-cache
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:

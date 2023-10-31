@@ -38,7 +38,8 @@ runs:
     ## Perform a lookup to check if the cache already exists
     - name: Check Cache
       if: |
-        inputs.action == 'check'
+        inputs.action == 'check' ||
+        inputs.action == 'save'
       uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
       id: check-cache
       with:
@@ -70,11 +71,31 @@ runs:
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}
 
-    ## Restore cargo cache data
-    ##   - use wretry action, to retry on a failed upload
+    ## Save cargo cache data
+    ## If cargo cache is not found, install nextest
+    - name: Install nextest
+      if: steps.check-cache.outputs.cache-hit != 'true'
+      id: install-nextest
+      uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
+      with:
+        tool: nextest # can be versioned, ex: tool@1.1.1.1
+
+    ## If cargo cache is not found, install grcov
+    ##  - cargo-llvm-cov instead? https://github.com/taiki-e/cargo-llvm-cov
+    - name: Install grcov
+      if: |
+        inputs.action == 'save' &&
+        steps.check-cache.outputs.cache-hit != 'true'
+      id: install-grcov
+      uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
+      with:
+        tool: grcov # can be versioned, ex: tool@1.1.1.1
+
+    # Use wretry action, to retry on a failed upload
     - name: Save Cache
       if: |
-        inputs.action == 'save'
+        inputs.action == 'save' &&
+        steps.check-cache.outputs.cache-hit != 'true'
       id: save-cache
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
