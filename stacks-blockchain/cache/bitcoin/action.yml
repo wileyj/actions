@@ -26,6 +26,10 @@ inputs:
     required: false
     default: ${{ github.event.repository.name }}-bitcoin-binaries
     # default: ${{ github.event.repository.name }}-${{ github.sha }}-bitcoin-binaries
+  btc-version:
+    description: "Bitcoin version"
+    required: false
+    default: "0.20.0"
 
 outputs:
   cache-hit:
@@ -38,7 +42,8 @@ runs:
     ## Perform a lookup to check if the cache already exists
     - name: Check Cache
       if: |
-        inputs.action == 'check'
+        inputs.action == 'check' ||
+        inputs.action == 'save'
       uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
       id: check-cache
       with:
@@ -62,8 +67,20 @@ runs:
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}
 
-    ## Restore bitcoin cache data
+    ## Save bitcoin cache data
     ##   - use wretry action, to retry on a failed upload
+
+    ## if bitcoin cache is not found, download and extract it
+    - name: Install Bitcoin Binary
+      if: |
+        inputs.action == 'save' &&
+        steps.check-cache.outputs.cache-hit != 'true'
+      id: install-bitcoin
+      shell: bash
+      run: |
+        curl -LSf -# https://github.com/stacks-network/bitcoin/releases/download/v${BTC_VERSION}/bitcoin-${BTC_VERSION}-x86_64-linux-gnu.tar.gz | tar zxf - -C /tmp
+        mv /tmp/bitcoin-${BTC_VERSION} /tmp/bitcoin
+
     - name: Save Cache
       if: |
         inputs.action == 'save'
