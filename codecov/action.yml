@@ -1,0 +1,67 @@
+name: "Generate and Upload codecov"
+description: "Generates and uploads codecov data"
+branding:
+  icon: "box"
+  color: "gray-dark"
+
+inputs:
+  binary-path:
+    description: "Binary Path"
+    required: false
+    default: "./target/debug/"
+  test-name:
+    description: "Test Name for codecov"
+    required: true
+    default: ""
+  verbose:
+    description: "codecov upload verbosity"
+    required: false
+    default: "false"
+  filename:
+    description: "codecov filename to generate"
+    required: false
+    default: "./lcov.info"
+  fail_ci_if_error:
+    description: "Fail on error"
+    required: false
+    default: "false"
+  retries:
+    description: "Number of attemps"
+    required: false
+    default: "3"
+  retry-delay:
+    description: "Time to wait to retry"
+    required: false
+    default: "10000"
+  upload-only:
+    description: "Skip grcov, and upload existing coverage file"
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    ## Generate code coverage using grcov
+    - name: Run grcov
+      if: |
+        inputs.upload-only != 'true'
+      id: run_grcov
+      shell: bash
+      run: |
+        grcov . --binary-path ${{ inputs.binary-path }} -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o ${{ inputs.filename }} || exit 1
+        echo "created=true\n" >> $GITHUB_OUTPUT
+
+    ## Upload coverage to codecov
+    ##   - use wretry action, to retry on a failed upload
+    - name: Upload Code Coverage
+      id: code_coverage
+      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+      # uses: wileyj/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+      with:
+        action: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
+        with: |
+          files: ${{ inputs.filename }}
+          name: ${{ inputs.test-name }}
+          fail_ci_if_error: ${{ inputs.fail_ci_if_error }}
+          verbose: ${{ inputs.verbose }}
+        attempt_limit: ${{ inputs.retries }}
+        attempt_delay: ${{ inputs.retry-delay }}

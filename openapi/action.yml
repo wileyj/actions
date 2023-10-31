@@ -1,0 +1,45 @@
+name: "Generate and upload openAPI docs"
+description: "Generate and upload openAPI docs"
+branding:
+  icon: "box"
+  color: "gray-dark"
+
+inputs:
+  output:
+    description: "openAPI output file"
+    required: false
+    default: "./open-api-docs.html"
+  input:
+    description: "Input file to use to generate openAPI docs"
+    required: true
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    ## checkout the code
+    - name: Checkout the latest code
+      id: git_checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    ## Use redoc to generate HTML of openapi.yml
+    - name: Redoc
+      id: run_redoc
+      uses: seeebiii/redoc-cli-github-action@c9649b33918da5eb290b81cd03a943caea091540 # v10
+      with:
+        args: "bundle -o ${{ inputs.output }} ${{ inputs.input }}"
+
+    ## Test the resultant html
+    - name: check result
+      id: check_redoc
+      shell: bash
+      run: |
+        test -f ${{ inputs.output }} || (echo "Missing ${{ inputs.output }} from previous step." && exit 1)
+
+    ## Upload the html file artifact
+    - name: Upload bundled html
+      id: upload_html_artifact
+      uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
+      with:
+        name: open-api-bundle
+        path: |
+          ${{ inputs.output }}
