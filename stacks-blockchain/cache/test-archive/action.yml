@@ -66,7 +66,7 @@ runs:
     ## Save test archive cache data
     - name: Setup Rust Toolchain
       if: |
-        steps.check-cache.outputs.cache-hit != 'true' &&
+        steps.check-cache.outputs.cache-hit != 'true'
       id: setup_rust_toolchain
       uses: actions-rust-lang/setup-rust-toolchain@f3c84ee10bf5a86e7a5d607d487bf17d57670965 # v1.5.0
       with:
