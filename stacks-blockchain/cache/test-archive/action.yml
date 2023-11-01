@@ -64,6 +64,13 @@ runs:
         attempt_delay: ${{ inputs.retry-delay}}
 
     ## Save test archive cache data
+    - name: Checkout the latest code
+      if: |
+        inputs.action == 'save' &&
+        steps.check-cache.outputs.cache-hit != 'true'
+      id: git_checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
     - name: Setup Rust Toolchain
       if: |
         inputs.action == 'save' &&
@@ -101,7 +108,8 @@ runs:
     ## Use wretry action, to retry on a failed upload
     - name: Save Cache
       if: |
-        inputs.action == 'save'
+        inputs.action == 'save' &&
+        steps.check-cache.outputs.cache-hit != 'true'
       id: save-cache
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
