@@ -1,7 +1,7 @@
 name: "Generate and Upload codecov"
 description: "Generates and uploads codecov data"
 branding:
-  icon: "box"
+  icon: "check-circle"
   color: "gray-dark"
 
 inputs:

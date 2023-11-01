@@ -35,7 +35,7 @@ outputs:
 runs:
   using: "composite"
   steps:
-    ## Perform a lookup to check if the cache already exists
+    ## Check if cache data exists
     - name: Check Cache
       if: |
         inputs.action == 'check' ||
@@ -51,8 +51,8 @@ runs:
           ~/.cargo/git/db/
         key: ${{ inputs.cache-key }}
 
-    ## Restore cargo cache data
-    ##   - use wretry action, to retry on a failed upload
+    ## Restore cache data
+    ## Use wretry action, to retry on a failed upload
     - name: Restore Cache
       if: |
         inputs.action == 'restore'
@@ -71,8 +71,8 @@ runs:
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}
 
-    ## Save cargo cache data
-    ## If cargo cache is not found, install nextest
+    ## Restore cache data
+    ## If cache is not found, install nextest
     - name: Install nextest
       if: |
         inputs.action == 'save' &&
@@ -93,7 +93,7 @@ runs:
       with:
         tool: grcov # can be versioned, ex: tool@1.1.1.1
 
-    ## Use wretry action, to retry on a failed upload
+    ## Use wretry action to retry on a failed upload
     - name: Save Cache
       if: |
         inputs.action == 'save' &&

@@ -1,5 +1,5 @@
-name: "Stacks Blockchain Tests"
-description: "Stacks Blockchain Tests"
+name: "Stacks Blockchain Test Environment"
+description: "Stacks Blockchain Test Environment"
 branding:
   icon: "archive"
   color: "gray-dark"
