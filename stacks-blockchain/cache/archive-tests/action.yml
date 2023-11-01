@@ -23,7 +23,7 @@ runs:
     - name: Check Genesis Test Archive Cache
       if: |
         inputs.genesis == 'true'
-      uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
+      uses: wileyj/actions/stacks-blockchain/cache/genesis-test-archive@main
       id: check-genesis-test-archive-cache
 
     - name: Check Cargo Target Cache
@@ -60,10 +60,8 @@ runs:
 
     - name: Build and Archive Tests
       if: |
-        inputs.genesis != 'true && (
-          steps.check-test-archive-cache.outputs.cache-hit != 'true' ||
-          steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
-        )
+        steps.check-test-archive-cache.outputs.cache-hit != 'true' ||
+        steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
       id: archive-tests
       shell: bash
       run: |
@@ -76,7 +74,7 @@ runs:
 
     - name: Build and Archive Genesis Tests
       if: |
-        inputs.genesis == 'true && (
+        inputs.genesis == 'true' && (
           steps.check-test-archive-cache.outputs.cache-hit != 'true' ||
           steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
         )
@@ -97,7 +95,7 @@ runs:
     ##   - Genesis nextest archive cache
     - name: Cache Cargo Target
       if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' || 
+        steps.check-target-cache.outputs.cache-hit != 'true' || 
         steps.check-test-archive-cache.outputs.cache-hit != 'true' || 
         steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
       id: save-target-cache
