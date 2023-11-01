@@ -77,7 +77,7 @@ runs:
 
     - name: Restore Cargo Cache
       if: |
-        inputs.action == 'save'      
+        inputs.action == 'save' &&
         steps.check-cache.outputs.cache-hit != 'true'
       id: restore_cargo_cache
       uses: wileyj/actions/stacks-blockchain/cache/cargo@main
@@ -86,7 +86,7 @@ runs:
 
     - name: Build and Archive Genesis Tests
       if: |
-        inputs.action == 'save'      
+        inputs.action == 'save' &&
         steps.check-cache.outputs.cache-hit != 'true'
       id: archive_genesis_tests
       shell: bash
