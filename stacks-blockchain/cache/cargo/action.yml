@@ -74,8 +74,10 @@ runs:
     ## Save cargo cache data
     ## If cargo cache is not found, install nextest
     - name: Install nextest
-      if: steps.check-cache.outputs.cache-hit != 'true'
-      id: install-nextest
+      if: |
+        inputs.action == 'save' &&
+        steps.check-cache.outputs.cache-hit != 'true'
+      id: install-crates
       uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
       with:
         tool: nextest # can be versioned, ex: tool@1.1.1.1
@@ -91,7 +93,7 @@ runs:
       with:
         tool: grcov # can be versioned, ex: tool@1.1.1.1
 
-    # Use wretry action, to retry on a failed upload
+    ## Use wretry action, to retry on a failed upload
     - name: Save Cache
       if: |
         inputs.action == 'save' &&

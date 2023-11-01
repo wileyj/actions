@@ -63,7 +63,7 @@ runs:
         attempt_delay: ${{ inputs.retry-delay}}
 
     ## Restore cargo target cache data
-    ##   - use wretry action, to retry on a failed upload
+    ## Use wretry action, to retry on a failed upload
     - name: Save Cache
       if: |
         inputs.action == 'save'
