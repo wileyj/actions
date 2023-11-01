@@ -64,47 +64,47 @@ runs:
         attempt_delay: ${{ inputs.retry-delay}}
 
     ## Save cargo cache data
-    - name: Checkout the latest code
-      if: |
-        inputs.action == 'save' &&
-        steps.check-cache.outputs.cache-hit != 'true'
-      id: git_checkout
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+    # - name: Checkout the latest code
+    #   if: |
+    #     inputs.action == 'save' &&
+    #     steps.check-cache.outputs.cache-hit != 'true'
+    #   id: git_checkout
+    #   uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
-    - name: Setup Rust Toolchain
-      if: |
-        inputs.action == 'save' &&
-        steps.check-cache.outputs.cache-hit != 'true'
-      id: setup_rust_toolchain
-      uses: actions-rust-lang/setup-rust-toolchain@f3c84ee10bf5a86e7a5d607d487bf17d57670965 # v1.5.0
-      with:
-        toolchain: stable
-        components: llvm-tools-preview
-        cache: false
+    # - name: Setup Rust Toolchain
+    #   if: |
+    #     inputs.action == 'save' &&
+    #     steps.check-cache.outputs.cache-hit != 'true'
+    #   id: setup_rust_toolchain
+    #   uses: actions-rust-lang/setup-rust-toolchain@f3c84ee10bf5a86e7a5d607d487bf17d57670965 # v1.5.0
+    #   with:
+    #     toolchain: stable
+    #     components: llvm-tools-preview
+    #     cache: false
 
-    - name: Restore Cargo Cache
-      if: |
-        inputs.action == 'save' &&
-        steps.check-cache.outputs.cache-hit != 'true'
-      id: restore_cargo_cache
-      uses: wileyj/actions/stacks-blockchain/cache/cargo@main
-      with:
-        action: restore
+    # - name: Restore Cargo Cache
+    #   if: |
+    #     inputs.action == 'save' &&
+    #     steps.check-cache.outputs.cache-hit != 'true'
+    #   id: restore_cargo_cache
+    #   uses: wileyj/actions/stacks-blockchain/cache/cargo@main
+    #   with:
+    #     action: restore
 
-    - name: Build and Archive Genesis Tests
-      if: |
-        inputs.action == 'save' &&
-        steps.check-cache.outputs.cache-hit != 'true'
-      id: archive_genesis_tests
-      shell: bash
-      run: |
-        cd testnet/stacks-node && cargo nextest archive \
-          --build-jobs 8 \
-          --workspace \
-          --tests \
-          --locked \
-          --features prod-genesis-chainstate \
-          --archive-file /tmp/genesis_archive.tar.zst
+    # - name: Build and Archive Genesis Tests
+    #   if: |
+    #     inputs.action == 'save' &&
+    #     steps.check-cache.outputs.cache-hit != 'true'
+    #   id: archive_genesis_tests
+    #   shell: bash
+    #   run: |
+    #     cd testnet/stacks-node && cargo nextest archive \
+    #       --build-jobs 8 \
+    #       --workspace \
+    #       --tests \
+    #       --locked \
+    #       --features prod-genesis-chainstate \
+    #       --archive-file /tmp/genesis_archive.tar.zst
 
     ## Use wretry action, to retry on a failed upload
     - name: Save Cache
