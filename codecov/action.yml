@@ -37,6 +37,16 @@ inputs:
     description: "Skip grcov, and upload existing coverage file"
     required: false
     default: "false"
+  # rustflags:
+  #   description: "Rust flags"
+  #   required: false
+  #   default: "-Cinstrument-coverage -Awarnings"
+  # # RUSTFLAGS: "-Cinstrument-coverage -Awarnings"
+  # llvm-profile:
+  #   description: "LLVM Profile File"
+  #   required: false
+  #   default: "stacks-blockchain-%p-%m.profraw"
+  # # LLVM_PROFILE_FILE: "stacks-blockchain-%p-%m.profraw"
 runs:
   using: "composite"
   steps:
@@ -49,6 +59,12 @@ runs:
       run: |
         grcov . --binary-path ${{ inputs.binary-path }} -s . -t lcov --branch --ignore-not-existing --ignore "/*" -o ${{ inputs.filename }} || exit 1
         echo "created=true\n" >> $GITHUB_OUTPUT
+
+    - name: github env vars
+      id: env
+      shell: bash
+      run: |
+        echo "env vars: ${GITHUB_ENV}"
 
     ## Upload coverage to codecov
     ##   - use wretry action, to retry on a failed upload
