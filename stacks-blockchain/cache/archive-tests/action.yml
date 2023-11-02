@@ -32,7 +32,7 @@ runs:
       id: echo-target
       shell: bash
       run: |
-        echo "check-target: ${{ steps.check-target.outputs.cache-hit }}"
+        echo "check-target: ${{ steps.check-target-cache.outputs.cache-hit }}"
     - name: echo test cache
       id: echo-test
       shell: bash
@@ -48,7 +48,7 @@ runs:
     ##   - if inputs.genesis == true, optionally build the genesis test archive
     - name: Checkout the latest code
       if: |
-        steps.check-target.outputs.cache-hit != 'true' ||
+        steps.check-target-cache.outputs.cache-hit != 'true' ||
         steps.check-test-archive-cache.outputs.cache-hit != 'true' ||
         steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
       id: git-checkout
@@ -56,7 +56,7 @@ runs:
 
     - name: Setup Rust Toolchain
       if: |
-        steps.check-target.outputs.cache-hit != 'true' ||
+        steps.check-target-cache.outputs.cache-hit != 'true' ||
         steps.check-test-archive-cache.outputs.cache-hit != 'true' ||
         steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
       id: setup-rust-toolchain
@@ -68,7 +68,7 @@ runs:
 
     - name: Restore Cargo Cache
       if: |
-        steps.check-target.outputs.cache-hit != 'true' ||
+        steps.check-target-cache.outputs.cache-hit != 'true' ||
         steps.check-test-archive-cache.outputs.cache-hit != 'true' ||
         steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
       id: restore-cargo-cache
@@ -78,7 +78,7 @@ runs:
 
     - name: Build and Archive Tests
       if: |
-        steps.check-target.outputs.cache-hit != 'true' ||
+        steps.check-target-cache.outputs.cache-hit != 'true' ||
         steps.check-test-archive-cache.outputs.cache-hit != 'true' ||
         steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
       id: archive-tests
@@ -94,7 +94,7 @@ runs:
     - name: Build and Archive Genesis Tests
       if: |
         inputs.genesis == 'true' && (
-          steps.check-target.outputs.cache-hit != 'true' ||
+          steps.check-target-cache.outputs.cache-hit != 'true' ||
           steps.check-test-archive-cache.outputs.cache-hit != 'true' ||
           steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
         )
@@ -126,7 +126,7 @@ runs:
 
     - name: Cache Test Archive
       if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' || 
+        steps.check-target-cache.outputs.cache-hit != 'true' || 
         steps.check-test-archive-cache.outputs.cache-hit != 'true' || 
         steps.check-genesis-test-archive-cache.outputs.cache-hit != 'true'
       id: save-nextest-cache
