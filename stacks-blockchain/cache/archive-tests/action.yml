@@ -19,8 +19,6 @@ runs:
       id: check-target-cache
 
     - name: Check Test Archive Cache
-      if: |
-        inputs.genesis != 'true'
       uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
       id: check-test-archive-cache
 
@@ -34,17 +32,17 @@ runs:
       id: echo-target
       shell: bash
       run: |
-        echo "target: ${{ steps.check-target.outputs.cache-hit }}"
+        echo "check-target: ${{ steps.check-target.outputs.cache-hit }}"
     - name: echo test cache
       id: echo-test
       shell: bash
       run: |
-        echo "target: ${{ steps.check-test-archive-cache.outputs.cache-hit }}"
+        echo "check-test-archive-cache: ${{ steps.check-test-archive-cache.outputs.cache-hit }}"
     - name: echo genesis test cache
       id: echo-genesis-test
       shell: bash
       run: |
-        echo "target: ${{ steps.check-genesis-test-archive-cache.outputs.cache-hit }}"
+        echo "check-genesis-test-archive-cache: ${{ steps.check-genesis-test-archive-cache.outputs.cache-hit }}"
 
     ## Build the test archive cache(s)
     ##   - if inputs.genesis == true, optionally build the genesis test archive
