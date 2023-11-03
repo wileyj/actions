@@ -16,7 +16,7 @@ runs:
     ## cleanup runner
     - name: Cleanup Runner
       id: runner_cleanup
-      uses: wileyj/actions/cleanup@main
+      uses: stacks-network/actions/cleanup@main
 
     ## Checkout the code
     - name: Checkout the latest code
@@ -35,21 +35,21 @@ runs:
     ## Restore cargo cache data
     - name: Restore Cargo Cache
       id: restore_cargo_cache
-      uses: wileyj/actions/stacks-blockchain/cache/cargo@main
+      uses: stacks-network/actions/stacks-blockchain/cache/cargo@main
       with:
         action: restore
 
     ## Restore nextest target cache data
     - name: Restore Target Cache
       id: restore_target_cache
-      uses: wileyj/actions/stacks-blockchain/cache/target@main
+      uses: stacks-network/actions/stacks-blockchain/cache/target@main
       with:
         action: restore
 
     ## Restore bitcoin cache data
     - name: Restore Bitcoin Binary Cache
       id: restore_bitcoin_cache
-      uses: wileyj/actions/stacks-blockchain/cache/bitcoin@main
+      uses: stacks-network/actions/stacks-blockchain/cache/bitcoin@main
       with:
         action: restore
 
@@ -66,7 +66,7 @@ runs:
       if: |
         inputs.genesis != 'true'
       id: restore_test_cache
-      uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
+      uses: stacks-network/actions/stacks-blockchain/cache/test-archive@main
       with:
         action: restore
 
@@ -75,6 +75,6 @@ runs:
       if: |
         inputs.genesis == 'true'
       id: restore_genesis_test_cache
-      uses: wileyj/actions/stacks-blockchain/cache/genesis-test-archive@main
+      uses: stacks-network/actions/stacks-blockchain/cache/genesis-test-archive@main
       with:
         action: restore

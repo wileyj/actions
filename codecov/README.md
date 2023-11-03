@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Code Coverage
         id: codecov
-        uses: wileyj/actions/codecov@main
+        uses: stacks-network/actions/codecov@main
         with:
           test-name: sample_test
 ```
@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Code Coverage
         id: codecov
-        uses: wileyj/actions/codecov@main
+        uses: stacks-network/actions/codecov@main
         with:
           upload-only: true
           test-name: sample_test

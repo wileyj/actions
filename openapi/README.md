@@ -21,7 +21,7 @@ jobs:
     steps:
       - name: OpenAPI
         id: openapi
-        uses: wileyj/actions/openapi@main
+        uses: stacks-network/actions/openapi@main
         with:
           input: ./docs/rpc/openapi.yaml
           output: ./open-api-docs.html

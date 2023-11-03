@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Check Cache
         id: check_cache
-        uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
+        uses: stacks-network/actions/stacks-blockchain/cache/test-archive@main
 ```
 
 ### Restore Cache
@@ -50,7 +50,7 @@ jobs:
     steps:
       - name: Restore Cargo Cache
       id: restore_cache
-      uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
+      uses: stacks-network/actions/stacks-blockchain/cache/test-archive@main
       with:
         action: restore
 ```
@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Save Cargo Cache
       id: save_cache
-      uses: wileyj/actions/stacks-blockchain/cache/test-archive@main
+      uses: stacks-network/actions/stacks-blockchain/cache/test-archive@main
       with:
         action: save
 ```

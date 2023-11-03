@@ -1,4 +1,4 @@
-# Nextest Archive Cache action
+# Build Nextest Archive Cache action
 
 Builds the cache(s) of [nextest](https://nexte.st) archives for stacks-blockchain tests
 
@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Test Archives
         id: test-archives
-        uses: wileyj/actions/stacks-blockchain/cache/archive-tests@main
+        uses: stacks-network/actions/stacks-blockchain/cache/build-cache@main
         with:
           genesis: true
 ```
