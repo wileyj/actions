@@ -6,7 +6,7 @@ branding:
 
 inputs:
   genesis:
-    description: "Restore genesis archvie"
+    description: "Restore genesis archive"
     required: false
     default: "false"
 

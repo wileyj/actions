@@ -1,4 +1,4 @@
-# Stacks Blockchain Cache action
+# Stacks Blockchain Cache actions
 
 > - [Bitcoin Cache action](./bitcoin/README.md)
 > - [Cargo Cache action](./cargo/README.md)

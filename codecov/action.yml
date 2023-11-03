@@ -26,7 +26,7 @@ inputs:
     required: false
     default: "false"
   retries:
-    description: "Number of attemps"
+    description: "Number of attempts"
     required: false
     default: "3"
   retry-delay:
@@ -55,7 +55,6 @@ runs:
     - name: Upload Code Coverage
       id: code_coverage
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
-      # uses: wileyj/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
         action: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
         with: |
