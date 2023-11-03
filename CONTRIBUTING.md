@@ -8,13 +8,13 @@ The governing idea behind this monorepo of [composite actions](https://docs.gith
 
 If there is a way to improve a CI workflow that would benefit other repos in the [stacks-network](https://github.com/stacks-network) org, it belongs here.
 
-# Code of Conduct
+## Code of Conduct
 
 This project and everyone participating in it is governed by this [Code of Conduct](./CODE_OF_CONDUCT.md).
 
-# How Can I Contribute?
+## How Can I Contribute?
 
-## Repo Structure
+### Repo Structure
 
 This repo is structured as a typical monorepo, with agnostic [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) at the top level.
 Repository specific [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) are added at the top level, i.e. `./stacks-blockchain/cargo`.
@@ -26,7 +26,7 @@ _At a minimum_, any new [composite actions](https://docs.github.com/en/actions/c
 
 There may or may not be additional folders/logic depending upon the complexity of the workflow, the above 2 files are the minimum requirement.
 
-### Branch naming
+#### Branch naming
 
 Branch names should use a prefix that conveys the overall goal of the branch:
 
@@ -34,7 +34,7 @@ Branch names should use a prefix that conveys the overall goal of the branch:
 - `fix/some-broken-thing` for hot fixes and bug fixes
 - `docs/something-needs-a-comment` for documentation
 
-### Merging PRs from Forks
+#### Merging PRs from Forks
 
 PRs from forks or opened by contributors without commit access require
 some special handling for merging. Any such PR, after being reviewed,
@@ -49,7 +49,7 @@ is responsible for:
 5. Tagging reviewers for re-approval.
 6. Merging the new PR.
 
-## Git Commit Messages
+### Git Commit Messages
 
 Aim to use descriptive git commit messages. We try to follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/).
 The general format is as follows:
@@ -70,14 +70,14 @@ should reference the issue in the commit message. For example:
 fix: incorporate unlocks in mempool admitter, #3623
 ```
 
-# Coding Conventions
+## Coding Conventions
 
-## Simplicity of implementation
+### Simplicity of implementation
 
 The most important consideration when accepting or rejecting a contribution is
 the simplicity (i.e. ease of understanding) of its implementation.
 
-## Minimal dependencies
+### Minimal dependencies
 
 Adding new external package dependencies is very much discouraged. Exceptions will be
 granted on a case-by-case basis, and only if deemed absolutely necessary.
@@ -102,7 +102,7 @@ jobs:
 Which uses [this commit](https://github.com/docker/setup-buildx-action/commit/f95db51fddba0c2d1ec667646a06c2ce06100226)
 Although not required, it is encouraged to add a comment for which release an external action is using, i.e. `# v3.0.0.`
 
-## Data Input
+### Data Input
 
 _If relevant_, all composite workflows should have clearly defined inputs.
 ex:
@@ -119,7 +119,7 @@ inputs:
     default: ""
 ```
 
-## Data Output
+### Data Output
 
 _If relevant_, all composite workflows should have clearly defined outputs.
 example (from [stacks-blockchain/cache/bitcoin/action.yml](./stacks-blockchain/cache/bitcoin/action.yml)):
@@ -133,11 +133,11 @@ outputs:
 
 Where `check_cache` is the step reporting if a cache already exists.
 
-## Formatting
+### Formatting
 
 This repository uses the default github action yaml formatting style. Refer to https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
 
-## Comments
+### Comments
 
 Comments are very important for the readability and correctness of the action. The purpose of comments is:
 
