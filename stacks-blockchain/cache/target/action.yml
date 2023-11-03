@@ -30,7 +30,7 @@ inputs:
 outputs:
   cache-hit:
     description: "Cache Hit"
-    value: ${{ steps.check-cache.outputs.cache-hit }}
+    value: ${{ steps.check_cache.outputs.cache-hit }}
 
 runs:
   using: "composite"
@@ -40,7 +40,7 @@ runs:
       if: |
         inputs.action == 'check'
       uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
-      id: check-cache
+      id: check_cache
       with:
         lookup-only: true
         path: ./target
@@ -51,7 +51,7 @@ runs:
     - name: Restore Cache
       if: |
         inputs.action == 'restore'
-      id: restore-cache
+      id: restore_cache
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
         action: actions/cache/restore@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
@@ -67,7 +67,7 @@ runs:
     - name: Save Cache
       if: |
         inputs.action == 'save'
-      id: save-cache
+      id: save_cache
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
         action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
