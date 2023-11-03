@@ -4,7 +4,7 @@ Generic docker setup
 
 - runs [cleanup](../cleanup/)
 - sets some basic env vars based on workflow trigger (i.e. PR)
-- Sets up QEMU, buildx and logs into dockerhub
+- Sets up QEMU, buildx and logs into docker
 
 ## Documentation
 

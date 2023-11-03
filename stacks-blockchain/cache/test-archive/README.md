@@ -1,11 +1,20 @@
 # Test Archive Cache action
 
+[Nextest](https://nexte.st) archive of tests
+
+- `check` - Verifies if the cache already exists
+- `restore` - Restores a cache if it exists
+- `save` - Builds and saves the [nextest](https://nexte.st) archive
+
 ## Documentation
 
 ### Inputs
 
-- `action` - type of cache action (one of: `check`, `restore`, `save`)
+- `action` - Type of cache action - one of: `check`, `restore`, `save` (default: `check`)
 - `cache-key` - _optional_ defaults to: `${{ github.event.repository.name }}-${{ github.sha }}-test-archive`
+- `fail_ci_if_error` - _optional_ Fail the workflow on an error (default: `false`)
+- `retries` - _optional_ Number of times to retry codecov upload (default: `3`)
+- `retry-delay` - _optional_ Time in ms between upload retries (default: `10000`)
 
 ### Outputs
 

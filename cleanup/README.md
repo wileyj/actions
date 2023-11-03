@@ -1,6 +1,6 @@
 # Runner Cleanup action
 
-_Modified version of [this action](https://github.com/easimon/maximize-build-space/)_
+_Modified version of [this composite action](https://github.com/easimon/maximize-build-space/)_
 
 The main changes between the linked repo and this action is that this action does not create a logical volume or resize the swap space. Additionally, all package/image removal is by default set to `true` so it can be used very simply.
 Before running this action, a runner will have `~18GB` of free disk. Afterwards, there will be `~48GB` free.

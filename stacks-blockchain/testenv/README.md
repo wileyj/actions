@@ -1,19 +1,17 @@
 # Stacks Blockchain Test Environment
 
 - runs [cleanup](../cleanup/)
-- restores caches used for tests (cargo, bitcoin)
-- optionally restores the genesis test cache
+- restores caches used for tests (cargo, bitcoin, cargo target, nextest archive)
+- optionally restores the genesis nextest archive cache
 
 ## Documentation
 
 ### Inputs
 
-- `genesis` - Restore genesis test cache (boolean)
+- `genesis` - _optional_ Restore genesis test cache (default: `false`)
 
 ## Usage
 
-### Tests
-
 ```yaml
 name: Action
 on: push
@@ -25,21 +23,4 @@ jobs:
       - name: Setup Test Environment
         id: setup_tests
         uses: wileyj/actions/stacks-blockchain/testenv@main
-```
-
-### Genesis Tests
-
-```yaml
-name: Action
-on: push
-jobs:
-  build:
-    name: Job
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Test Environment
-        id: setup_tests
-        uses: wileyj/actions/stacks-blockchain/testenv@main
-        with:
-          genesis: true
 ```

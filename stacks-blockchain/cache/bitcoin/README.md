@@ -1,11 +1,21 @@
 # Bitcoin Cache action
 
+Generic cache operations for the bitcoin cache
+
+- `check`: checks if the cache exists
+- `restore`: restores the cache (if it passes the `check` step)
+- `save`: Downloads the specified version of bitcoin and saves the cache
+
 ## Documentation
 
 ### Inputs
 
-- `action` - type of cache action (one of: `check`, `restore`, `save`)
+- `action` - Type of cache action - one of: `check`, `restore`, `save` (default: `check`)
 - `cache-key` - _optional_ defaults to: `${{ github.event.repository.name }}-${{ github.sha }}-test-archive`
+- `fail_ci_if_error` - _optional_ Fail the workflow on an error (default: `false`)
+- `retries` - _optional_ Number of times to retry codecov upload (default: `3`)
+- `retry-delay` - _optional_ Time in ms between upload retries (default: `10000`)
+- `btc-version` - _optional_ The version of Bitcoin to use (default: `0.20.0`)
 
 ### Outputs
 
