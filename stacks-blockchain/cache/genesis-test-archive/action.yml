@@ -24,8 +24,7 @@ inputs:
   cache-key:
     description: "Cache Key name"
     required: false
-    default: ${{ github.event.repository.name }}-genesis-test-archive
-    # default: ${{ github.event.repository.name }}-${{ github.sha }}-genesis-test-archive
+    default: ${{ github.event.repository.name }}-${{ github.sha }}-genesis-test-archive
 
 outputs:
   cache-hit:
