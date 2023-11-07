@@ -22,5 +22,5 @@ jobs:
     steps:
       - name: Setup Test Environment
         id: setup_tests
-        uses: stacks-network/actions/stacks-blockchain/testenv@main
+        uses: wileyj/actions/stacks-blockchain/testenv@main
 ```

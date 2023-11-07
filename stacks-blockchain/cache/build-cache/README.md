@@ -20,7 +20,7 @@ jobs:
     steps:
       - name: Test Archives
         id: test-archives
-        uses: stacks-network/actions/stacks-blockchain/cache/build-cache@main
+        uses: wileyj/actions/stacks-blockchain/cache/build-cache@main
         with:
           genesis: true
 ```
