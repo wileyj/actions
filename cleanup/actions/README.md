@@ -27,4 +27,6 @@ jobs:
       - name: Cleanup Workflows
         id: workflow_cleanup
         uses: stacks-network/actions/cleanup/actions@main 
+        with:
+          token: ${{ secrets.GH_TOKEN }}
 ```
