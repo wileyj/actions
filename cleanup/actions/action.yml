@@ -5,6 +5,10 @@ branding:
   color: gray-dark
 
 inputs:
+  token:
+    description: "GH_TOKEN"
+    required: true
+    default: ""
   cache-ttl:
     description: "How many days to keep a cache (default: 7)"
     required: false
@@ -23,7 +27,7 @@ runs:
     ## Use the `gh` cli and API to delete any action that has been completed (and was successful) for x days
     - name: Delete Old Workflows
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ inputs.token }}
       shell: bash
       run: |
         ## Set a timestamp in iso-8601 format for x days in the past, defined by a variable
@@ -63,7 +67,7 @@ runs:
     - name: Delete Failed Workflows
       shell: bash
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ inputs.token }}
       run: |
         ## Set a timestamp in iso-8601 format for x days in the past, defined by a variable
         TIME_DIFF="$((86400 * ${NUM_DAYS}))"
@@ -103,7 +107,7 @@ runs:
     - name: Delete Caches
       shell: bash
       env:
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ inputs.token }}
       run: |
         ## Set a timestamp in iso-8601 format for x days in the past, defined by a variable
         TIME_DIFF="$((86400 * ${NUM_DAYS}))"
