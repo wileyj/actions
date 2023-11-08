@@ -37,6 +37,7 @@ inputs:
     description: "Skip grcov, and upload existing coverage file"
     required: false
     default: "false"
+
 runs:
   using: "composite"
   steps:
