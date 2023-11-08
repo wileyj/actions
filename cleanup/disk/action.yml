@@ -6,6 +6,7 @@ description: "Maximize the available disk space for your build job"
 branding:
   icon: "trash"
   color: "gray-dark"
+
 inputs:
   remove-dotnet:
     description: "Removes .NET runtime and libraries. (frees ~17 GB)"
@@ -27,6 +28,7 @@ inputs:
     description: "Removes cached Docker images. (frees ~3 GB)"
     required: false
     default: "true"
+
 runs:
   using: "composite"
   steps:

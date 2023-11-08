@@ -13,13 +13,14 @@ inputs:
     description: "Docker password"
     required: false
     default: ""
+
 runs:
   using: "composite"
   steps:
     ## cleanup runner
     - name: Cleanup Runner
       id: runner_cleanup
-      uses: stacks-network/actions/cleanup@main
+      uses: stacks-network/actions/cleanup/disk@main
 
     ## Checkout the code
     - name: Checkout the latest code
