@@ -21,6 +21,7 @@ inputs:
     description: "How many days to keep failed workflows (default: 15)"
     required: false
     default: "15"
+
 runs:
   using: "composite"
   steps:
