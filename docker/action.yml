@@ -13,6 +13,7 @@ inputs:
     description: "Docker password"
     required: false
     default: ""
+
 runs:
   using: "composite"
   steps:
