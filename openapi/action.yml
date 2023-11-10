@@ -13,6 +13,7 @@ inputs:
     description: "Input file to use to generate openAPI docs"
     required: true
     default: ""
+
 runs:
   using: "composite"
   steps:

@@ -27,6 +27,7 @@ inputs:
     description: "Removes cached Docker images. (frees ~3 GB)"
     required: false
     default: "true"
+
 runs:
   using: "composite"
   steps:
