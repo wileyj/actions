@@ -9,10 +9,7 @@ inputs:
     description: "Run steps for genesis test archive"
     required: false
     default: "false"
-  cache-key-root:
-    description: "Cache Key Root"
-    required: false
-    default: ${{ github.event.repository.name }}-${{ github.event.pull_request.head.sha || github.sha }}
+
 runs:
   using: "composite"
   steps:
