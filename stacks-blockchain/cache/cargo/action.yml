@@ -24,7 +24,7 @@ inputs:
   cache-key:
     description: "Cache Key name"
     required: false
-    default: ${{ github.event.repository.name }}-${{ github.sha }}-cargo
+    default: ${{ github.event.repository.name }}-${{ github.event.pull_request.head.sha || github.sha }}-cargo
 
 outputs:
   cache-hit:
