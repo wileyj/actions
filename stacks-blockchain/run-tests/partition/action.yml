@@ -1,0 +1,50 @@
+name: "Run Partitioned Tests"
+description: "Run Partitioned Tests"
+branding:
+  icon: "archive"
+  color: "gray-dark"
+
+inputs:
+  partition:
+    description: "Partition to run"
+    required: true
+  total-partitions:
+    description: "Total number of partitions"
+    required: true
+  threads:
+    description: "Number of test threads"
+    required: false
+    default: "num-cpus"
+  archive-file:
+    description: "Archive file to use for tests"
+    required: true
+    default: "/tmp/test_archive.tar.zst"
+  success-output:
+    description: "Success output"
+    required: false
+    default: "immediate-final"
+  status-level:
+    description: "Output status level"
+    required: false
+    default: "fail"
+  retries:
+    description: "Number of test retries"
+    required: false
+    default: "2"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Partitioned Tests
+      id: run-tests
+      shell: bash
+      run: |
+        cargo nextest run \
+          --test-threads ${{ inputs.threads}} \
+          --retries ${{ inputs.retries }} \
+          --final-status-level ${{ inputs.status-level }} \
+          --fail-fast \
+          --success-output ${{ inputs.success-output }} \
+          --status-level ${{ inputs.status-level }} \
+          --archive-file ${{ inputs.archive-file }} \
+          --partition count:${{ inputs.partition }}/${{ inputs.total-partitions }}
