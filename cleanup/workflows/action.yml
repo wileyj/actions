@@ -104,7 +104,7 @@ runs:
         echo "Done"
 
     ## Use the gh cli and API to delete caches that have existed for at least x days
-    ##   - ignore caches with a key of `stacks-blockchain-bitcoin-binaries`
+    ##   - ignore caches with a key of `stacks-core-bitcoin-binaries`
     - name: Delete Caches
       shell: bash
       env:
@@ -128,8 +128,8 @@ runs:
             .actions_caches[]
             ## Retrieve the keys: id (used for deleting), last_accessed_at (used for comparison) and key (used for comparison)
             | { id, last_accessed_at, key }
-            ## Filter out the id based on (last_accessed_at < TS and key is not stacks-blockchain-bitcoin-binaries
-            | select((.last_accessed_at < $TS) and (.key != "stacks-blockchain-bitcoin-binaries" ))
+            ## Filter out the id based on (last_accessed_at < TS and key is not stacks-core-bitcoin-binaries
+            | select((.last_accessed_at < $TS) and (.key != "stacks-core-bitcoin-binaries" ))
             ## If an item matches our conditional, store the id as ID in the for loop
             | {id}
             | .[]

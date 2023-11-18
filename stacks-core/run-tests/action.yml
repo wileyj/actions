@@ -1,0 +1,47 @@
+name: "Run Tests"
+description: "Run Tests"
+branding:
+  icon: "archive"
+  color: "gray-dark"
+
+inputs:
+  test-name:
+    description: "Test name to run"
+    required: true
+  threads:
+    description: "Number of test threads"
+    required: false
+    default: "num-cpus"
+  archive-file:
+    description: "Archive file to use for tests"
+    required: true
+    default: "/tmp/test_archive.tar.zst"
+  success-output:
+    description: "Success output"
+    required: false
+    default: "immediate-final"
+  status-level:
+    description: "Output status level"
+    required: false
+    default: "fail"
+  retries:
+    description: "Number of test retries"
+    required: false
+    default: "2"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Tests
+      id: run-tests
+      shell: bash
+      run: |
+        cargo nextest run \
+          --archive-file ${{ inputs.archive-file }} \
+          --test-threads ${{ inputs.threads }} \
+          --retries ${{ inputs.retries }} \
+          --run-ignored all \
+          --fail-fast \
+          --success-output ${{ inputs.success-output }} \
+          --status-level ${{ inputs.status-level }} \
+          "${{ inputs.test-name }}"

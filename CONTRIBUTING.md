@@ -1,6 +1,6 @@
 # Contributing to the Stacks Network github actions monorepo
 
-_Modified version of the [stacks-blockchain CONTRIBUTING.md](https://github.com/stacks-network/stacks-blockchain/blob/master/CONTRIBUTING.md)_
+_Modified version of the [stacks-core CONTRIBUTING.md](https://github.com/stacks-network/stacks-core/blob/master/CONTRIBUTING.md)_
 
 The governing idea behind this monorepo of [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) can be summarized in a single sentence:
 
@@ -17,7 +17,7 @@ This project and everyone participating in it is governed by this [Code of Condu
 ### Repo Structure
 
 This repo is structured as a typical monorepo, with agnostic [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) at the top level.
-Repository specific [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) are added at the top level, i.e. `./stacks-blockchain/cargo`.
+Repository specific [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) are added at the top level, i.e. `./stacks-core/cargo`.
 
 _At a minimum_, any new [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) will need the following 2 files:
 
@@ -122,7 +122,7 @@ inputs:
 ### Data Output
 
 _If relevant_, all composite workflows should have clearly defined outputs.
-example (from [stacks-blockchain/cache/bitcoin/action.yml](./stacks-blockchain/cache/bitcoin/action.yml)):
+example (from [stacks-core/cache/bitcoin/action.yml](./stacks-core/cache/bitcoin/action.yml)):
 
 ```yaml
 outputs:
