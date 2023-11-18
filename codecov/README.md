@@ -6,15 +6,16 @@
 ## Documentation
 
 ### Inputs
-
-- `test-name`- _required_ Test name that is being uploaded.
-- `binary-path` - _optional_ Used when generating a report, it's the binary path used by grcov (default: `./target/debug/`)
-- `verbose` - _optional_ Output verbosity when uploading a report
-- `filename` - _optional_ Filename created by grcov and uploaded. (default: `/lcov.info`)
-- `fail_ci_if_error` - _optional_ Fail the workflow on an error (default: `false`)
-- `retries` - _optional_ Number of times to retry codecov upload (default: `3`)
-- `retry-delay` - _optional_ Time in ms between upload retries (default: `10000`)
-- `upload-only` - _optional_ Skips grcov step and uploads an existing file (default: `false`)
+| Input | Description | Required | Default |
+| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
+| `test-name` | Test name that is being uploaded | true | null |
+| `binary-path` | Used when generating a report, it's the binary path used by grcov | false | `./target/debug/` |
+| `verbose` | Output verbosity when uploading a report | false | null |
+| `filename` | Filename created by grcov and uploaded | false | `/lcov.info` |
+| `fail_ci_if_error` | Fail the workflow on an error | false | `false` |
+| `retries` | Number of times to retry codecov | false | `3` |
+| `retry-delay` | Time in ms between upload retries | false | `10000` |
+| `upload-only` | Skips grcov step and uploads an existing file | false | `false` |
 
 ## Usage
 
@@ -51,4 +52,5 @@ jobs:
         with:
           upload-only: true
           test-name: sample_test
+          filename: ./coverage.lcov
 ```
