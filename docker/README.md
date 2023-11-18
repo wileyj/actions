@@ -9,9 +9,10 @@ Generic docker setup
 ## Documentation
 
 ### Inputs
-
-- `username` - Docker repo login
-- `password` - Docker repo password
+| Input | Description | Required | Default |
+| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
+| `username` | Docker repo username | true | null |
+| `password` | Docker repo password | true | null |
 
 ## Usage
 

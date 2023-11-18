@@ -6,8 +6,10 @@ Generates an HTML artifact of a provided openapi.yml file using `redoc`, checks 
 
 ### Inputs
 
-- `input`- _required_ OpenAPI input file to use
-- `output` - _optional_ Filename to save OpenAPI artifact as (default: `./open-api-docs.html`)
+| Input | Description | Required | Default |
+| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
+| `input` | OpenAPI input file to use | true | null |
+| `output` | OpenAPI artifact filename | false | `./open-api-docs.html` |
 
 ## Usage
 
@@ -24,5 +26,4 @@ jobs:
         uses: stacks-network/actions/openapi@main
         with:
           input: ./docs/rpc/openapi.yaml
-          output: ./open-api-docs.html
 ```

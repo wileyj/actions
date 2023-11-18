@@ -8,12 +8,13 @@ Before running this action, a runner will have `~18GB` of free disk. Afterwards,
 ## Documentation
 
 ### Inputs
-
-- `remove-dotnet` - Removes .NET runtime and libraries. (frees ~17 GB) (default: `true`)
-- `remove-android`- Removes Android SDKs and Tools. (frees ~11 GB) (default: `true`)
-- `remove-haskell` - Removes GHC (Haskell) artifacts. (frees ~2.7 GB) (default: `true`)
-- `remove-codeql` - Removes CodeQL Action Bundles. (frees ~5.4 GB) (default: `true`)
-- `remove-docker-images` - Removes cached Docker images. (frees ~3 GB) (default: `true`)
+| Input | Description | Required | Default |
+| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
+| `remove-dotnet` | Removes .NET runtime and libraries. (frees ~17 GB) | false | `true` |
+| `remove-android` | Removes Android SDKs and Tools. (frees ~11 GB) | false | `true` |
+| `remove-haskell` | Removes GHC (Haskell) artifacts. (frees ~2.7 GB) | false | `true` |
+| `remove-codeql` | Removes CodeQL Action Bundles. (frees ~5.4 GB) | false | `true` |
+| `remove-docker-images` | Removes cached Docker images. (frees ~3 GB) | false | `true` |
 
 ## Usage
 

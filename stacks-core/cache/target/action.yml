@@ -1,5 +1,5 @@
-name: "Test Archive Cache"
-description: "Nextest binary archive for tests"
+name: "Cargo Target Cache"
+description: "Cargo Target data cache"
 branding:
   icon: "archive"
   color: "gray-dark"
@@ -24,7 +24,7 @@ inputs:
   cache-key:
     description: "Cache Key name"
     required: false
-    default: ${{ github.event.repository.name }}-${{ github.sha }}-test-archive
+    default: ${{ github.event.repository.name }}-${{ github.event.pull_request.head.sha || github.sha }}-target
 
 outputs:
   cache-hit:
@@ -37,13 +37,12 @@ runs:
     ## Check if cache data exists
     - name: Check Cache
       if: |
-        inputs.action == 'check' ||
-        inputs.action == 'save'
+        inputs.action == 'check'
       uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
       id: check_cache
       with:
         lookup-only: true
-        path: /tmp/test_archive.tar.zst
+        path: ./target
         key: ${{ inputs.cache-key }}
 
     ## Restore cache data
@@ -57,7 +56,7 @@ runs:
         action: actions/cache/restore@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with: |
           fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
-          path: /tmp/test_archive.tar.zst
+          path: ./target
           key: ${{ inputs.cache-key }}
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}
@@ -66,14 +65,13 @@ runs:
     ## Use wretry action to retry on a failed upload
     - name: Save Cache
       if: |
-        inputs.action == 'save' &&
-        steps.check_cache.outputs.cache-hit != 'true'
+        inputs.action == 'save'
       id: save_cache
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
         action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with: |
-          path: /tmp/test_archive.tar.zst
+          path: ./target
           key: ${{ inputs.cache-key }}
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}

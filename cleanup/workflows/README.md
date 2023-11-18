@@ -9,10 +9,11 @@ Deletes the following Github Action workflow artifacts after a specified time pe
 ## Documentation
 
 ### Inputs
-
-- `cache-ttl` - Number of days to retain caches (default: `7`)
-- `workflow-ttl` - Number of days to retain successful workflows (default: `30`)
-- `failed-workflow-ttl` - Number of days to retain successful workflows (default: `15`)
+| Input | Description | Required | Default |
+| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
+| `cache-ttl` | Number of days to retain caches | false | `7` |
+| `workflow-ttl` | Number of days to retain successful workflows | false | `30` |
+| `failed-workflow-ttl` | Number of days to retain successful workflows | false | `15` |
 
 ## Usage
 
@@ -20,7 +21,15 @@ Deletes the following Github Action workflow artifacts after a specified time pe
 
 ```yaml
 name: Action
-on: push
+on:
+  workflow_dispatch:
+    inputs:
+      cache-ttl:
+        default: "7"
+      workflow-ttl:
+        default: "30"
+      failed-workflow-ttl:
+        default: "15"
 jobs:
   build:
     name: Job
@@ -37,7 +46,7 @@ jobs:
 When running via a schedule, the inputs need to be provided via env var
 
 ```yaml
-name: Workflow Cleanup
+name: Action
 on:
   schedule:
     ## Run every day at 00:00:00
@@ -49,7 +58,7 @@ env:
 
 jobs:
   workflow-cleanup:
-    name: Workflow Cleanup
+    name: Job
     runs-on: ubuntu-latest
     steps:
       - name: Cleanup Workflows
