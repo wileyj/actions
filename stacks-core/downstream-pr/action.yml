@@ -41,6 +41,7 @@ runs:
         echo "SOURCE_BRANCH: ${SOURCE_BRANCH}"
         echo "TARGET_BRANCH: ${TARGET_BRANCH}"
         echo "Comparing diff of ${SOURCE_BRANCH} -> ${TARGET_BRANCH}"
+        echo "cmd: git diff ${TARGET_BRANCH} --quiet --exit-code"
         $(git diff ${TARGET_BRANCH} --quiet --exit-code)
         DIFF_RET="$?"
         if [ "${DIFF_RET}" -eq "0" ];then
