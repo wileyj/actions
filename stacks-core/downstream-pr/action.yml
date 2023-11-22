@@ -40,6 +40,13 @@ runs:
         echo "COMMIT_HASH: ${COMMIT_HASH}"
         echo "SOURCE_BRANCH: ${SOURCE_BRANCH}"
         echo "TARGET_BRANCH: ${TARGET_BRANCH}"
+        echo "Comparing diff of ${SOURCE_BRANCH} -> ${TARGET_BRANCH}"
+        $(git diff ${TARGET_BRANCH} --quiet --exit-code)
+        DIFF_RET="$?"
+        if [ "${DIFF_RET}" -eq "0" ];then
+          echo "No diff - skipping PR creation"
+          exit 0
+        fi
         ASSIGNED=$(curl -sL \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -49,6 +56,7 @@ runs:
         echo "Assigned to: ${ASSIGNED}"          
         gh pr create \
           --assignee "${ASSIGNED}" \
+          --head "${SOURCE_BRANCH}" \
           --base "${TARGET_BRANCH}" \
           --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}" \
           --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
