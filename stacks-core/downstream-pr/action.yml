@@ -41,8 +41,8 @@ runs:
         echo "SOURCE_BRANCH: ${SOURCE_BRANCH}"
         echo "TARGET_BRANCH: ${TARGET_BRANCH}"
         echo "Comparing diff of ${SOURCE_BRANCH} -> ${TARGET_BRANCH}"
-        echo "cmd: git diff ${TARGET_BRANCH} --quiet --exit-code"
-        $(git diff ${TARGET_BRANCH} --quiet --exit-code)
+        echo "cmd: git diff origin/${TARGET_BRANCH} --quiet --exit-code"
+        $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
         DIFF_RET="$?"
         if [ "${DIFF_RET}" -eq "0" ];then
           echo "No diff - skipping PR creation"
@@ -54,7 +54,7 @@ runs:
           "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH}" | jq -r .author.login
         )
         echo "Automatic PR to Merge ${SOURCE_BRANCH} into ${TARGET_BRANCH}"
-        echo "Assigned to: ${ASSIGNED}"          
+        echo "Assigned to: ${ASSIGNED}"
         gh pr create \
           --assignee "${ASSIGNED}" \
           --head "${SOURCE_BRANCH}" \
