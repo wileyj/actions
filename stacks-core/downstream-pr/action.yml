@@ -16,6 +16,8 @@ runs:
     - name: Checkout the latest code
       id: git_checkout
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        fetch-depth: 0
 
     - name: Create PR
       id: create-pr
@@ -42,6 +44,7 @@ runs:
         echo "TARGET_BRANCH: ${TARGET_BRANCH}"
         echo "Comparing diff of ${SOURCE_BRANCH} -> ${TARGET_BRANCH}"
         echo "cmd: git diff origin/${TARGET_BRANCH} --quiet --exit-code"
+        # git fetch origin ${TARGET_BRANCH}
         $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
         DIFF_RET="$?"
         if [ "${DIFF_RET}" -eq "0" ];then
