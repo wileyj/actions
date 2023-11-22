@@ -57,8 +57,8 @@ runs:
         echo "Automatic PR to Merge ${SOURCE_BRANCH} into ${TARGET_BRANCH}"
         echo "Assigned to: $ASSIGNED"
         gh pr create \
-          --assignee $ASSIGNED \
-          --base develop \
+          --assignee "${ASSIGNED}" \
+          --base "${SOURCE_BRANCH}" \
           --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
           --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
         # gh_pr_up() { gh pr create $* || gh pr edit $* }
