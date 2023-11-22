@@ -25,7 +25,7 @@ runs:
       run: |
         SOURCE_BRANCH=${{ github.ref_name }}
         TARGET_BRANCH=""
-        ASSIGNED=$(git log -1 '--pretty=%aN')
+        COMMIT_HASH=$(git log -1 '--pretty=%H')
         case $SOURCE_BRANCH in
           develop)
             TARGET_BRANCH="next"
@@ -37,12 +37,18 @@ runs:
             exit 1
             ;;
         esac
+        echo "COMMIT_HASH: ${COMMIT_HASH}"
+        echo "SOURCE_BRANCH: ${SOURCE_BRANCH}"
+        echo "TARGET_BRANCH: ${TARGET_BRANCH}"
+        ASSIGNED=$(curl -sL \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH}" | jq -r .author.login
+        )
         echo "Automatic PR to Merge ${SOURCE_BRANCH} into ${TARGET_BRANCH}"
-        echo "Assigned to: $ASSIGNED"
+        echo "Assigned to: ${ASSIGNED}"          
         gh pr create \
           --assignee "${ASSIGNED}" \
           --base "${TARGET_BRANCH}" \
           --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}" \
           --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
-        # gh_pr_up() { gh pr create $* || gh pr edit $* }
-        # gh_pr_up --title "My pull request" --body "Description"
