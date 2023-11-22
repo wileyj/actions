@@ -56,11 +56,10 @@ runs:
         esac
         echo "Automatic PR to Merge ${SOURCE_BRANCH} into ${TARGET_BRANCH}"
         echo "Assigned to: $ASSIGNED"
-        # gh pr create \
-        #   --assignee $USER \
-        #   --base develop \
-        #   --reviewer $USER \
-        #   --title "Merge Develop to Next"
-        #   --body "Automatic PR to Merge Develop into Next"
+        gh pr create \
+          --assignee $ASSIGNED \
+          --base develop \
+          --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
+          --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
         # gh_pr_up() { gh pr create $* || gh pr edit $* }
         # gh_pr_up --title "My pull request" --body "Description"
