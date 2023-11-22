@@ -43,7 +43,7 @@ runs:
         SOURCE_BRANCH=${{ github.ref_name }}
         TARGET_BRANCH=""
         ASSIGNED=$(git log -1 '--pretty=%aN')
-        case BRANCH in
+        case SOURCE_BRANCH in
           develop)
             TARGET_BRANCH="next"
             ;;
