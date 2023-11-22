@@ -4,30 +4,11 @@ branding:
   icon: "archive"
   color: "gray-dark"
 
-# inputs:
-#   test-name:
-#     description: "Test name to run"
-#     required: true
-#   threads:
-#     description: "Number of test threads"
-#     required: false
-#     default: "num-cpus"
-#   archive-file:
-#     description: "Archive file to use for tests"
-#     required: true
-#     default: "/tmp/test_archive.tar.zst"
-#   success-output:
-#     description: "Success output"
-#     required: false
-#     default: "immediate-final"
-#   status-level:
-#     description: "Output status level"
-#     required: false
-#     default: "fail"
-#   retries:
-#     description: "Number of test retries"
-#     required: false
-#     default: "2"
+inputs:
+  token:
+    description: "GH_TOKEN"
+    required: true
+    default: ""
 
 runs:
   using: "composite"
@@ -39,6 +20,8 @@ runs:
     - name: Create PR
       id: create-pr
       shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
       run: |
         SOURCE_BRANCH=${{ github.ref_name }}
         TARGET_BRANCH=""
