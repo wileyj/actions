@@ -1,0 +1,65 @@
+name: "Create Downstream PR"
+description: "Create Downstream PR"
+branding:
+  icon: "archive"
+  color: "gray-dark"
+
+# inputs:
+#   test-name:
+#     description: "Test name to run"
+#     required: true
+#   threads:
+#     description: "Number of test threads"
+#     required: false
+#     default: "num-cpus"
+#   archive-file:
+#     description: "Archive file to use for tests"
+#     required: true
+#     default: "/tmp/test_archive.tar.zst"
+#   success-output:
+#     description: "Success output"
+#     required: false
+#     default: "immediate-final"
+#   status-level:
+#     description: "Output status level"
+#     required: false
+#     default: "fail"
+#   retries:
+#     description: "Number of test retries"
+#     required: false
+#     default: "2"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout the latest code
+      id: git_checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    - name: Create PR
+      id: create-pr
+      shell: bash
+      run: |
+        SOURCE_BRANCH=${{ github.ref_name }}
+        TARGET_BRANCH=""
+        ASSIGNED=$(git log -1 '--pretty=%aN')
+        case BRANCH in
+          develop)
+            TARGET_BRANCH="next"
+            ;;
+          master)
+            TARGET_BRANCH="develop"
+            ;;
+          *)
+            exit 1
+            ;;
+        esac
+        echo "Automatic PR to Merge ${SOURCE_BRANCH} into ${TARGET_BRANCH}"
+        # gh pr create \
+        #   --assignee $USER \
+        #   --base develop \
+        #   --reviewer $USER \
+        #   --title "Merge Develop to Next"
+        #   --body "Automatic PR to Merge Develop into Next"
+        # gh_pr_up() { gh pr create $* || gh pr edit $* }
+        # gh_pr_up --title "My pull request" --body "Description"
