@@ -70,12 +70,15 @@ runs:
         )
 
         ## Finally, create the PR
-        gh pr create \
-          --assignee "${ASSIGNED}" \
-          --head "${SOURCE_BRANCH}" \
-          --base "${TARGET_BRANCH}" \
-          --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}" \
-          --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
-
-# git ls-remote https://github.com/wileyj/stacks-blockchain master seen
-# git ls-remote --exit-code --quiet origin master
+        PR=$(
+          gh pr create \
+            --assignee "${ASSIGNED}" \
+            --head "${SOURCE_BRANCH}" \
+            --base "${TARGET_BRANCH}" \
+            --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}" \
+            --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
+        )
+        PR_NUM=$(basename "$PR")
+        cat <<EOF >> $GITHUB_STEP_SUMMARY
+        PR [$PR_NUM]($PR) created and assigned to $ASSIGNED
+        EOF
