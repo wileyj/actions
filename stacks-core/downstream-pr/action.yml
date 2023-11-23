@@ -53,15 +53,15 @@ runs:
           exit 0
         fi
 
-        ## Check diff of source with the target branch origin
-        $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
-        DIFF_RET="$?"
-        ## if the diff return code is 0, no files have changed and we can exit successfully
-        if [ "${DIFF_RET}" -eq "0" ];then
-          echo "No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}"
-          echo "  Skipping PR creation"
-          exit 0
-        fi
+        # ## Check diff of source with the target branch origin
+        # $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
+        # DIFF_RET="$?"
+        # ## if the diff return code is 0, no files have changed and we can exit successfully
+        # if [ "${DIFF_RET}" -eq "0" ];then
+        #   echo "No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}"
+        #   echo "  Skipping PR creation"
+        #   exit 0
+        # fi
 
         ## using the commit_hash, retrieve the username of the last commit to assign the PR
         ASSIGNED=$(curl -sL \
