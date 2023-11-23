@@ -44,6 +44,7 @@ runs:
         esac
 
         # ## Check if the target branch exists
+        echo "check diff 47"
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
             cat <<EOF >> $GITHUB_STEP_SUMMARY
         Target Branch ($TARGET_BRANCH) does not exist.
@@ -52,6 +53,7 @@ runs:
         fi
 
         ## Check diff of source with the target branch origin
+        echo "check diff 56"
         $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
         DIFF_RET="$?"
         ## if the diff return code is 0, no files have changed and we can exit successfully
@@ -62,6 +64,7 @@ runs:
         exit 0
         fi
 
+        echo "check diff 67"
         ## using the commit_hash, retrieve the username of the last commit to assign the PR
         ASSIGNED=$(curl -sL \
           -H "Accept: application/vnd.github+json" \
@@ -69,6 +72,7 @@ runs:
           "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH}" | jq -r .author.login
         )
 
+        echo "check diff 75"
         ## Finally, create the PR
         PR=$(
           gh pr create \
@@ -78,6 +82,7 @@ runs:
             --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}" \
             --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
         )
+        echo "check diff 85"
         PR_NUM=$(basename "$PR")
         cat <<EOF >> $GITHUB_STEP_SUMMARY
         PR [$PR_NUM]($PR) created and assigned to $ASSIGNED
