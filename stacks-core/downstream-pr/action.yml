@@ -48,12 +48,12 @@ runs:
         # REV_RET="$?"
         # echo "REV_RET: $REV_RET"
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
-          cat <<-EOF >> $GITHUB_STEP_SUMMARY
-          # Downstream PR Results
+            cat <<EOF >> $GITHUB_STEP_SUMMARY
+        # Downstream PR Results
 
-          Target Branch ($TARGET_BRANCH) does not exist.
-          EOF
-          exit 1
+        Target Branch ($TARGET_BRANCH) does not exist.
+        EOF
+        exit 1
         fi
         # if [ "${REV_RET}" -ne "0" ];then
         #   echo "Target Branch does not exist"
@@ -66,11 +66,12 @@ runs:
         DIFF_RET="$?"
         ## if the diff return code is 0, no files have changed and we can exit successfully
         if [ "${DIFF_RET}" -eq "0" ];then
-          cat <<-EOF >> $GITHUB_STEP_SUMMARY
-          # Downstream PR Results
+            cat <<EOF >> $GITHUB_STEP_SUMMARY
+        # Downstream PR Results
 
-          No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}
-          EOF
+        No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}
+        EOF
+        exit 1
           # echo "No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}"
           # echo "  Skipping PR creation"
           # exit 0
