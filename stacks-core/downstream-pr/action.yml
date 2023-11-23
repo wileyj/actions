@@ -44,7 +44,7 @@ runs:
         esac
 
         ## Check if the target branch exists
-        $(git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH} > /dev/null; 2>&1)
+        $(git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH} > /dev/null 2>&1)
         REV_RET="$?"
         echo "REV_RET: $REV_RET"
         if [ "${REV_RET}" -ne "0" ];then
