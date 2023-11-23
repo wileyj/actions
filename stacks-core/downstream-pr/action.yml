@@ -43,25 +43,25 @@ runs:
             ;;
         esac
 
-        ## Check if the target branch exists
-        $(git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH} > /dev/null 2>&1)
-        REV_RET="$?"
-        echo "REV_RET: $REV_RET"
-        if [ "${REV_RET}" -ne "0" ];then
-          echo "Target Branch does not exist"
-          echo "  Exiting"
-          exit 0
-        fi
-
-        # ## Check diff of source with the target branch origin
-        # $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
-        # DIFF_RET="$?"
-        # ## if the diff return code is 0, no files have changed and we can exit successfully
-        # if [ "${DIFF_RET}" -eq "0" ];then
-        #   echo "No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}"
-        #   echo "  Skipping PR creation"
+        # ## Check if the target branch exists
+        # $(git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH} > /dev/null 2>&1)
+        # REV_RET="$?"
+        # echo "REV_RET: $REV_RET"
+        # if [ "${REV_RET}" -ne "0" ];then
+        #   echo "Target Branch does not exist"
+        #   echo "  Exiting"
         #   exit 0
         # fi
+
+        ## Check diff of source with the target branch origin
+        $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
+        DIFF_RET="$?"
+        ## if the diff return code is 0, no files have changed and we can exit successfully
+        if [ "${DIFF_RET}" -eq "0" ];then
+          echo "No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}"
+          echo "  Skipping PR creation"
+          exit 0
+        fi
 
         ## using the commit_hash, retrieve the username of the last commit to assign the PR
         ASSIGNED=$(curl -sL \
