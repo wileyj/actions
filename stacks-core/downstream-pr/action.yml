@@ -43,14 +43,15 @@ runs:
             ;;
         esac
 
-        # ## Check if the target branch exists
-        # $(git rev-parse --quiet --verify origin/${TARGET_BRANCH} > /dev/null 2>&1)
-        # REV_RET="$?"
-        # if [ "${REV_RET}" -ne "0" ];then
-        #   echo "Target Branch does not exist"
-        #   echo "  Exiting"
-        #   exit 0
-        # fi
+        ## Check if the target branch exists
+        $(git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH} > /dev/null; 2>&1)
+        REV_RET="$?"
+        echo "REV_RET: $REV_RET"
+        if [ "${REV_RET}" -ne "0" ];then
+          echo "Target Branch does not exist"
+          echo "  Exiting"
+          exit 0
+        fi
 
         ## Check diff of source with the target branch origin
         $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
@@ -78,3 +79,4 @@ runs:
           --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
 
 # git ls-remote https://github.com/wileyj/stacks-blockchain master seen
+# git ls-remote --exit-code --quiet origin master
