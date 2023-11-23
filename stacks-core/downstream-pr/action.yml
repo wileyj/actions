@@ -50,6 +50,7 @@ runs:
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
           echo "Target Branch does not exist"
           echo "  Exiting"
+          exit 0
         fi
         # if [ "${REV_RET}" -ne "0" ];then
         #   echo "Target Branch does not exist"
