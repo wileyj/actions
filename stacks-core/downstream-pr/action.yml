@@ -43,37 +43,66 @@ runs:
             ;;
         esac
 
+        echo "SOURCE_BRANCH: ${SOURCE_BRANCH}"
+        echo "TARGET_BRANCH: ${TARGET_BRANCH}"
+        echo "COMMIT_HASH: ${COMMIT_HASH}"
+
         # ## Check if the target branch exists
-        echo "check diff 47"
+        echo "LINE 51 check diff"
+        echo "run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
+        if 
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
+            echo "LINE 54"
             cat <<EOF >> $GITHUB_STEP_SUMMARY
         Target Branch ($TARGET_BRANCH) does not exist.
         EOF
+        echo "LINE 58 exiting 1"
         exit 1
         fi
 
         ## Check diff of source with the target branch origin
-        echo "check diff 56"
-        $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
-        DIFF_RET="$?"
+        echo "LINE 64 check diff"
+        echo "run cmd: git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo \$?"
+        # if exit code is 0, the diff is empty. 
+        # if exit code != 0, there is a diff
+        # if exit code == 128, the target branch doesn't exist
+        # $(git diff origin/${TARGET_BRANCH} --quiet --exit-code)
+        # # $(git diff origin/next --quiet --exit-code)
+        # DIFF_RET="$?"
+        echo "LINE 72 BRANCH_DIFF"
+        BRANCH_DIFF=$(git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo $?)
         ## if the diff return code is 0, no files have changed and we can exit successfully
-        if [ "${DIFF_RET}" -eq "0" ];then
-            cat <<EOF >> $GITHUB_STEP_SUMMARY
-        No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}
+        echo "LINE 75 BRANCH_DIFF: ${BRANCH_DIFF}"
+        EXIT_CODE=0
+        MSG=""
+        if [ "${BRANCH_DIFF}" -ne "1" ];then
+          echo "LINE 79 BRANCH_DIFF != 1"
+          if [ "${BRANCH_DIFF}" -eq "0" ]; ;then
+            echo "LINE 81 BRANCH_DIFF == 0"
+            MSG="No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}"
+            EXIT_CODE=0
+          else
+            echo "LINE 85 BRANCH_DIFF != (0 or 1)"
+            MSG="Target branch ${TARGET_BRANCH} not found"
+            EXIT_CODE=1
+          fi
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+        $MSG
         EOF
-        exit 0
+        echo "LINE 92 exiting 0"
+        exit $EXIT_CODE
         fi
 
-        echo "check diff 67"
+        echo "LINE 96 getting last commit uid"
         ## using the commit_hash, retrieve the username of the last commit to assign the PR
         ASSIGNED=$(curl -sL \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH}" | jq -r .author.login
         )
-
-        echo "check diff 75"
+        echo "LINE 103 ASSIGNED: $ASSIGNED"
         ## Finally, create the PR
+        echo "LINE 105 create the PR"
         PR=$(
           gh pr create \
             --assignee "${ASSIGNED}" \
@@ -82,8 +111,10 @@ runs:
             --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}" \
             --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
         )
-        echo "check diff 85"
+        echo "LINE 114"
         PR_NUM=$(basename "$PR")
+        echo "LINE 116 PR_NUM=${PR_NUM}"
         cat <<EOF >> $GITHUB_STEP_SUMMARY
         PR [$PR_NUM]($PR) created and assigned to $ASSIGNED
         EOF
+        exit 0
