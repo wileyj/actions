@@ -74,6 +74,7 @@ runs:
         echo "LINE 75 BRANCH_DIFF: ${BRANCH_DIFF}"
         EXIT_CODE=0
         MSG=""
+        # if [ "${BRANCH_DIFF}" -eq "0" ];then
         if [ "${BRANCH_DIFF}" -ne "1" ];then
           echo "LINE 79 BRANCH_DIFF != 1"
           if [ "${BRANCH_DIFF}" -eq "0" ]; then
@@ -88,7 +89,7 @@ runs:
           cat <<EOF >> $GITHUB_STEP_SUMMARY
         $MSG
         EOF
-        echo "LINE 92 exiting 0"
+        echo "LINE 92 exiting $EXIT_CODE"
         exit $EXIT_CODE
         fi
 
