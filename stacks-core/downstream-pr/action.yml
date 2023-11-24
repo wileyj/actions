@@ -50,7 +50,6 @@ runs:
         # ## Check if the target branch exists
         echo "LINE 51 check diff"
         echo "run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
-        if 
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
             echo "LINE 54"
             cat <<EOF >> $GITHUB_STEP_SUMMARY
