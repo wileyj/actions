@@ -76,7 +76,7 @@ runs:
         MSG=""
         if [ "${BRANCH_DIFF}" -ne "1" ];then
           echo "LINE 79 BRANCH_DIFF != 1"
-          if [ "${BRANCH_DIFF}" -eq "0" ]; ;then
+          if [ "${BRANCH_DIFF}" -eq "0" ]; then
             echo "LINE 81 BRANCH_DIFF == 0"
             MSG="No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}"
             EXIT_CODE=0
