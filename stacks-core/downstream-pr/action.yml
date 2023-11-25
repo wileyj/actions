@@ -53,7 +53,7 @@ runs:
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
             echo "LINE 54"
             cat <<EOF >> $GITHUB_STEP_SUMMARY
-        Target Branch ($TARGET_BRANCH) does not exist.
+        Target Branch (\`${TARGET_BRANCH}\`) does not exist.
         EOF
         echo "LINE 58 exiting 1"
         exit 1
@@ -74,12 +74,12 @@ runs:
           case $BRANCH_DIFF in
             0)
               echo "LINE 76 branch_diff:${BRANCH_DIFF} (0)"
-              MSG="No changes detected between ${SOURCE_BRANCH}->${TARGET_BRANCH}"
+              MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
               EXIT_CODE=1
               ;;
             128)
               echo "LINE 81 branch_diff:${BRANCH_DIFF} (128)"
-              MSG="Target branch ${TARGET_BRANCH} not found"
+              MSG="Target branch (\`${TARGET_BRANCH}\`) not found"
               EXIT_CODE=2
               ;;
             *)
@@ -112,7 +112,7 @@ runs:
           echo "LINE 112"
           PR_NUM=$(basename "$PR")
           echo "LINE 114 PR_NUM=${PR_NUM}"
-          MSG="PR [$PR_NUM]($PR) created and assigned to $ASSIGNED"
+          MSG="PR [$PR_NUM]($PR) created and assigned to [$ASSIGNED](https://github.com/${ASSIGNED})"
         fi
         cat <<EOF >> $GITHUB_STEP_SUMMARY
         $MSG
