@@ -17,7 +17,7 @@ runs:
       id: git_checkout
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
-        fetch-depth: 1
+        fetch-depth: 0
 
     - name: Create PR
       id: create-pr
