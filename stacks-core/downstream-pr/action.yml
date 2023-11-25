@@ -67,6 +67,7 @@ runs:
         ## if the diff return code is 0, no files have changed and we can exit successfully
         echo "LINE 68 BRANCH_DIFF: ${BRANCH_DIFF}"
         EXIT_CODE=0
+        git diff origin/${TARGET_BRANCH}
         if [ "${BRANCH_DIFF}" -ne "1" ]; then
           echo "LINE 71 - branch_diff: ${BRANCH_DIFF} (!= 1)"
           MSG=""
@@ -90,7 +91,7 @@ runs:
           esac
         fi
 
-        if [ "${BRANCH_DIFF}" -eq "0" ];then
+        if [ "${BRANCH_DIFF}" -eq "1" ];then
           echo "LINE 94 getting last commit uid"
           ## using the commit_hash, retrieve the username of the last commit to assign the PR
           ASSIGNED=$(curl -sL \
