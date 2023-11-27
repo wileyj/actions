@@ -29,71 +29,80 @@ runs:
         SOURCE_BRANCH=${{ github.ref_name }} # use the source branch that called this workflow
         TARGET_BRANCH=""
         COMMIT_HASH=$(git log -1 '--pretty=%H') # retrieve the branch commit hash (used to determine who to assign the PR to)
+        EXIT_CODE=0
 
         ## set target branch depending on SOURCE_BRANCH
         case $SOURCE_BRANCH in
           develop)
             TARGET_BRANCH="next"
+            echo "LINE 38 - TARGET_BRANCH: ${TARGET_BRANCH}"
             ;;
           master)
             TARGET_BRANCH="develop"
+            echo "LINE 42 - TARGET_BRANCH: ${TARGET_BRANCH}"
             ;;
           *)
             exit 1
             ;;
         esac
 
-        echo "SOURCE_BRANCH: ${SOURCE_BRANCH}"
-        echo "TARGET_BRANCH: ${TARGET_BRANCH}"
-        echo "COMMIT_HASH: ${COMMIT_HASH}"
+        echo "LINE 49 - SOURCE_BRANCH: ${SOURCE_BRANCH}"
+        echo "LINE 50 - TARGET_BRANCH: ${TARGET_BRANCH}"
+        echo "LINE 51 - COMMIT_HASH: ${COMMIT_HASH}"
 
         # ## Check if the target branch exists
-        echo "LINE 51 check diff"
-        echo "run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
+        echo "LINE 54 - check diff"
+        echo "LINE 55 - run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
-            echo "LINE 54"
             cat <<EOF >> $GITHUB_STEP_SUMMARY
         Target Branch (\`${TARGET_BRANCH}\`) does not exist.
         EOF
-        echo "LINE 58 exiting 1"
+        echo "LINE 60 - exiting 1"
         exit 1
         fi
 
         ## Check diff of source with the target branch origin
-        echo "LINE 63 check diff"
-        echo "run cmd: git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo \$?"
-        echo "running: git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code"
+        echo "LINE 65 - running: git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code"
         git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code
         echo "exit code: $?"
 
-        echo "running: git diff origin/${TARGET_BRANCH} --exit-code"
+        echo "LINE 69 - running: git diff origin/${TARGET_BRANCH} --exit-code"
+        git diff origin/${TARGET_BRANCH} --exit-code
         echo "exit code: $?"
 
-        echo "LINE 65 BRANCH_DIFF"
+        echo "LINE 73 - Running: git diff --name-only origin/develop..origin/next --exit-code"
+        git diff --name-only origin/develop..origin/next --exit-code
+        echo "exit code: $?"
+
+        echo "LINE 77 - check diff"
+        echo "LINE 78 - run cmd: git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo \$?"
+        echo "LINE 79 - BRANCH_DIFF"
         BRANCH_DIFF=$(git diff origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo $?)
+        echo "LINE 81 - BRANCH_DIFF: ${BRANCH_DIFF}"
 
         ## if the diff return code is 0, no files have changed and we can exit successfully
-        echo "LINE 68 BRANCH_DIFF: ${BRANCH_DIFF}"
-        EXIT_CODE=0
         git diff origin/${TARGET_BRANCH}
         if [ "${BRANCH_DIFF}" -ne "1" ]; then
-          echo "LINE 71 - branch_diff: ${BRANCH_DIFF} (!= 1)"
+          echo "LINE 86 - branch_diff: ${BRANCH_DIFF} (!= 1)"
           MSG=""
           echo "branch_diff (${BRANCH_DIFF} != 1 - no PR should be created"
           case $BRANCH_DIFF in
             0)
-              echo "LINE 76 branch_diff:${BRANCH_DIFF} (0)"
+              echo "LINE 91 - branch_diff:${BRANCH_DIFF} (0)"
               MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
+              echo "LINE 93 - No changes detected between ${SOURCE_BRANCH}..${TARGET_BRANCH}"
               EXIT_CODE=1
               ;;
             128)
-              echo "LINE 81 branch_diff:${BRANCH_DIFF} (128)"
+              echo "LINE 97 - branch_diff:${BRANCH_DIFF} (128)"
               MSG="Target branch (\`${TARGET_BRANCH}\`) not found"
+              echo "LINE 99 - Target branch (${TARGET_BRANCH}) not found"
               EXIT_CODE=2
               ;;
             *)
-              echo "LINE 86 branch_diff:${BRANCH_DIFF}"
+              echo "LINE 103 - branch_diff:${BRANCH_DIFF}"
               MSG="Unknown error code"
+              echo "LINE 105 - Unknown error code"
               EXIT_CODE=3
               ;;
           esac
@@ -126,6 +135,6 @@ runs:
         # cat <<EOF >> $GITHUB_STEP_SUMMARY
         # $MSG
         # EOF
-        echo "LINE 120 MSG: $MSG"
-        echo "LINE 121 exiting $EXIT_CODE"
+        echo "LINE 138 - MSG: $MSG"
+        echo "LINE 139 - exiting $EXIT_CODE"
         exit $EXIT_CODE
