@@ -62,15 +62,16 @@ runs:
         ## Check diff of source with the target branch origin
         echo "LINE 63 check diff"
         echo "run cmd: git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo \$?"
-        echo "running: git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH}"
-        git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH}
+        echo "running: git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code"
+        git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code
         echo "exit code: $?"
-        echo "running: git diff origin/${TARGET_BRANCH}"
+
+        echo "running: git diff origin/${TARGET_BRANCH} --exit-code"
         echo "exit code: $?"
+
         echo "LINE 65 BRANCH_DIFF"
-        BRANCH_DIFF=$(git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo $?)
-        # git diff --name-only origin/main origin/${GITHUB_HEAD_REF}
-        # git diff --name-only origin/${TARGET_BRANCH} origin/${SOURCE_BRANCH}
+        BRANCH_DIFF=$(git diff origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo $?)
+
         ## if the diff return code is 0, no files have changed and we can exit successfully
         echo "LINE 68 BRANCH_DIFF: ${BRANCH_DIFF}"
         EXIT_CODE=0
@@ -98,33 +99,33 @@ runs:
           esac
         fi
 
-        if [ "${BRANCH_DIFF}" -eq "1" ];then
-          echo "LINE 94 getting last commit uid"
-          ## using the commit_hash, retrieve the username of the last commit to assign the PR
-          ASSIGNED=$(curl -sL \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH}" | jq -r .author.login
-          )
-          echo "LINE 101 ASSIGNED: $ASSIGNED"
-          ## Finally, create the PR
-          echo "LINE 103 create the PR"
-          PR=$(
-            gh pr create \
-              --assignee "${ASSIGNED}" \
-              --head "${SOURCE_BRANCH}" \
-              --base "${TARGET_BRANCH}" \
-              --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}" \
-              --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
-          )
-          echo "LINE 112"
-          PR_NUM=$(basename "$PR")
-          echo "LINE 114 PR_NUM=${PR_NUM}"
-          MSG="PR [$PR_NUM]($PR) created and assigned to [$ASSIGNED](https://github.com/${ASSIGNED})"
-        fi
-        cat <<EOF >> $GITHUB_STEP_SUMMARY
-        $MSG
-        EOF
+        # if [ "${BRANCH_DIFF}" -eq "1" ];then
+        #   echo "LINE 94 getting last commit uid"
+        #   ## using the commit_hash, retrieve the username of the last commit to assign the PR
+        #   ASSIGNED=$(curl -sL \
+        #     -H "Accept: application/vnd.github+json" \
+        #     -H "X-GitHub-Api-Version: 2022-11-28" \
+        #     "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH}" | jq -r .author.login
+        #   )
+        #   echo "LINE 101 ASSIGNED: $ASSIGNED"
+        #   ## Finally, create the PR
+        #   echo "LINE 103 create the PR"
+        #   PR=$(
+        #     gh pr create \
+        #       --assignee "${ASSIGNED}" \
+        #       --head "${SOURCE_BRANCH}" \
+        #       --base "${TARGET_BRANCH}" \
+        #       --title "Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}" \
+        #       --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
+        #   )
+        #   echo "LINE 112"
+        #   PR_NUM=$(basename "$PR")
+        #   echo "LINE 114 PR_NUM=${PR_NUM}"
+        #   MSG="PR [$PR_NUM]($PR) created and assigned to [$ASSIGNED](https://github.com/${ASSIGNED})"
+        # fi
+        # cat <<EOF >> $GITHUB_STEP_SUMMARY
+        # $MSG
+        # EOF
         echo "LINE 120 MSG: $MSG"
         echo "LINE 121 exiting $EXIT_CODE"
         exit $EXIT_CODE
