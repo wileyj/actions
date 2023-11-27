@@ -33,7 +33,7 @@ runs:
         EXIT_CODE=0
         MSG=""
         DIFF_OUT="/tmp/diff"
-        SOURCE_BRANCH="test"
+
         ## set target branch depending on SOURCE_BRANCH
         case $SOURCE_BRANCH in
           develop)
