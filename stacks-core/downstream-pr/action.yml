@@ -46,7 +46,6 @@ runs:
             ;;
           *)
             MSG="Unsupported source branch: \`$SOURCE_BRANCH\`"
-            exit 1
             ;;
         esac
 
