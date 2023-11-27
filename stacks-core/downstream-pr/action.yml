@@ -118,9 +118,9 @@ runs:
           EXIT_CODE=1
         fi
 
-        # cat <<EOF >> $GITHUB_STEP_SUMMARY
-        # $MSG
-        # EOF
+        cat <<EOF >> $GITHUB_STEP_SUMMARY
+        $MSG
+        EOF
         echo "LINE 124 - MSG: $MSG"
         echo "LINE 125 - exiting $EXIT_CODE"
         exit $EXIT_CODE
