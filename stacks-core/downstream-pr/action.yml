@@ -17,7 +17,7 @@ runs:
       id: git_checkout
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
-        fetch-depth: 0
+        fetch-depth: 2
 
     - name: Create PR
       id: create-pr
@@ -62,8 +62,11 @@ runs:
         ## Check diff of source with the target branch origin
         echo "LINE 63 check diff"
         echo "run cmd: git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo \$?"
+        git diff origin/${TARGET_BRANCH}
         echo "LINE 65 BRANCH_DIFF"
         BRANCH_DIFF=$(git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo $?)
+        # git diff --name-only origin/main origin/${GITHUB_HEAD_REF}
+        # git diff --name-only origin/${TARGET_BRANCH} origin/${SOURCE_BRANCH}
         ## if the diff return code is 0, no files have changed and we can exit successfully
         echo "LINE 68 BRANCH_DIFF: ${BRANCH_DIFF}"
         EXIT_CODE=0
