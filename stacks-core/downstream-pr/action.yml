@@ -62,8 +62,11 @@ runs:
         ## Check diff of source with the target branch origin
         echo "LINE 63 check diff"
         echo "run cmd: git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo \$?"
+        echo "running: git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH}"
         git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH}
-        echo "$?"
+        echo "exit code: $?"
+        echo "running: git diff origin/${TARGET_BRANCH}"
+        echo "exit code: $?"
         echo "LINE 65 BRANCH_DIFF"
         BRANCH_DIFF=$(git diff origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo $?)
         # git diff --name-only origin/main origin/${GITHUB_HEAD_REF}
