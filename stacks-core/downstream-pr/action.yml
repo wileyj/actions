@@ -61,22 +61,22 @@ runs:
         exit 1
         fi
 
-        # ## Check diff of source with the target branch origin
-        # echo "LINE 65 - running: git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet"
-        # DIFF_1=$(git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
-        # echo "LINE 67 - DIFF_1 exit code: $DIFF_1"
-        # # git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet
-
-        echo "LINE 69 - running: git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet"
-        DIFF_2=$(git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
-        echo "LINE 71 - DIFF_2 exit code: $DIFF_2"
+        ## Check diff of source with the target branch origin
+        echo "LINE 65 - running: git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet"
+        DIFF_1=$(git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
+        echo "LINE 67 - DIFF_1 exit code: $DIFF_1"
         # git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet
 
-        BRANCH_DIFF=${DIFF_2}
-        # echo "LINE 73 - Running: git diff --name-only origin/develop..origin/next --exit-code"
-        # DIFF_3=$(git diff --name-only origin/${SOURCE_BRANCH}..origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
-        # echo "LINE 75 - DIFF_3 exit code: $DIFF_3"
-        # # git diff --name-only origin/${SOURCE_BRANCH}..origin/${TARGET_BRANCH} --exit-code --quiet
+
+        echo "LINE 71 - running: git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet"
+        DIFF_2=$(git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
+        echo "LINE 73 - DIFF_2 exit code: $DIFF_2"
+        # # git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet
+
+        echo "LINE 76 - Running: git diff --name-only origin/develop..origin/next --exit-code"
+        DIFF_3=$(git diff --name-only origin/${SOURCE_BRANCH}..origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
+        echo "LINE 78 - DIFF_3 exit code: $DIFF_3"
+        # git diff --name-only origin/${SOURCE_BRANCH}..origin/${TARGET_BRANCH} --exit-code --quiet
 
         # # echo "LINE 77 - check diff"
         # echo "LINE 78 - run cmd: git diff --name-only origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo \$?"
@@ -84,6 +84,9 @@ runs:
         # BRANCH_DIFF=$(git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo $?)
         # echo "LINE 81 - BRANCH_DIFF: ${BRANCH_DIFF}"
 
+        git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH}
+
+        exit 0
         ## if the diff return code is 0, no files have changed and we can exit successfully
         if [ "${BRANCH_DIFF}" -ne "1" ]; then
           echo "LINE 86 - branch_diff: ${BRANCH_DIFF} (!= 1)"
