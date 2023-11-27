@@ -61,7 +61,7 @@ runs:
         echo "LINE 61 - exiting 1"
         exit 1
         fi
-        git fetch -p
+        git fetch origin ${TARGET_BRANCH}
         ## Check diff of source with the target branch origin
         echo "LINE 66 - running: git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet"
         BRANCH_DIFF=$(git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
