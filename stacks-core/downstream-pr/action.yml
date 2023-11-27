@@ -33,7 +33,7 @@ runs:
         EXIT_CODE=0
         MSG=""
         DIFF_OUT="/tmp/diff"
-
+        SOURCE_BRANCH="test"
         ## set target branch depending on SOURCE_BRANCH
         case $SOURCE_BRANCH in
           develop)
@@ -45,6 +45,9 @@ runs:
             echo "LINE 42 - TARGET_BRANCH: ${TARGET_BRANCH}"
             ;;
           *)
+            cat <<EOF >> $GITHUB_STEP_SUMMARY
+            Unsupported source branch `$SOURCE_BRANCH`
+            EOF
             exit 1
             ;;
         esac
@@ -115,7 +118,7 @@ runs:
           echo "LINE 115 - no PR should be created"
           MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
           echo "LINE 117 - No changes detected between ${SOURCE_BRANCH}..${TARGET_BRANCH}"
-          EXIT_CODE=1
+          EXIT_CODE=0
         fi
 
         cat <<EOF >> $GITHUB_STEP_SUMMARY
