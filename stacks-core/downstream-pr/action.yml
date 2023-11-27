@@ -45,9 +45,7 @@ runs:
             echo "LINE 42 - TARGET_BRANCH: ${TARGET_BRANCH}"
             ;;
           *)
-            cat <<EOF >> $GITHUB_STEP_SUMMARY
-            Unsupported source branch `$SOURCE_BRANCH`
-            EOF
+            MSG="Unsupported source branch: \`$SOURCE_BRANCH\`"
             exit 1
             ;;
         esac
@@ -60,10 +58,18 @@ runs:
         echo "LINE 54 - check diff"
         echo "LINE 55 - run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
-            cat <<EOF >> $GITHUB_STEP_SUMMARY
-        Target Branch \`${TARGET_BRANCH}\` does not exist.
+          MSG="Target Branch \`${TARGET_BRANCH}\` does not exist."
+        #     cat <<EOF >> $GITHUB_STEP_SUMMARY
+        # Target Branch \`${TARGET_BRANCH}\` does not exist.
+        # EOF
+        # echo "LINE 61 - exiting 1"
+        # exit 1
+        fi
+        if [ "${MSG}" != "" ]; then
+          echo "LINE 69"
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+        $MSG
         EOF
-        echo "LINE 61 - exiting 1"
         exit 1
         fi
         echo "LINE 66"
