@@ -124,7 +124,7 @@ runs:
               echo "LINE 124 - No changes detected between ${SOURCE_BRANCH}..${TARGET_BRANCH}"
               EXIT_CODE=1
               ;;
-            128)
+            128) # this shouldn't be reached
               echo "LINE 128 - branch_diff:${BRANCH_DIFF} (128)"
               MSG="Target branch \`${TARGET_BRANCH}\` not found"
               echo "LINE 130 - Target branch (${TARGET_BRANCH}) not found"
