@@ -32,6 +32,7 @@ runs:
         COMMIT_HASH=$(git log -1 '--pretty=%H') # retrieve the branch commit hash (used to determine who to assign the PR to)
         EXIT_CODE=0
         MSG=""
+        DIFF_OUT="/tmp/diff"
 
         ## set target branch depending on SOURCE_BRANCH
         case $SOURCE_BRANCH in
@@ -62,48 +63,41 @@ runs:
         echo "LINE 61 - exiting 1"
         exit 1
         fi
+        echo "LINE 66"
         git fetch origin ${TARGET_BRANCH}
+        echo "LINE 68"
+        git diff --name-only origin/${TARGET_BRANCH}..origin/${SOURCE_BRANCH} > ${DIFF_OUT}
+        echo "LINE 70"
+        ls -al $DIFF_OUT
+        echo "LINE 72"
+        cat $DIFF_OUT
+        echo "LINE 74"
+        DIFF_NUM=$(sed -n '$=' ${DIFF_OUT})
+        echo "LINE 76 - DIFF_NUM: ${DIFF_NUM}"
+
         ## Check diff of source with the target branch origin
-        # echo "LINE 66 - running: git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet"
-        # BRANCH_DIFF=$(git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
-        echo "LINE 66 - running: git diff --name-only origin/${TARGET_BRANCH}..HEAD --exit-code --quiet"
-        BRANCH_DIFF=$(git diff --name-only origin/${TARGET_BRANCH}..HEAD --exit-code --quiet > /dev/null 2&>1; echo $?)
-        echo "LINE 68 - BRANCH_DIFF exit code: $BRANCH_DIFF"
-        # git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet
-        # 0 - no diff
-        # 1 - diff
-        # 128 - branch not found
+        # # echo "LINE 66 - running: git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet"
+        # # BRANCH_DIFF=$(git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
+        # echo "LINE 66 - running: git diff --name-only origin/${TARGET_BRANCH}..HEAD --exit-code --quiet"
+        # BRANCH_DIFF=$(git diff --name-only origin/${TARGET_BRANCH}..HEAD --exit-code --quiet > /dev/null 2&>1; echo $?)
+        # echo "LINE 68 - BRANCH_DIFF exit code: $BRANCH_DIFF"
+        # # git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet
+        # # 0 - no diff
+        # # 1 - diff
+        # # 128 - branch not found
 
-        # echo "LINE 75 - running: git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet"
-        # DIFF_2=$(git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
-        # echo "LINE 77 - DIFF_2 exit code: $DIFF_2"
-        # # # git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --exit-code --quiet
-
-        # echo "LINE 80 - Running: git diff --name-only origin/${TARGET_BRANCH}..HEAD --exit-code"
-        # DIFF_3=$(git diff --name-only origin/${TARGET_BRANCH}..HEAD --exit-code --quiet > /dev/null 2&>1; echo $?)
-        # echo "LINE 82 - DIFF_3 exit code: $DIFF_3"
-        # # git diff --name-only origin/${SOURCE_BRANCH}..origin/${TARGET_BRANCH} --exit-code --quiet
-
-        # # echo "LINE 77 - check diff"
-        # echo "LINE 78 - run cmd: git diff --name-only origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo \$?"
-        # # echo "LINE 79 - BRANCH_DIFF"
-        # BRANCH_DIFF=$(git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH} --quiet --exit-code > /dev/null 2&>1; echo $?)
-        # echo "LINE 81 - BRANCH_DIFF: ${BRANCH_DIFF}"
-
-        # git diff --name-only origin/${SOURCE_BRANCH} origin/${TARGET_BRANCH}
-        # exit 0
-
-        if [ "${BRANCH_DIFF}" -eq "1" ];then
-          echo "LINE 95 - getting last commit uid"
+        # if [ "${BRANCH_DIFF}" -eq "1" ];then
+        if [ "${DIFF_NUM}" -gt 0 ]; then
+          echo "LINE 91 - getting last commit uid"
           ## using the commit_hash, retrieve the username of the last commit to assign the PR
           ASSIGNED=$(curl -sL \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH}" | jq -r .author.login
           )
-          echo "LINE 102 - ASSIGNED: $ASSIGNED"
+          echo "LINE 98 - ASSIGNED: $ASSIGNED"
           ## Finally, create the PR
-          echo "LINE 104 - create the PR"
+          echo "LINE 100 - create the PR"
           PR=$(
             gh pr create \
               --assignee "${ASSIGNED}" \
@@ -113,37 +107,20 @@ runs:
               --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
           )
           PR_NUM=$(basename "$PR")
-          echo "LINE 1114 - PR_NUM=${PR_NUM}"
+          echo "LINE 110 - PR_NUM=${PR_NUM}"
           MSG="PR [$PR_NUM]($PR) created and assigned to [$ASSIGNED](https://github.com/${ASSIGNED})"
         else
           ## if the diff return code is not 1, no files have changed or some other issue
-          echo "LINE 118 - branch_diff (!=1): ${BRANCH_DIFF}"
-          echo "LINE 119 - no PR should be created"
-          case $BRANCH_DIFF in
-            0)
-              echo "LINE 122 - branch_diff:${BRANCH_DIFF} (0)"
-              MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
-              echo "LINE 124 - No changes detected between ${SOURCE_BRANCH}..${TARGET_BRANCH}"
-              EXIT_CODE=1
-              ;;
-            128) # this shouldn't be reached
-              echo "LINE 128 - branch_diff:${BRANCH_DIFF} (128)"
-              MSG="Target branch \`${TARGET_BRANCH}\` not found"
-              echo "LINE 130 - Target branch (${TARGET_BRANCH}) not found"
-              EXIT_CODE=2
-              ;;
-            *)
-              echo "LINE 134 - branch_diff:${BRANCH_DIFF}"
-              MSG="Unknown error code"
-              echo "LINE 136 - Unknown error code"
-              EXIT_CODE=3
-              ;;
-          esac
+          echo "LINE 114 - DIFF_NUM is not gt 0::${DIFF_NUM}::end"
+          echo "LINE 115 - no PR should be created"
+          MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
+          echo "LINE 117 - No changes detected between ${SOURCE_BRANCH}..${TARGET_BRANCH}"
+          EXIT_CODE=1
         fi
 
         # cat <<EOF >> $GITHUB_STEP_SUMMARY
         # $MSG
         # EOF
-        echo "LINE 145 - MSG: $MSG"
-        echo "LINE 146 - exiting $EXIT_CODE"
+        echo "LINE 124 - MSG: $MSG"
+        echo "LINE 125 - exiting $EXIT_CODE"
         exit $EXIT_CODE
