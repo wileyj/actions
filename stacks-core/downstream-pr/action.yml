@@ -65,6 +65,7 @@ runs:
 
         ## check if a pr already exists
         echo "LINE 67 - check for exiting PR"
+        echo "\"/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open\" | jq -e .[] | select(.title | contains(\"Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}\"))"
         EXISTING_PR=$(gh api \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -89,7 +90,7 @@ runs:
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"))'
-          
+
         ## Check if the target branch exists
         echo "LINE 54 - check diff"
         echo "LINE 55 - run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
