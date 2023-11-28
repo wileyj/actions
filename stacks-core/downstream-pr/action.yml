@@ -34,6 +34,15 @@ runs:
         MSG=""
         DIFF_OUT="/tmp/diff"
 
+        exit_script() {
+          MSG=${1}
+          EXIT_CODE=${2}
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+        $MSG
+        EOF
+        exit ${EXIT_CODE}
+        }
+
         ## set target branch depending on SOURCE_BRANCH
         case $SOURCE_BRANCH in
           develop)
@@ -53,24 +62,41 @@ runs:
         echo "LINE 50 - TARGET_BRANCH: ${TARGET_BRANCH}"
         echo "LINE 51 - COMMIT_HASH: ${COMMIT_HASH}"
 
-        # ## Check if the target branch exists
+
+        ## check if a pr already exists
+        EXISTING_PR=$(gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"))' > /dev/null 2>&1; echo $?
+        )
+        # .html_url
+        if [ "${EXISTING_PR}" -eq "0" ];then
+          PR=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"))' | jq -r .html_url
+          )
+          PR_NUM=$(basename ${PR})
+          MSG="PR [$PR_NUM]($PR) already exists and is open"
+          EXIT_CODE=0
+          exit_script "${MSG}" "${EXIT_CODE}"
+        fi
+        ## Check if the target branch exists
         echo "LINE 54 - check diff"
         echo "LINE 55 - run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
           MSG="Target Branch \`${TARGET_BRANCH}\` does not exist."
-        #     cat <<EOF >> $GITHUB_STEP_SUMMARY
-        # Target Branch \`${TARGET_BRANCH}\` does not exist.
+          EXIT_CODE=1
+          exit_script "${MSG}" "${EXIT_CODE}"
+        fi
+
+        # if [ "${MSG}" != "" ]; then
+        #   echo "LINE 69"
+        #   cat <<EOF >> $GITHUB_STEP_SUMMARY
+        # $MSG
         # EOF
-        # echo "LINE 61 - exiting 1"
         # exit 1
-        fi
-        if [ "${MSG}" != "" ]; then
-          echo "LINE 69"
-          cat <<EOF >> $GITHUB_STEP_SUMMARY
-        $MSG
-        EOF
-        exit 1
-        fi
+        # fi
         echo "LINE 66"
         git fetch origin ${TARGET_BRANCH}
         echo "LINE 68"
@@ -98,11 +124,12 @@ runs:
         if [ "${DIFF_NUM}" -gt 0 ]; then
           echo "LINE 91 - getting last commit uid"
           ## using the commit_hash, retrieve the username of the last commit to assign the PR
-          ASSIGNED=$(curl -sL \
+          ASSIGNED=$(gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "https://api.github.com/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH}" | jq -r .author.login
+            /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH} | jq -r .author.login
           )
+
           echo "LINE 98 - ASSIGNED: $ASSIGNED"
           ## Finally, create the PR
           echo "LINE 100 - create the PR"
@@ -117,6 +144,8 @@ runs:
           PR_NUM=$(basename "$PR")
           echo "LINE 110 - PR_NUM=${PR_NUM}"
           MSG="PR [$PR_NUM]($PR) created and assigned to [$ASSIGNED](https://github.com/${ASSIGNED})"
+          EXIT_CODE=0
+          exit_script "${MSG}" "${EXIT_CODE}"
         else
           ## if the diff return code is not 1, no files have changed or some other issue
           echo "LINE 114 - DIFF_NUM is not gt 0::${DIFF_NUM}::end"
@@ -124,11 +153,12 @@ runs:
           MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
           echo "LINE 117 - No changes detected between ${SOURCE_BRANCH}..${TARGET_BRANCH}"
           EXIT_CODE=0
+          exit_script "${MSG}" "${EXIT_CODE}"
         fi
 
-        cat <<EOF >> $GITHUB_STEP_SUMMARY
-        $MSG
-        EOF
-        echo "LINE 124 - MSG: $MSG"
-        echo "LINE 125 - exiting $EXIT_CODE"
-        exit $EXIT_CODE
+        # cat <<EOF >> $GITHUB_STEP_SUMMARY
+        # $MSG
+        # EOF
+        # echo "LINE 124 - MSG: $MSG"
+        # echo "LINE 125 - exiting $EXIT_CODE"
+        exit 0
