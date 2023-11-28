@@ -35,6 +35,7 @@ runs:
         DIFF_OUT="/tmp/diff"
 
         exit_script() {
+          echo "LINE 38 - exit_script"
           MSG=${1}
           EXIT_CODE=${2}
           cat <<EOF >> $GITHUB_STEP_SUMMARY
@@ -47,11 +48,9 @@ runs:
         case $SOURCE_BRANCH in
           develop)
             TARGET_BRANCH="next"
-            echo "LINE 38 - TARGET_BRANCH: ${TARGET_BRANCH}"
             ;;
           master)
             TARGET_BRANCH="develop"
-            echo "LINE 42 - TARGET_BRANCH: ${TARGET_BRANCH}"
             ;;
           *)
             MSG="Unsupported source branch: \`$SOURCE_BRANCH\`"
@@ -90,49 +89,21 @@ runs:
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"))'
-
+        echo "LINE 92"
+        exit 0
         ## Check if the target branch exists
-        echo "LINE 54 - check diff"
-        echo "LINE 55 - run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
           MSG="Target Branch \`${TARGET_BRANCH}\` does not exist."
           EXIT_CODE=1
           exit_script "${MSG}" "${EXIT_CODE}"
         fi
 
-        # if [ "${MSG}" != "" ]; then
-        #   echo "LINE 69"
-        #   cat <<EOF >> $GITHUB_STEP_SUMMARY
-        # $MSG
-        # EOF
-        # exit 1
-        # fi
-        echo "LINE 66"
         git fetch origin ${TARGET_BRANCH}
-        echo "LINE 68"
         git diff --name-only origin/${TARGET_BRANCH}..origin/${SOURCE_BRANCH} > ${DIFF_OUT}
-        echo "LINE 70"
-        ls -al $DIFF_OUT
-        echo "LINE 72"
-        cat $DIFF_OUT
-        echo "LINE 74"
         DIFF_NUM=$(sed -n '$=' ${DIFF_OUT})
-        echo "LINE 76 - DIFF_NUM: ${DIFF_NUM}"
-
-        ## Check diff of source with the target branch origin
-        # # echo "LINE 66 - running: git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet"
-        # # BRANCH_DIFF=$(git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet > /dev/null 2&>1; echo $?)
-        # echo "LINE 66 - running: git diff --name-only origin/${TARGET_BRANCH}..HEAD --exit-code --quiet"
-        # BRANCH_DIFF=$(git diff --name-only origin/${TARGET_BRANCH}..HEAD --exit-code --quiet > /dev/null 2&>1; echo $?)
-        # echo "LINE 68 - BRANCH_DIFF exit code: $BRANCH_DIFF"
-        # # git diff --name-only origin/${TARGET_BRANCH} --exit-code --quiet
-        # # 0 - no diff
-        # # 1 - diff
-        # # 128 - branch not found
 
         # if [ "${BRANCH_DIFF}" -eq "1" ];then
         if [ "${DIFF_NUM}" -gt 0 ]; then
-          echo "LINE 91 - getting last commit uid"
           ## using the commit_hash, retrieve the username of the last commit to assign the PR
           ASSIGNED=$(gh api \
             -H "Accept: application/vnd.github+json" \
@@ -140,9 +111,7 @@ runs:
             /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/commits/${COMMIT_HASH} | jq -r .author.login
           )
 
-          echo "LINE 98 - ASSIGNED: $ASSIGNED"
           ## Finally, create the PR
-          echo "LINE 100 - create the PR"
           PR=$(
             gh pr create \
               --assignee "${ASSIGNED}" \
@@ -152,23 +121,14 @@ runs:
               --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
           )
           PR_NUM=$(basename "$PR")
-          echo "LINE 110 - PR_NUM=${PR_NUM}"
           MSG="PR [$PR_NUM]($PR) created and assigned to [$ASSIGNED](https://github.com/${ASSIGNED})"
           EXIT_CODE=0
           exit_script "${MSG}" "${EXIT_CODE}"
         else
           ## if the diff return code is not 1, no files have changed or some other issue
-          echo "LINE 114 - DIFF_NUM is not gt 0::${DIFF_NUM}::end"
-          echo "LINE 115 - no PR should be created"
           MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
-          echo "LINE 117 - No changes detected between ${SOURCE_BRANCH}..${TARGET_BRANCH}"
           EXIT_CODE=0
           exit_script "${MSG}" "${EXIT_CODE}"
         fi
 
-        # cat <<EOF >> $GITHUB_STEP_SUMMARY
-        # $MSG
-        # EOF
-        # echo "LINE 124 - MSG: $MSG"
-        # echo "LINE 125 - exiting $EXIT_CODE"
         exit 0
