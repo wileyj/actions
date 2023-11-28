@@ -64,23 +64,32 @@ runs:
 
 
         ## check if a pr already exists
+        echo "LINE 67 - check for exiting PR"
         EXISTING_PR=$(gh api \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"))' > /dev/null 2>&1; echo $?
         )
-        # .html_url
+        echo "LINE 73 - EXISTING_PR: ${EXISTING_PR}"
         if [ "${EXISTING_PR}" -eq "0" ];then
           PR=$(gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"))' | jq -r .html_url
           )
+          echo "LINE 80 - PR: $PR"
           PR_NUM=$(basename ${PR})
+          echo "LINE 82 - PR_NUM: $PR_NUM"
           MSG="PR [$PR_NUM]($PR) already exists and is open"
           EXIT_CODE=0
           exit_script "${MSG}" "${EXIT_CODE}"
         fi
+        echo "LINE 87"
+        gh api \
+          -H "Accept: application/vnd.github+json" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"))'
+          
         ## Check if the target branch exists
         echo "LINE 54 - check diff"
         echo "LINE 55 - run cmd: git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}"
