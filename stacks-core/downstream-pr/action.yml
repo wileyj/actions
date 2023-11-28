@@ -74,7 +74,7 @@ runs:
           PR=$(gh api \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("'''${PR_TITLE}'''"))' | jq -r .html_url
+            "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("'''${PR_TITLE}'''"))'| jq -r .html_url
           )
           echo "LINE 80 - PR: $PR"
           PR_NUM=$(basename ${PR})
@@ -87,7 +87,8 @@ runs:
         gh api \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("'''${PR_TITLE}'''"))'
+          "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" | jq -e '.[] | select(.title | contains("'''${PR_TITLE}'''"))'| jq -r .html_url
+
         echo "LINE 92"
         exit 0
         ## Check if the target branch exists
