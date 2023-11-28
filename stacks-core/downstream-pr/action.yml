@@ -27,15 +27,16 @@ runs:
         GH_TOKEN: ${{ inputs.token }}
       run: |
 
+        ## set some defaults
         SOURCE_BRANCH=${{ github.ref_name }} # use the source branch that called this workflow
         TARGET_BRANCH=""
         COMMIT_HASH=$(git log -1 '--pretty=%H') # retrieve the branch commit hash (used to determine who to assign the PR to)
-        EXIT_CODE=0
+        EXIT_CODE=0  # default exit code
         MSG=""
-        DIFF_OUT="/tmp/diff"
+        DIFF_OUT="/tmp/diff" # output file to store git diff data
 
+        ## simple function to exit and display some output
         exit_script() {
-          echo "LINE 38 - exit_script"
           MSG=${1}
           EXIT_CODE=${2}
           cat <<EOF >> $GITHUB_STEP_SUMMARY
@@ -44,7 +45,7 @@ runs:
         exit ${EXIT_CODE}
         }
 
-        ## set target branch depending on SOURCE_BRANCH
+        ## set TARGET_BRANCH depending on SOURCE_BRANCH
         case $SOURCE_BRANCH in
           develop)
             TARGET_BRANCH="next"
@@ -56,21 +57,18 @@ runs:
             MSG="Unsupported source branch: \`$SOURCE_BRANCH\`"
             ;;
         esac
-
-        echo "LINE 49 - SOURCE_BRANCH: ${SOURCE_BRANCH}"
-        echo "LINE 50 - TARGET_BRANCH: ${TARGET_BRANCH}"
-        echo "LINE 51 - COMMIT_HASH: ${COMMIT_HASH}"
         PR_TITLE="Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
 
-        ## check if a pr already exists
-        echo "LINE 67 - check for exiting PR"
+        ## Check if a PR is open and exists already
+        ##   - only look at open PR's
+        ##   - jq to check .title for PR_TITLE (with -e option to record exit code)
         EXISTING_PR=$(gh api \
           -H "Accept: application/vnd.github+json" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" \
           | jq -e ".[] | select(.title | contains(\"${PR_TITLE}\"))" > /dev/null 2>&1; echo $?
         )        
-        echo "LINE 73 - EXISTING_PR: ${EXISTING_PR}"
+        ## if a PR exists, retrieve the PR url
         if [ "${EXISTING_PR}" -eq "0" ];then
           PR=$(gh api \
             -H "Accept: application/vnd.github+json" \
@@ -79,35 +77,25 @@ runs:
             | jq -e ".[] | select(.title | contains(\"${PR_TITLE}\"))" \
             | jq -r .html_url
           )
-          echo "LINE 80 - PR: $PR"
-          PR_NUM=$(basename ${PR})
-          echo "LINE 82 - PR_NUM: $PR_NUM"
-          MSG="PR [$PR_NUM]($PR) already exists and is open"
-          EXIT_CODE=0
-          exit_script "${MSG}" "${EXIT_CODE}"
+          PR_NUM=$(basename ${PR}) # parse the PR number from the url
+          MSG="PR [$PR_NUM]($PR) already exists and is open" # output message to display
+          EXIT_CODE=0  # exit code
+          exit_script "${MSG}" "${EXIT_CODE}" # exit with message and exit code
         fi
-        echo "LINE 87"
-        gh api \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" \
-        | jq -e ".[] | select(.title | contains(\"${PR_TITLE}\"))" \
-        | jq -r .html_url
 
-        echo "LINE 92"
-        exit 0
         ## Check if the target branch exists
         if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
-          MSG="Target Branch \`${TARGET_BRANCH}\` does not exist."
-          EXIT_CODE=1
-          exit_script "${MSG}" "${EXIT_CODE}"
+          MSG="Target Branch \`${TARGET_BRANCH}\` does not exist." # output message to display
+          EXIT_CODE=1 # exit code
+          exit_script "${MSG}" "${EXIT_CODE}" # exit with message and exit code
         fi
 
+        ## fetch the target branch and create a diff
         git fetch origin ${TARGET_BRANCH}
         git diff --name-only origin/${TARGET_BRANCH}..origin/${SOURCE_BRANCH} > ${DIFF_OUT}
+        ## check how many lines are in the diff (how many files have changed)
         DIFF_NUM=$(sed -n '$=' ${DIFF_OUT})
 
-        # if [ "${BRANCH_DIFF}" -eq "1" ];then
         if [ "${DIFF_NUM}" -gt 0 ]; then
           ## using the commit_hash, retrieve the username of the last commit to assign the PR
           ASSIGNED=$(gh api \
@@ -125,15 +113,16 @@ runs:
               --title "${PR_TITLE}" \
               --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
           )
-          PR_NUM=$(basename "$PR")
-          MSG="PR [$PR_NUM]($PR) created and assigned to [$ASSIGNED](https://github.com/${ASSIGNED})"
-          EXIT_CODE=0
-          exit_script "${MSG}" "${EXIT_CODE}"
+          PR_NUM=$(basename "$PR") # parse the PR number from the url
+          MSG="PR [$PR_NUM]($PR) created and assigned to [$ASSIGNED](https://github.com/${ASSIGNED})" # output message to display
+          EXIT_CODE=0 # exit code
+          exit_script "${MSG}" "${EXIT_CODE}" # exit with message and exit code
         else
-          ## if the diff return code is not 1, no files have changed or some other issue
-          MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
-          EXIT_CODE=0
-          exit_script "${MSG}" "${EXIT_CODE}"
+          ## if the diff does not contain at least 1 change, exit successfully with a message
+          MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`" # output message to display
+          EXIT_CODE=0 # exit code
+          exit_script "${MSG}" "${EXIT_CODE}" # exit with message and exit code
         fi
 
-        exit 0
+        ## if no other conditions are met, exit with an error
+        exit 1
