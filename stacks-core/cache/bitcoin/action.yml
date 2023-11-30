@@ -47,7 +47,7 @@ runs:
       id: check_cache
       with:
         lookup-only: true
-        path: /tmp/bitcoin
+        path: ~/bitcoin
         key: ${{ inputs.cache-key }}
 
     ## Restore cache data
@@ -61,7 +61,7 @@ runs:
         action: actions/cache/restore@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with: |
           fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
-          path: /tmp/bitcoin
+          path: ~/bitcoin
           key: ${{ inputs.cache-key }}
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}
@@ -75,8 +75,8 @@ runs:
       id: install_bitcoin
       shell: bash
       run: |
-        curl -LSf -# https://github.com/stacks-network/bitcoin/releases/download/v${{ inputs.btc-version }}/bitcoin-${{ inputs.btc-version }}-x86_64-linux-gnu.tar.gz | tar zxf - -C /tmp
-        mv /tmp/bitcoin-${{ inputs.btc-version }} /tmp/bitcoin
+        curl -LSf -# https://github.com/stacks-network/bitcoin/releases/download/v${{ inputs.btc-version }}/bitcoin-${{ inputs.btc-version }}-x86_64-linux-gnu.tar.gz | tar zxf - -C ~
+        mv ~/bitcoin-${{ inputs.btc-version }} ~/bitcoin
 
     ## Use wretry action to retry on a failed upload
     - name: Save Cache
@@ -88,7 +88,7 @@ runs:
       with:
         action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with: |
-          path: /tmp/bitcoin
+          path: ~/bitcoin
           key: ${{ inputs.cache-key }}
         attempt_limit: ${{ inputs.retries}}
         attempt_delay: ${{ inputs.retry-delay}}

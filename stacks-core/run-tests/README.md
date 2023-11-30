@@ -8,17 +8,19 @@ For running tests using a partition, [use this action ](./partition/) instead.
 
 ### Inputs
 
-| Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `test-name` | Test name to run | `true`| null |
-| `archive-file` | Archive file to use for tests | `true` | `/tmp/test_archive.tar.zst` |
-| `threads` | Number of test threads | `false` | `num-cpus` |
-| `success-output` | Success output | `false` | `immediate-final` |
-| `status-level` | Output status level | `false` | `fail` |
-| `retries` | Number of test retries | `false`| `2` |
+| Input            | Description                   | Required | Default                  |
+| ---------------- | ----------------------------- | -------- | ------------------------ |
+| `test-name`      | Test name to run              | `true`   | null                     |
+| `archive-file`   | Archive file to use for tests | `true`   | `~/test_archive.tar.zst` |
+| `threads`        | Number of test threads        | `false`  | `num-cpus`               |
+| `success-output` | Success output                | `false`  | `immediate-final`        |
+| `status-level`   | Output status level           | `false`  | `fail`                   |
+| `retries`        | Number of test retries        | `false`  | `2`                      |
 
 ## Usage
+
 ### Integration Test
+
 ```yaml
 name: Action
 on: push
@@ -36,6 +38,7 @@ jobs:
 ```
 
 ### Genesis Test
+
 ```yaml
 name: Action
 on: push
@@ -50,6 +53,6 @@ jobs:
         uses: stacks-network/actions/stacks-core/run-tests@main
         with:
           test-name: test::name
-          threads: 1 
-          archive-file: /tmp/genesis_archive.tar.zst
+          threads: 1
+          archive-file: ~/genesis_archive.tar.zst
 ```

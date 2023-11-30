@@ -73,7 +73,7 @@ runs:
           --workspace \
           --tests \
           --locked \
-          --archive-file /tmp/test_archive.tar.zst
+          --archive-file ~/test_archive.tar.zst
 
     - name: Build and Archive Genesis Tests
       if: |
@@ -91,7 +91,7 @@ runs:
           --tests \
           --locked \
           --features prod-genesis-chainstate \
-          --archive-file /tmp/genesis_archive.tar.zst
+          --archive-file ~/genesis_archive.tar.zst
 
     ## Save Caches
     ## If any of the caches are not found, save cargo target cache
