@@ -37,6 +37,7 @@ runs:
       shell: bash
       run: |
         cargo nextest run \
+          --verbose \
           --archive-file ${{ inputs.archive-file }} \
           --test-threads ${{ inputs.threads }} \
           --retries ${{ inputs.retries }} \
