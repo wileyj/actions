@@ -58,7 +58,7 @@ runs:
       id: bitcoin_binary
       shell: bash
       run: |
-        sudo ln -s /tmp/bitcoin/bin/bitcoind /bin/
+        sudo ln -s ~/bitcoin/bin/bitcoind /bin/
         ls -al /bin/bitcoind
 
     ## Restore nextest test archive cache data

@@ -18,7 +18,7 @@ inputs:
   archive-file:
     description: "Archive file to use for tests"
     required: true
-    default: "/tmp/test_archive.tar.zst"
+    default: "~/test_archive.tar.zst"
   success-output:
     description: "Success output"
     required: false
