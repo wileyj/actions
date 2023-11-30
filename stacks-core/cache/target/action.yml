@@ -39,7 +39,8 @@ runs:
     - name: Check Cache
       if: |
         inputs.action == 'check'
-      uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+      # uses: actions/cache@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+      uses: buildjet/cache@v3
       id: check_cache
       with:
         lookup-only: true
@@ -54,7 +55,8 @@ runs:
       id: restore_cache
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
-        action: actions/cache/restore@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        # action: actions/cache/restore@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        action: buildjet/cache/restore@v3
         with: |
           fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
           path: ./target
@@ -70,7 +72,8 @@ runs:
       id: save_cache
       uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
-        action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        # action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        action: buildjet/cache/save@v3
         with: |
           path: ./target
           key: ${{ inputs.cache-key }}
