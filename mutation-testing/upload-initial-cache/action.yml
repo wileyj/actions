@@ -36,4 +36,4 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: ./actions-repo/mutation-testing/initial-output/${{ github.ref_name }}
-        key: mutants-stable-${{ github.ref_name }}
+        key: mutants-output-${{ github.ref_name }}

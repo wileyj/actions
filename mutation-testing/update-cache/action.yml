@@ -26,7 +26,7 @@ runs:
       uses: actions/cache/restore@v3
       with:
         path: ./mutation-testing/packages-output
-        key: mutants-stable-${{ github.ref_name }}
+        key: mutants-output-${{ github.ref_name }}
 
     - name: Create git.diff file
       shell: bash
@@ -87,7 +87,7 @@ runs:
       shell: bash
       run: |
         gh extension install actions/gh-actions-cache
-        gh actions-cache delete "mutants-stable-${{ github.ref_name }}" --confirm
+        gh actions-cache delete "mutants-output-${{ github.ref_name }}" --confirm
       env:
         GH_TOKEN: ${{ inputs.gh-token }}
 
@@ -96,4 +96,11 @@ runs:
       uses: actions/cache/save@v3
       with:
         path: ./mutation-testing/packages-output
-        key: mutants-stable-${{ github.ref_name }}
+        key: mutants-output-${{ github.ref_name }}
+
+    - name: Upload to artifact to easily check the ouput
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: mutants-output-${{ github.sha }}
+        path: ./mutation-testing/packages-output

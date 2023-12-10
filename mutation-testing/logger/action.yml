@@ -25,7 +25,7 @@ runs:
       with:
         lookup-only: true
         path: ./
-        key: mutants-stable-${{ github.ref_name }}
+        key: mutants-output-${{ github.ref_name }}
 
     - name: Upload initial outputs if there is no cache
       if: steps.check_cache.outputs.cache-hit != 'true'
