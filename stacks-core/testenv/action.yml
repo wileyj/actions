@@ -9,6 +9,10 @@ inputs:
     description: "Restore genesis archive"
     required: false
     default: "false"
+  btc-version:
+    description: "Bitcoin version"
+    required: false
+    default: "0.20.0"
 
 runs:
   using: "composite"
@@ -52,6 +56,7 @@ runs:
       uses: stacks-network/actions/stacks-core/cache/bitcoin@main
       with:
         action: restore
+        btc-version: ${{ inputs.btc-version }}
 
     ## Symlink bitoind to $PATH
     - name: Link Bitcoin Binary
