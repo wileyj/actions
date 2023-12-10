@@ -1,0 +1,99 @@
+name: Update Cache
+
+inputs:
+  gh-token:
+    description: 'The github token secret in order to delete the old cache'
+    required: true
+    default: ''
+
+runs:
+  using: 'composite'
+
+  steps:
+    # Cleanup Runner
+    - name: Cleanup Runner action repo
+      id: runner_cleanup
+      uses: stacks-network/actions/cleanup/disk@main
+
+    # Checkout the stacks-core code
+    - name: Checkout the stacks core repo
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Restore mutants-output cached folder
+      id: cache-restore
+      uses: actions/cache/restore@v3
+      with:
+        path: ./mutation-testing/packages-output
+        key: mutants-stable-${{ github.ref_name }}
+
+    - name: Create git.diff file
+      shell: bash
+      run: |
+        last_commit_hash=$(<../packages-output/last_commit_hash.txt)
+        git diff $last_commit_hash > git.diff
+      working-directory: ./mutation-testing/scripts
+
+    # Checkout the actions code
+    - name: Get the action repo code
+      id: git_checkout_actions
+      uses: actions/checkout@v3
+      with:
+        repository: stacks-network/actions
+        ref: main
+        path: ./actions-repo
+
+    - name: Install cargo-mutants crate
+      shell: bash
+      run: cargo install cargo-mutants
+
+    - name: Remove deleted functions from output files
+      shell: bash
+      run: ./remove-deleted-functions-from-output.sh
+      working-directory: ./mutation-testing/scripts
+
+    - name: Remove deleted file lines from git.diff file
+      shell: bash
+      run: ./remove-deleted-file-lines.sh
+      working-directory: ./mutation-testing/scripts
+
+    - name: Run the mutation testing on the differences
+      shell: bash
+      run: |
+        if [ -f ./packages-output/last_commit_hash.txt ]; then
+          cargo mutants --no-shuffle -j 2 -vV --in-diff ./scripts/git.diff --output temp/
+        fi
+      working-directory: ./mutation-testing
+
+    - name: Update the content from the stable output
+      shell: bash
+      run: bash append-match-package.sh
+      working-directory: ./mutation-testing/scripts
+
+    - name: Re-write the old commit hash with the current one
+      shell: bash
+      run: |
+        echo "${{ github.sha }}" > last_commit_hash.txt
+      working-directory: ./mutation-testing/packages-output
+
+    - name: Print new commit hash
+      shell: bash
+      run: cat ./mutation-testing/packages-output/last_commit_hash.txt
+
+    - name: Delete Previous Cache
+      if: ${{ steps.cache-restore.outputs.cache-hit }}
+      continue-on-error: true
+      shell: bash
+      run: |
+        gh extension install actions/gh-actions-cache
+        gh actions-cache delete "mutants-stable-${{ github.ref_name }}" --confirm
+      env:
+        GH_TOKEN: ${{ inputs.gh-token }}
+
+    # TODO: feature for retrying the save in case it fails for any reason (in order not to lose the cache)
+    - name: Save Cache
+      uses: actions/cache/save@v3
+      with:
+        path: ./mutation-testing/packages-output
+        key: mutants-stable-${{ github.ref_name }}
