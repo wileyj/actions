@@ -1,6 +1,6 @@
-# Logger Mutants action
+# Update cache action
 
-Check whether to log the mutants to cache, or to create a new cache if it doesn't exist.
+Logs the mutants to cache, appending to the old output, and saving an artifact for easier data access and backup.
 
 ## Documentation
 
@@ -20,9 +20,9 @@ jobs:
     name: Job
     runs-on: ubuntu-latest
     steps:
-      - name: Log Mutants
-        id: log-mutants
-        uses: stacks-network/actions/mutation-testing/logger@main
+      - name: Update Cache
+        id: update-cache
+        uses: stacks-network/actions/mutation-testing/update-cache@main
         with:
           gh-token: ${{ secrets.GITHUB_TOKEN }}
 ```
