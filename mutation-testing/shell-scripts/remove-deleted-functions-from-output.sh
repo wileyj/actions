@@ -55,9 +55,15 @@ while IFS= read -r line; do
     first_char=${line:0:1}
     if [[ $first_char == '-' ]]; then
       fn_name=$(echo "$line" | grep -oP 'fn\s+\K[^(\s]+')
-      if [[ ${line:1:2} == 'fn' ]]; then
-        functions+=("${file_path}.*replace ${fn_name}")
+      if [[ ${line:1:1} != " " ]]; then
+        # Eg.
+        # libsigner/src/http.rs:138:5: replace function_test -> Result...
+        # libsigner/src/http.rs:102:32: replace > with < in decode_http_request
+        functions+=("${file_path}.*(replace|in) ${fn_name}")
       else
+        # Eg.
+        # libsigner/src/http.rs:57:9: replace SignerHttpRequest::destruct -> ...
+        # libsigner/src/events.rs:255:9: replace <impl EventReceiver for StackerDBEventReceiver>::forward_event -> bool with true
         functions+=("${file_path}.*${impl_block}::${fn_name}")
       fi
     fi

@@ -37,9 +37,9 @@ for file in "${FILES[@]}"; do
             # Extract the package from which the line is coming from
             local_package=${line%%/*}
 
-            # Extract the after the number line without the line number and escape it for awk
+            # Extract the line without the line number and escape it for awk
             # Escape the variables for use in a sed pattern
-            var_1=$(echo "$line" | sed -E 's/^(.+):[0-9]+:[^:]+/\1/')
+            var_1=$(echo "$line" | sed -E 's/^(.+):[0-9]+:[0-9]+:[^:]+/\1/')
             escaped_var_1=$(sed 's/[][/.^$]/\\&/g' <<< "$var_1")
 
             var_2=$(echo "$line" | sed -E 's/^[^:]+:[0-9]+:(.+)/\1/')
