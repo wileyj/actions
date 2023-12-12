@@ -9,6 +9,8 @@ Logs the mutants to cache, appending to the old output, and saving an artifact f
 | Input | Description | Required | Default |
 | ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
 | `gh-token` | The github token from the main workflow for cache deletion | true | `""` |
+| `retries` | Number of times to retry cache and artifact upload | false | `3` |
+| `retry-delay` | Time in ms between upload retries | false | `10000` |
 
 ## Usage
 

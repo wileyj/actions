@@ -5,6 +5,14 @@ inputs:
     description: 'The github token secret in order to delete the old cache'
     required: true
     default: ''
+  retries:
+    description: "Number of attempts"
+    required: false
+    default: "3"
+  retry-delay:
+    description: "Time to wait to retry"
+    required: false
+    default: "10000"
 
 runs:
   using: 'composite'
@@ -93,14 +101,22 @@ runs:
 
     # TODO: feature for retrying the save in case it fails for any reason (in order not to lose the cache)
     - name: Save Cache
-      uses: actions/cache/save@v3
+      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
-        path: ./mutation-testing/packages-output
-        key: mutants-output-${{ github.ref_name }}
+        uses: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
+        with:
+          path: ./mutation-testing/packages-output
+          key: mutants-output-${{ github.ref_name }}
+        attempt_limit: ${{ inputs.retries }}
+        attempt_delay: ${{ inputs.retry-delay }}
 
     - name: Upload to artifact to easily check the ouput
-      uses: actions/upload-artifact@v3
-      if: always()
+      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
       with:
-        name: mutants-output-${{ github.sha }}
-        path: ./mutation-testing/packages-output
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: mutants-output-${{ github.sha }}
+          path: ./mutation-testing/packages-output
+        attempt_limit: ${{ inputs.retries }}
+        attempt_delay: ${{ inputs.retry-delay }}
