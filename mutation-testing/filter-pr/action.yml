@@ -1,7 +1,7 @@
 name: Filter PR Mutants
 
 runs:
-  using: 'composite'
+  using: "composite"
 
   steps:
     # Cleanup Runner
@@ -61,6 +61,10 @@ runs:
                     echo "-------------"
                     echo "Found unviable mutants:"
                     cat ./mutants.out/unviable.txt
+                    echo "-------------"
+                    echo "To resolve this issue, consider one of the following options:"
+                    echo "1. Create 'Default::default()' implementation for the specific structure."
+                    echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
                     exit 1
                 fi
                 echo "All new and updated functions are caught!"
@@ -83,6 +87,10 @@ runs:
                     echo "-------------"
                     echo "Found unviable mutants:"
                     cat ./mutants.out/unviable.txt
+                    echo "-------------"
+                    echo "To resolve this issue, consider one of the following options:"
+                    echo "1. Create 'Default::default()' implementation for the specific structure."
+                    echo "2. Add '#[mutants::skip]' or '#[cfg_attr(test, mutants::skip)]' function headers."
                 fi
                 exit 1
                 ;;
