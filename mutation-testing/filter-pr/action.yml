@@ -28,7 +28,7 @@ runs:
       uses: actions/checkout@v3
       with:
         repository: stacks-network/actions
-        ref: main
+        ref: feat/mutation-testing
         path: ./actions-repo
 
     - name: Copy the git diff file to scripts folder
