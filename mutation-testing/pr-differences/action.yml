@@ -1,4 +1,4 @@
-name: Filter PR Mutants
+name: PR Differences Mutants
 
 inputs:
   shard:
