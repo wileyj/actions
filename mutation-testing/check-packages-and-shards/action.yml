@@ -58,11 +58,8 @@ runs:
         cargo mutants --in-diff git.diff --list > all_mutants.txt
         mkdir -p mutants_by_packages
 
-        cat git.diff
-        cat all_mutants.txt
-
         # Check that the file exists before performing actions on it
-        if [ -s all_mutants.txt ]; then
+        if [ ! -s all_mutants.txt ]; then
           echo "The file containing mutants is missing or empty!"
           exit 1
         fi
