@@ -1,10 +1,14 @@
 name: Check Packages and Shards
 
 outputs:
-  run_big_packages: ${{ steps.check_packages_and_shards.outputs.run_big_packages }}
-  big_packages_with_shards: ${{ steps.check_packages_and_shards.outputs.big_packages_with_shards }}
-  run_small_packages: ${{ steps.check_packages_and_shards.outputs.run_small_packages }}
-  small_packages_with_shards: ${{ steps.check_packages_and_shards.outputs.small_packages_with_shards }}
+  run_big_packages:
+    value: ${{ steps.check_packages_and_shards.outputs.run_big_packages }}
+  big_packages_with_shards:
+    value: ${{ steps.check_packages_and_shards.outputs.big_packages_with_shards }}
+  run_small_packages:
+    value: ${{ steps.check_packages_and_shards.outputs.run_small_packages }}
+  small_packages_with_shards:
+    value: ${{ steps.check_packages_and_shards.outputs.small_packages_with_shards }}
 
 runs:
   using: "composite"
