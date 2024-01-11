@@ -14,12 +14,12 @@ runs:
 
   steps:
     # Cleanup Runner
-    - name: Cleanup Runner action repo
+    - name: Cleanup Runner
       id: runner_cleanup
       uses: stacks-network/actions/cleanup/disk@main
 
     # Checkout the stacks-core code
-    - name: Checkout the stacks core repo
+    - name: Checkout stacks-core repo
       id: git_checkout_stacks_core
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
@@ -31,7 +31,7 @@ runs:
         git diff origin/${{ github.base_ref }}.. > git.diff
 
     # Checkout the actions code
-    - name: Get the action repo code
+    - name: Checkout actions repo
       id: git_checkout_actions
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
@@ -39,7 +39,7 @@ runs:
         ref: feat/mutation-testing
         path: ./actions-repo
 
-    - name: Copy the git diff file to scripts folder
+    - name: Copy git diff
       shell: bash
       run: |
         if [ ! -s git.diff ]; then
@@ -53,12 +53,12 @@ runs:
       with:
         tool: cargo-mutants@23.12.2 # v23.12.2
 
-    - name: Remove deleted file lines from git.diff file
+    - name: Update git diff
       shell: bash
       run: ./remove-deleted-file-lines.sh
       working-directory: actions-repo/mutation-testing/shell-scripts
 
-    - name: Split diffs into big and small packages and create regex patterns for them
+    - name: Split diffs
       shell: bash
       run: |
         # Check that the file exists before performing actions on it
@@ -79,6 +79,7 @@ runs:
         # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
         while IFS= read -r line; do
           package=$(echo "$line" | cut -d'/' -f1)
+
           case $package in
             "testnet" | "stackslib")
               echo "$line" >> "mutants_by_packages/big_packages.txt"
@@ -110,7 +111,7 @@ runs:
         exit 0
       working-directory: actions-repo/mutation-testing/shell-scripts
 
-    - name: Run mutants and check the exit code of the command, fail the workflow if mutations are not caught
+    - name: Run mutants
       shell: bash
       run: |
         # Disable immediate exit on error
@@ -119,23 +120,39 @@ runs:
         # Check which type of mutants to run: big, small, with or without shards, then capture the exit code
         if [[ ${{ inputs.shard }} == -1 ]]; then
           if [[ ${{ inputs.package-dimension }} == big ]]; then
-            echo "Running mutants without shards on big packages"
-            cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" --output ./ -- --all-targets -- --test-threads 1
-            exit_code=$?
+            if [[ -f mutants_by_packages/regex_big.txt ]]; then
+              echo "Running mutants without shards on big packages"
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" --output ./ -- --all-targets -- --test-threads 1
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
           else
-            echo "Running mutants without shards on small packages"
-            cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" --output ./ -- --all-targets
-            exit_code=$?
+            if [[ -f mutants_by_packages/regex_small.txt ]]; then
+              echo "Running mutants without shards on small packages"
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" --output ./ -- --all-targets
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
           fi
         else
           if [[ ${{ inputs.package-dimension }} == big ]]; then
-            echo "Running mutants with shard ${{ inputs.shard }} on big packages"
-            cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" --shard ${{ inputs.shard }}/8 --output ./ -- --all-targets -- --test-threads 1
-            exit_code=$?
+            if [[ -f mutants_by_packages/regex_big.txt ]]; then
+              echo "Running mutants with shard ${{ inputs.shard }} on big packages"
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" --shard ${{ inputs.shard }}/8 --output ./ -- --all-targets -- --test-threads 1
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
           else
-            echo "Running mutants with shard ${{ inputs.shard }} on small packages"
-            cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" --shard ${{ inputs.shard }}/4 --output ./ -- --all-targets
-            exit_code=$?
+            if [[ -f mutants_by_packages/regex_small.txt ]]; then
+              echo "Running mutants with shard ${{ inputs.shard }} on small packages"
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" --shard ${{ inputs.shard }}/4 --output ./ -- --all-targets
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
           fi
         fi
 
