@@ -43,7 +43,7 @@ runs:
       shell: bash
       run: |
         if [ ! -s git.diff ]; then
-          echo "Diff file missing!"
+          echo "Diff file (git.diff) is missing!"
         fi
 
         mv git.diff ./actions-repo/mutation-testing/shell-scripts/
@@ -63,7 +63,7 @@ runs:
       run: |
         # Check that the file exists before performing actions on it
         if [ ! -s git.diff ]; then
-          echo "Diff file missing!"
+          echo "Diff file (git.diff) is missing or empty!"
         fi
 
         # Make a file containing all the mutants for the differences in the PR and a folder to split them into big and small packages
@@ -72,7 +72,7 @@ runs:
 
         # Check that the file exists before performing actions on it
         if [ ! -s all_mutants.txt ]; then
-          echo "The file containing mutants is missing or empty!"
+          echo "The file containing mutants (all_mutants.txt) is missing or empty!"
           exit 1
         fi
 

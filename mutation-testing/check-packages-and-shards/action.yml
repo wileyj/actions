@@ -50,7 +50,7 @@ runs:
 
         # Check that the file exists before performing actions on it
         if [ ! -s "$input_file" ]; then
-          echo "Diff file missing!"
+          echo "Diff file (git.diff) is missing or empty!"
           exit 1
         fi
 
@@ -70,19 +70,18 @@ runs:
         # Check that the file exists before performing actions on it
         if [ -s "$temp_file" ]; then
           mv "$temp_file" "$input_file"
-        else
-          echo "Temp diff file missing!"
-          exit 1
+          exit 0
         fi
 
-        exit 0
+        echo "Temp diff file (temp_diff_file.diff) is missing or empty!"
+        exit 1
 
     - name: Split diffs
       shell: bash
       run: |
         # Check that the file exists before performing actions on it
         if [ ! -s git.diff ]; then
-          echo "Diff file missing!"
+          echo "Diff file (git.diff) is missing or empty!"
           exit 1
         fi
 
@@ -92,7 +91,7 @@ runs:
 
         # Check that the file exists before performing actions on it
         if [ ! -s all_mutants.txt ]; then
-          echo "The file containing mutants is missing or empty!"
+          echo "The file containing mutants (all_mutants.txt) is missing or empty!"
           exit 1
         fi
 

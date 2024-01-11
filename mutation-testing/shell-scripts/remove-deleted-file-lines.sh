@@ -8,7 +8,7 @@ done
 
 # Check that the file exists before performing actions on it
 if [ ! -s "$input_file" ]; then
-  echo "Diff file missing!"
+  echo "Diff file (git.diff) is missing or empty!"
   exit 1
 fi
 
@@ -28,9 +28,8 @@ awk '
 # Check that the file exists before performing actions on it
 if [ -s "$temp_file" ]; then
   mv "$temp_file" "$input_file"
-else
-  echo "Temp diff file missing!"
-  exit 1
+  exit 0
 fi
 
-exit 0
+echo "Temp diff file (temp_diff_file.diff) is missing or emtpy!"
+exit 1
