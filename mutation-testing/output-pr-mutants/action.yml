@@ -5,7 +5,7 @@ runs:
 
   steps:
     - name: Download artifacts
-      uses: actions/download-artifact@bb3fa7fd35ab8113a980912eb9f59b846d14e3ff # v4.1.1
+      uses: actions/download-artifact@v3
 
     - name: Append output from shards
       shell: bash
