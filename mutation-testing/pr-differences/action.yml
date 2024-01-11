@@ -91,21 +91,19 @@ runs:
 
         # Create regex patterns of the mutants to be ran for `cargo mutants` -F flag and output them to files to be used later
         for package in mutants_by_packages/*; do
-          if [ -s mutants_by_packages/$package ]; then
-            regex_pattern=""
+          regex_pattern=""
 
-            while IFS= read -r line; do
-              escaped_line=$(echo "$line" | sed 's/[][()\.^$*+?{}|]/\\&/g')
-              regex_pattern+="($escaped_line)|"
-            done < "$package"
+          while IFS= read -r line; do
+            escaped_line=$(echo "$line" | sed 's/[][()\.^$*+?{}|]/\\&/g')
+            regex_pattern+="($escaped_line)|"
+          done < "$package"
 
-            regex_pattern="${regex_pattern%|}"
+          regex_pattern="${regex_pattern%|}"
 
-            if [[ "$package" == "mutants_by_packages/big_packages.txt" ]]; then
-              echo "$regex_pattern" > mutants_by_packages/regex_big.txt
-            else
-              echo "$regex_pattern" > mutants_by_packages/regex_small.txt
-            fi
+          if [[ "$package" == "mutants_by_packages/big_packages.txt" ]]; then
+            echo "$regex_pattern" > mutants_by_packages/regex_big.txt
+          else
+            echo "$regex_pattern" > mutants_by_packages/regex_small.txt
           fi
         done
 
