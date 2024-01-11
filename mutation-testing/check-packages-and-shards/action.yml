@@ -1,0 +1,159 @@
+name: Check Packages and Shards
+description: "Checks which types of packages are contained in the diffs and how many mutants there are"
+branding:
+  icon: "check"
+  color: "gray-dark"
+
+outputs:
+  run_big_packages:
+    description: "True if there are packages on `stackslib` or `stacks-node`."
+    value: ${{ steps.check_packages_and_shards.outputs.run_big_packages }}
+  big_packages_with_shards:
+    description: "True if there are more than 16 mutants on `stackslib` and `stacks-node`."
+    value: ${{ steps.check_packages_and_shards.outputs.big_packages_with_shards }}
+  run_small_packages:
+    description: "True if there are packages on other packages than `stackslib` or `stacks-node`."
+    value: ${{ steps.check_packages_and_shards.outputs.run_small_packages }}
+  small_packages_with_shards:
+    description: "True if there are more than 79 (119 if `big_packages_with_shards` is true) mutants on small packages."
+    value: ${{ steps.check_packages_and_shards.outputs.small_packages_with_shards }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Checkout stacks-core repo
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        fetch-depth: 0
+
+    - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
+      name: Install cargo-mutants
+      with:
+        tool: cargo-mutants@23.12.2 # v23.12.2
+
+    - name: Relative diff
+      shell: bash
+      run: |
+        git diff origin/${{ github.base_ref }}.. > git.diff
+
+    - name: Update git diff
+      shell: bash
+      run: |
+        input_file="git.diff"
+        temp_file="temp_diff_file.diff"
+
+        # Check if the commands exist on the host
+        for cmd in tac awk sed; do
+          command -v "${cmd}" > /dev/null 2>&1 || { echo "Missing command: ${cmd}" && exit 1; }
+        done
+
+        # Check that the file exists before performing actions on it
+        if [ ! -s "$input_file" ]; then
+          echo "Diff file missing!"
+          exit 1
+        fi
+
+        # Reverse the file, remove 4 lines after '+++ /dev/null', then reverse it back (editors can't go backwards - to remove lines above)
+        tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+        sed '/+++ \/dev\/null/{n;N;N;N;d;}' "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+        tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+
+        # Remove the lines between '+++ /dev/null' (included) and 'diff --git a/'
+        awk '
+          BEGIN { in_block=0 }
+          /\+\+\+ \/dev\/null/ { in_block=1; next }
+          in_block && /diff --git a\// { in_block=0; print; next }
+          !in_block
+        ' "$input_file" > "$temp_file"
+
+        # Check that the file exists before performing actions on it
+        if [ -s "$temp_file" ]; then
+          mv "$temp_file" "$input_file"
+        else
+          echo "Temp diff file missing!"
+          exit 1
+        fi
+
+        exit 0
+
+    - name: Split diffs
+      shell: bash
+      run: |
+        # Check that the file exists before performing actions on it
+        if [ ! -s git.diff ]; then
+          echo "Diff file missing!"
+          exit 1
+        fi
+
+        # Make a file containing all the mutants for the differences in the PR and a folder to split them into big and small packages
+        cargo mutants --in-diff git.diff --list > all_mutants.txt
+        mkdir -p mutants_by_packages
+
+        # Check that the file exists before performing actions on it
+        if [ ! -s all_mutants.txt ]; then
+          echo "The file containing mutants is missing or empty!"
+          exit 1
+        fi
+
+        # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
+        while IFS= read -r line; do
+          package=$(echo "$line" | cut -d'/' -f1)
+          case $package in
+            "testnet" | "stackslib")
+              echo "$line" >> "mutants_by_packages/big_packages.txt"
+              ;;
+            *)
+              echo "$line" >> "mutants_by_packages/small_packages.txt"
+              ;;
+          esac
+        done < all_mutants.txt
+
+        exit 0
+
+    - name: Check packages and shards
+      id: check_packages_and_shards
+      shell: bash
+      run: |
+        number_of_big_mutants=0
+        number_of_small_mutants=0
+
+        # If big_packages file exists, count how many mutants there are
+        if [[ -s mutants_by_packages/big_packages.txt ]]; then
+          number_of_big_mutants=$(cat mutants_by_packages/big_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
+        fi
+
+        # If small_packages file exists, count how many mutants there are
+        if [[ -s mutants_by_packages/small_packages.txt ]]; then
+          number_of_small_mutants=$(cat mutants_by_packages/small_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
+        fi
+
+        # Set the mutants limit for when to run with shards on the small packages
+        # If there are mutants from big packages, check whether to run with or without shards, otherwise there's nothing to run
+        if [[ $number_of_big_mutants -gt 15 ]]; then
+          small_packages_shard_limit=119
+          echo "run_big_packages=true" >> "$GITHUB_OUTPUT"
+          echo "big_packages_with_shards=true" >> "$GITHUB_OUTPUT"
+        else
+          small_packages_shard_limit=79
+          if [[ $number_of_big_mutants -ne 0 ]]; then
+            echo "run_big_packages=true" >> "$GITHUB_OUTPUT"
+            echo "big_packages_with_shards=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_big_packages=false" >> "$GITHUB_OUTPUT"
+          fi
+        fi
+
+        # If there are mutants from small packages, check whether to run with or without shards, otherwise there's nothing to run
+        if [[ $number_of_small_mutants -ne 0 ]]; then
+          echo "run_small_packages=true" >> "$GITHUB_OUTPUT"
+          if [[ $number_of_small_mutants -gt $small_packages_shard_limit ]]; then
+            echo "small_packages_with_shards=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "small_packages_with_shards=false" >> "$GITHUB_OUTPUT"
+          fi
+        else
+          echo "run_small_packages=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        exit 0

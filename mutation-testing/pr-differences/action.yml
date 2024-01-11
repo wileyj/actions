@@ -21,7 +21,7 @@ runs:
     # Checkout the stacks-core code
     - name: Checkout stacks-core repo
       id: git_checkout_stacks_core
-      uses: actions/checkout@v3
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
         fetch-depth: 0
 
@@ -33,7 +33,7 @@ runs:
     # Checkout the actions code
     - name: Checkout actions repo
       id: git_checkout_actions
-      uses: actions/checkout@v3
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
         repository: stacks-network/actions
         ref: feat/mutation-testing
@@ -42,11 +42,16 @@ runs:
     - name: Copy git diff
       shell: bash
       run: |
+        if [ ! -s git.diff ]; then
+          echo "Diff file missing!"
+        fi
+
         mv git.diff ./actions-repo/mutation-testing/shell-scripts/
 
-    - name: Install cargo-mutants
-      shell: bash
-      run: cargo install --version 23.12.2 cargo-mutants
+    - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
+      name: Install cargo-mutants
+      with:
+        tool: cargo-mutants@23.12.2 # v23.12.2
 
     - name: Update git diff
       shell: bash
@@ -56,11 +61,17 @@ runs:
     - name: Split diffs
       shell: bash
       run: |
+        # Check that the file exists before performing actions on it
+        if [ ! -s git.diff ]; then
+          echo "Diff file missing!"
+        fi
+
+        # Make a file containing all the mutants for the differences in the PR and a folder to split them into big and small packages
         cargo mutants --in-diff git.diff --list > all_mutants.txt
         mkdir -p mutants_by_packages
 
         # Check that the file exists before performing actions on it
-        if [ -s all_mutants.txt ]; then
+        if [ ! -s all_mutants.txt ]; then
           echo "The file containing mutants is missing or empty!"
           exit 1
         fi
@@ -96,12 +107,17 @@ runs:
             echo "$regex_pattern" > mutants_by_packages/regex_small.txt
           fi
         done
+
+        exit 0
       working-directory: actions-repo/mutation-testing/shell-scripts
 
     - name: Run mutants
       shell: bash
       run: |
-        set +e  # Disable immediate exit on error
+        # Disable immediate exit on error
+        set +e
+
+        # Check which type of mutants to run: big, small, with or without shards, then capture the exit code
         if [[ ${{ inputs.shard }} == -1 ]]; then
           if [[ ${{ inputs.package-dimension }} == big ]]; then
             if [[ -f mutants_by_packages/regex_big.txt ]]; then
@@ -139,10 +155,14 @@ runs:
             fi
           fi
         fi
+
+        # Create the folder only containing the outcomes (.txt files) and make a file containing the exit code of the command
         mkdir mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}
         echo "$exit_code" > ./mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}/exit_code.txt
         mv ./mutants.out/*.txt mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}/
-        set -e  # Enable immediate exit on error again
+
+        # Enable immediate exit on error again
+        set -e
       working-directory: actions-repo/mutation-testing/shell-scripts
 
     - name: Upload artifact
