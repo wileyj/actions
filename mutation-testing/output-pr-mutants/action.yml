@@ -5,15 +5,17 @@ runs:
 
   steps:
     - name: Download artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@bb3fa7fd35ab8113a980912eb9f59b846d14e3ff # v4.1.1
 
     - name: Append output from shards
       shell: bash
       run: |
+        # List of all possible mutant outcomes file names and folder names collected from jobs.
         folders=("mutants-shard-big--1" "mutants-shard-big-0" "mutants-shard-big-1" "mutants-shard-big-2" "mutants-shard-big-3" "mutants-shard-big-4" "mutants-shard-big-5" "mutants-shard-big-6" "mutants-shard-big-7" "mutants-shard-small--1" "mutants-shard-small-0" "mutants-shard-small-1" "mutants-shard-small-2" "mutants-shard-small-3")
         files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
         mkdir -p mutants-shards
 
+        # If the folder/file path exists, append the output to it's corresponding file name in a newly created folder that will contain all outputs combined
         for file in "${files[@]}"; do
           for folder in "${folders[@]}"; do
             if [[ -s "$folder/$file" ]]; then
@@ -22,6 +24,12 @@ runs:
           done
         done
 
+        # If the folder/exit_code.txt path exists, check for the exit code and retain the most relevant one to a file
+        # - 4: unmutated build failed
+        # - 1: incorrect command line arguments
+        # - 2, 3: found timeout/missed/unviable mutants
+        # - 0: everything worked fine
+        # - *: unknown exit code
         for folder in "${folders[@]}"; do
           if [[ -s "$folder/exit_code.txt" ]]; then
             exit_code=$(<"${folder}/exit_code.txt")
@@ -55,11 +63,13 @@ runs:
     - name: Print mutants
       shell: bash
       run: |
+        # Info for creating the link that paths to the specific mutation tested
         server_url="${{ github.server_url }}"
         organisation="${{ github.repository_owner }}"
         repository="${{ github.event.repository.name }}"
         commit="${{ github.sha }}"
 
+        # Function to write to github step summary with specific info depending on the mutation category
         write_section() {
           local section_title=$1
           local file_name=$2
@@ -116,14 +126,17 @@ runs:
           fi
         }
 
+        # Print uncaught (missed/timeout/unviable) mutants to summary
         echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
         write_section "Missed:" "./mutants-shards/missed.txt"
         write_section "Timeout:" "./mutants-shards/timeout.txt"
         write_section "Unviable:" "./mutants-shards/unviable.txt"
-          
+
+        # Print caught mutants to summary
         echo "# Caught Mutants" >> "$GITHUB_STEP_SUMMARY"
         write_section "" "./mutants-shards/caught.txt"
 
+        # Get most relevant exit code from the file and match it
         exit_code=$(<"mutants-shards/exit_code.txt")
 
         case $exit_code in
