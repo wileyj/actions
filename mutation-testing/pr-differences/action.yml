@@ -79,7 +79,7 @@ runs:
         # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
         while IFS= read -r line; do
           package=$(echo "$line" | cut -d'/' -f1)
-          ccase $package in
+          case $package in
             "testnet" | "stackslib")
               echo "$line" >> "mutants_by_packages/big_packages.txt"
               ;;
