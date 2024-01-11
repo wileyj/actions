@@ -17,12 +17,6 @@ tac "$input_file" > "$temp_file"
 sed '/+++ \/dev\/null/{n;N;N;N;d;}' "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
 tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
 
-# Check that the file exists before performing actions on it
-if [ ! -s "$temp_file" ]; then
-  echo "Diff file missing!"
-  exit 1
-fi
-
 # Remove the lines between '+++ /dev/null' (included) and 'diff --git a/'
 awk '
   BEGIN { in_block=0 }
