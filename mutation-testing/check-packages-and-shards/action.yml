@@ -28,9 +28,9 @@ runs:
         fetch-depth: 0
 
     - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
-        name: Install cargo-mutants
-        with:
-          tool: cargo-mutants@23.12.2 # v23.12.2
+      name: Install cargo-mutants
+      with:
+        tool: cargo-mutants@23.12.2 # v23.12.2
 
     - name: Relative diff
       shell: bash
