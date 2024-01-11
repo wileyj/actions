@@ -55,7 +55,7 @@ runs:
         fi
 
         # Reverse the file, remove 4 lines after '+++ /dev/null', then reverse it back (editors can't go backwards - to remove lines above)
-        tac "$input_file" > "$temp_file"
+        tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
         sed '/+++ \/dev\/null/{n;N;N;N;d;}' "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
         tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
 
