@@ -23,21 +23,25 @@ runs:
 
   steps:
     - name: Checkout stacks-core repo
+      id: checkout_stacks_core
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       with:
         fetch-depth: 0
 
     - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
+      id: install_cargo_mutants
       name: Install cargo-mutants
       with:
         tool: cargo-mutants@23.12.2 # v23.12.2
 
     - name: Relative diff
+      id: relative_diff
       shell: bash
       run: |
         git diff origin/${{ github.base_ref }}.. > git.diff
 
     - name: Update git diff
+      id: update_git_diff
       shell: bash
       run: |
         input_file="git.diff"
@@ -77,6 +81,7 @@ runs:
         exit 1
 
     - name: Split diffs
+      id: split_diffs_by_packages
       shell: bash
       run: |
         # Check that the file exists before performing actions on it

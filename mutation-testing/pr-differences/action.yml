@@ -26,6 +26,7 @@ runs:
         fetch-depth: 0
 
     - name: Relative diff
+      id: relative_diff
       shell: bash
       run: |
         git diff origin/${{ github.base_ref }}.. > git.diff
@@ -40,6 +41,7 @@ runs:
         path: ./actions-repo
 
     - name: Copy git diff
+      id: copy_git_diff
       shell: bash
       run: |
         if [ ! -s git.diff ]; then
@@ -50,15 +52,18 @@ runs:
 
     - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
       name: Install cargo-mutants
+      id: install_cargo_mutants
       with:
         tool: cargo-mutants@23.12.2 # v23.12.2
 
     - name: Update git diff
+      id: update_git_diff
       shell: bash
       run: ./remove-deleted-file-lines.sh
       working-directory: actions-repo/mutation-testing/shell-scripts
 
     - name: Split diffs
+      id: split_diffs
       shell: bash
       run: |
         # Check that the file exists before performing actions on it
@@ -112,6 +117,7 @@ runs:
       working-directory: actions-repo/mutation-testing/shell-scripts
 
     - name: Run mutants
+      id: run_mutants
       shell: bash
       run: |
         # Disable immediate exit on error
@@ -166,6 +172,7 @@ runs:
       working-directory: actions-repo/mutation-testing/shell-scripts
 
     - name: Upload artifact
+      id: upload_artifact
       uses: actions/upload-artifact@v3
       if: always()
       with:

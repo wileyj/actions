@@ -5,9 +5,11 @@ runs:
 
   steps:
     - name: Download artifacts
+      id: download_artifacts
       uses: actions/download-artifact@v3
 
     - name: Append output from shards
+      id: append_mutant_outcomes
       shell: bash
       run: |
         # List of all possible mutant outcomes file names and folder names collected from jobs.
@@ -61,6 +63,7 @@ runs:
         echo "$most_relevant_exit_code" > './mutants-shards/exit_code.txt'
 
     - name: Print mutants
+      id: print_tested_mutants
       shell: bash
       run: |
         # Info for creating the link that paths to the specific mutation tested
