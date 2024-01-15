@@ -1,4 +1,22 @@
 name: Output Mutants
+description: "Collects the outcomes of jobs running mutants from artifacts, combines them and outputs them to github step summary"
+branding:
+  icon: "share"
+  color: "gray-dark"
+
+inputs:
+  big_packages:
+    description: "True if there were big packages running."
+    required: true
+  shards_for_big_packages:
+    description: "True if the big packages were running using matrix."
+    required: true
+  small_packages:
+    description: "True if there were small packages running."
+    required: true
+  shards_for_small_packages:
+    description: "True if the small packages were running using matrix."
+    required: true
 
 runs:
   using: "composite"
@@ -6,22 +24,46 @@ runs:
   steps:
     - name: Download artifacts
       id: download_artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@6b208ae046db98c579e8a3aa621ab581ff575935 # v4.1.1
 
     - name: Append output from shards
       id: append_mutant_outcomes
       shell: bash
       run: |
-        # List of all possible mutant outcomes file names and folder names collected from jobs.
-        folders=("mutants-shard-big--1" "mutants-shard-big-0" "mutants-shard-big-1" "mutants-shard-big-2" "mutants-shard-big-3" "mutants-shard-big-4" "mutants-shard-big-5" "mutants-shard-big-6" "mutants-shard-big-7" "mutants-shard-small--1" "mutants-shard-small-0" "mutants-shard-small-1" "mutants-shard-small-2" "mutants-shard-small-3")
+        # Check and append the folders that should be uploaded to artifacts for the big packages
+        if ${{ inputs.big_packages }} == "true"; then
+          if ${{ inputs.shards_for_big_packages }} == "true"; then
+            for i in {0..7}; do
+              folders+=("mutants-shard-big-$i")
+            done
+          else
+            folders+=("mutants-shard-big--1")
+          fi
+        fi
+
+        # Check and append the folders that should be uploaded to artifacts for the small packages
+        if ${{ inputs.small_packages }} == "true"; then
+          if ${{ inputs.shards_for_small_packages }} == "true"; then
+            for i in {0..3}; do
+              folders+=("mutants-shard-small-$i")
+            done
+          else
+            folders+=("mutants-shard-small--1")
+          fi
+        fi
+
         files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")
         mkdir -p mutants-shards
 
         # If the folder/file path exists, append the output to it's corresponding file name in a newly created folder that will contain all outputs combined
+        # If it doesn't exits, exit early because there was an error when uploading/downloading the artifact or the mutants were not run for that specific job
         for file in "${files[@]}"; do
           for folder in "${folders[@]}"; do
-            if [[ -s "$folder/$file" ]]; then
+            if [[ -f "$folder/$file" ]]; then
               cat "$folder/$file" >> "mutants-shards/$file"
+            else
+              echo "Missing necessary file or folder: $folder/$file"
+              exit 1
             fi
           done
         done
@@ -44,11 +86,11 @@ runs:
             1)
               [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=1
               ;;
-            2)
-              [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=2
-              ;;
             3)
               [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=3
+              ;;
+            2)
+              [ "$most_relevant_exit_code" -eq 0 ] && most_relevant_exit_code=2
               ;;
             0)
               ;;
@@ -57,10 +99,15 @@ runs:
               most_relevant_exit_code=$exit_code
               ;;
             esac
+          else
+            # If the file containing the exit code doesn't exist, something happened to the job that should have saved it, so default to '4'
+            most_relevant_exit_code=4
           fi
         done
 
         echo "$most_relevant_exit_code" > './mutants-shards/exit_code.txt'
+
+        exit 0
 
     - name: Print mutants
       id: print_tested_mutants
@@ -130,14 +177,18 @@ runs:
         }
 
         # Print uncaught (missed/timeout/unviable) mutants to summary
-        echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
-        write_section "Missed:" "./mutants-shards/missed.txt"
-        write_section "Timeout:" "./mutants-shards/timeout.txt"
-        write_section "Unviable:" "./mutants-shards/unviable.txt"
+        if [ -s ./mutants-shards/missed.txt -o -s ./mutants-shards/timeout.txt -o -s ./mutants-shards/unviable.txt ]; then
+          echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
+          write_section "Missed:" "./mutants-shards/missed.txt"
+          write_section "Timeout:" "./mutants-shards/timeout.txt"
+          write_section "Unviable:" "./mutants-shards/unviable.txt"
+        fi
 
         # Print caught mutants to summary
-        echo "# Caught Mutants" >> "$GITHUB_STEP_SUMMARY"
-        write_section "" "./mutants-shards/caught.txt"
+        if [ -s ./mutants-shards/caught.txt ]; then
+          echo "# Caught Mutants" >> "$GITHUB_STEP_SUMMARY"
+          write_section "" "./mutants-shards/caught.txt"
+        fi
 
         # Get most relevant exit code from the file and match it
         exit_code=$(<"mutants-shards/exit_code.txt")
@@ -146,24 +197,28 @@ runs:
           0)
               if [[ -f ./mutants-shards/unviable.txt ]]; then
                 echo "Found unviable mutants!"
-                exit 1
+                exit 5
               fi
             echo "All new and updated functions are caught!"
             ;;
           1)
             echo "Invalid command line arguments!"
-            exit 1
+            exit $exit_code
             ;;
-          2 | 3)
-            echo "Found missed/timeout/unviable mutants!"
-            exit 1
+          2)
+            echo "Found missed mutants!"
+            exit $exit_code
+            ;;
+          3)
+            echo "Found timeout mutants!"
+            exit $exit_code
             ;;
           4)
             echo "Building the packages failed without any mutations!"
-            exit 1
+            exit $exit_code
             ;;
           *)
             echo "Unknown exit code: $exit_code"
-            exit 1
+            exit $exit_code
           ;;
         esac

@@ -92,6 +92,11 @@ runs:
 
         # Make a file containing all the mutants for the differences in the PR and a folder to split them into big and small packages
         cargo mutants --in-diff git.diff --list > all_mutants.txt
+        if [ $? -ne 0 ]; then 
+          echo "Error retrieving the list of mutants!"
+          exit $?
+        fi
+
         mkdir -p mutants_by_packages
 
         # Check that the file exists before performing actions on it

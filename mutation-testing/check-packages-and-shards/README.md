@@ -1,6 +1,6 @@
 # Check Packages and Shards action
 
-Checks whether to run mutants on big (`stackslib`/`stacks-node`) or small packages (all others), and whether to run them using strategy matrix or not.
+Checks whether to run mutants on big ([stackslib](https://github.com/stacks-network/stacks-core/tree/develop/stackslib)/[stacks-node](https://github.com/stacks-network/stacks-core/tree/develop/testnet/stacks-node)) or small packages (all others), and whether to run them using strategy matrix or not.
 
 ## Documentation
 

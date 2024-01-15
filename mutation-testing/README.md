@@ -1,3 +1,5 @@
 # Mutation Testing actions
 
-> - [Filter PR Mutants action](./filter-pr/README.md)
+> - [Check Packages and Shards action](./check-packages-and-shards/README.md)
+> - [Output PR Mutants action](./output-pr-mutants/README.md)
+> - [PR Differences action](./pr-differences/README.md)
