@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Output Mutants
         id: output_pr_mutants
-        uses: stacks-network/actions/mutation-testing/output-pr-mutants@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/output-pr-mutants@main
         with:
           big_packages: "true"
           shards_for_big_packages: "false"

@@ -24,5 +24,5 @@ jobs:
     steps:
       - name: Check Packages and Shards
         id: check_packages_and_shards
-        uses: stacks-network/actions/mutation-testing/check-packages-and-shards@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/check-packages-and-shards@main
 ```

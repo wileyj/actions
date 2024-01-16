@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: PR Differences Mutants
         id: pr-differences-mutants
-        uses: stacks-network/actions/mutation-testing/pr-differences@main
+        uses: stacks-network/actions/stacks-core/mutation-testing/pr-differences@main
         with:
           package-dimension: "big"
 ```
