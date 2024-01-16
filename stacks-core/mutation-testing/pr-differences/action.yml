@@ -1,0 +1,202 @@
+name: PR Differences Mutants
+description: "Runs mutants corresponding to its given inputs and uploads the outcomes to artifacts"
+branding:
+  icon: "users"
+  color: "gray-dark"
+
+inputs:
+  shard:
+    description: "The number of the shard to run (`-1` if ran without shards)"
+    required: false
+    default: -1
+  package-dimension:
+    description: "The dimension of the package. `big` for `stacks-node` and `stackslib`, `small` for others"
+    required: true
+
+runs:
+  using: "composite"
+
+  steps:
+    # Cleanup Runner
+    - name: Cleanup Runner
+      id: runner_cleanup
+      uses: stacks-network/actions/cleanup/disk@main
+
+    # Checkout the stacks-core code
+    - name: Checkout stacks-core repo
+      id: git_checkout_stacks_core
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      with:
+        fetch-depth: 0
+
+    - name: Relative diff
+      id: relative_diff
+      shell: bash
+      run: |
+        git diff origin/${{ github.base_ref }}.. > git.diff
+
+    - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
+      name: Install cargo-mutants
+      id: install_cargo_mutants
+      with:
+        tool: cargo-mutants@23.12.2 # v23.12.2
+
+    - name: Update git diff
+      id: update_git_diff
+      shell: bash
+      run: |
+        input_file="git.diff"
+        temp_file="temp_diff_file.diff"
+
+        # Check if the commands exist on the host
+        for cmd in tac awk sed; do
+          command -v "${cmd}" > /dev/null 2>&1 || { echo "Missing command: ${cmd}" && exit 1; }
+        done
+
+        # Check that the file exists before performing actions on it
+        if [ ! -s "$input_file" ]; then
+          echo "Diff file (git.diff) is missing or empty!"
+          exit 1
+        fi
+
+        # Reverse the file, remove 4 lines after '+++ /dev/null', then reverse it back (editors can't go backwards - to remove lines above)
+        tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+        sed '/+++ \/dev\/null/{n;N;N;N;d;}' "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+        tac "$input_file" > "$temp_file" && mv "$temp_file" "$input_file"
+
+        # Remove the lines between '+++ /dev/null' (included) and 'diff --git a/'
+        awk '
+          BEGIN { in_block=0 }
+          /\+\+\+ \/dev\/null/ { in_block=1; next }
+          in_block && /diff --git a\// { in_block=0; print; next }
+          !in_block
+        ' "$input_file" > "$temp_file"
+
+        # Check that the file exists before performing actions on it
+        if [ -s "$temp_file" ]; then
+          mv "$temp_file" "$input_file"
+          exit 0
+        fi
+
+        echo "Temp diff file (temp_diff_file.diff) is missing or empty!"
+        exit 1
+
+    - name: Split diffs
+      id: split_diffs
+      shell: bash
+      run: |
+        # Check that the file exists before performing actions on it
+        if [ ! -s git.diff ]; then
+          echo "Diff file (git.diff) is missing or empty!"
+          exit 1
+        fi
+
+        # Make a file containing all the mutants for the differences in the PR and a folder to split them into big and small packages
+        cargo mutants --in-diff git.diff --list > all_mutants.txt
+        if [ $? -ne 0 ]; then 
+          echo "Error retrieving the list of mutants!"
+          exit $?
+        fi
+
+        mkdir -p mutants_by_packages
+
+        # Check that the file exists before performing actions on it
+        if [ ! -s all_mutants.txt ]; then
+          echo "The file containing mutants (all_mutants.txt) is missing or empty!"
+          exit 1
+        fi
+
+        # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
+        while IFS= read -r line; do
+          package=$(echo "$line" | cut -d'/' -f1)
+
+          case $package in
+            "testnet" | "stackslib")
+              echo "$line" >> "mutants_by_packages/big_packages.txt"
+              ;;
+            *)
+              echo "$line" >> "mutants_by_packages/small_packages.txt"
+              ;;
+          esac
+        done < all_mutants.txt
+
+        # Create regex patterns of the mutants to be ran for `cargo mutants` -F flag and output them to files to be used later
+        for package in mutants_by_packages/*; do
+          regex_pattern=""
+
+          while IFS= read -r line; do
+            escaped_line=$(echo "$line" | sed 's/[][()\.^$*+?{}|]/\\&/g')
+            regex_pattern+="($escaped_line)|"
+          done < "$package"
+
+          regex_pattern="${regex_pattern%|}"
+
+          if [[ "$package" == "mutants_by_packages/big_packages.txt" ]]; then
+            echo "$regex_pattern" > mutants_by_packages/regex_big.txt
+          else
+            echo "$regex_pattern" > mutants_by_packages/regex_small.txt
+          fi
+        done
+
+        exit 0
+
+    - name: Run mutants
+      id: run_mutants
+      shell: bash
+      run: |
+        # Disable immediate exit on error
+        set +e
+
+        # Check which type of mutants to run: big, small, with or without shards, then capture the exit code
+        if [[ ${{ inputs.shard }} == -1 ]]; then
+          if [[ ${{ inputs.package-dimension }} == big ]]; then
+            if [[ -f mutants_by_packages/regex_big.txt ]]; then
+              echo "Running mutants without shards on big packages"
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" --output ./ -- --all-targets -- --test-threads 1
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
+          else
+            if [[ -f mutants_by_packages/regex_small.txt ]]; then
+              echo "Running mutants without shards on small packages"
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" --output ./ -- --all-targets
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
+          fi
+        else
+          if [[ ${{ inputs.package-dimension }} == big ]]; then
+            if [[ -f mutants_by_packages/regex_big.txt ]]; then
+              echo "Running mutants with shard ${{ inputs.shard }} on big packages"
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" --shard ${{ inputs.shard }}/8 --output ./ -- --all-targets -- --test-threads 1
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
+          else
+            if [[ -f mutants_by_packages/regex_small.txt ]]; then
+              echo "Running mutants with shard ${{ inputs.shard }} on small packages"
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" --shard ${{ inputs.shard }}/4 --output ./ -- --all-targets
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
+          fi
+        fi
+
+        # Create the folder only containing the outcomes (.txt files) and make a file containing the exit code of the command
+        mkdir mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}
+        echo "$exit_code" > ./mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}/exit_code.txt
+        mv ./mutants.out/*.txt mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}/
+
+        # Enable immediate exit on error again
+        set -e
+
+    - name: Upload artifact
+      id: upload_artifact
+      uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
+      with:
+        name: mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}
+        path: mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}
