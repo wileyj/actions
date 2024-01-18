@@ -74,10 +74,10 @@ runs:
         # - 2, 3: found timeout/missed/unviable mutants
         # - 0: everything worked fine
         # - *: unknown exit code
+        most_relevant_exit_code=0
         for folder in "${folders[@]}"; do
           if [[ -s "$folder/exit_code.txt" ]]; then
             exit_code=$(<"${folder}/exit_code.txt")
-            most_relevant_exit_code=0
 
             case $exit_code in
             4)
