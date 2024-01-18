@@ -74,10 +74,10 @@ runs:
         # - 2, 3: found timeout/missed/unviable mutants
         # - 0: everything worked fine
         # - *: unknown exit code
+        most_relevant_exit_code=0
         for folder in "${folders[@]}"; do
           if [[ -s "$folder/exit_code.txt" ]]; then
             exit_code=$(<"${folder}/exit_code.txt")
-            most_relevant_exit_code=0
 
             case $exit_code in
             4)
@@ -195,11 +195,14 @@ runs:
 
         case $exit_code in
           0)
-              if [[ -f ./mutants-shards/unviable.txt ]]; then
+              if [[ ! -f ./mutants-shards/caught.txt && ! -f ./mutants-shards/missed.txt && ! -f ./mutants-shards/timeout.txt && ! -f ./mutants-shards/unviable.txt ]]; then
+                echo "No mutants found to test!"    
+              elif [[ -f ./mutants-shards/unviable.txt ]]; then
                 echo "Found unviable mutants!"
                 exit 5
+              else
+                echo "All new and updated functions are caught!"  
               fi
-            echo "All new and updated functions are caught!"
             ;;
           1)
             echo "Invalid command line arguments!"
@@ -222,3 +225,4 @@ runs:
             exit $exit_code
           ;;
         esac
+        exit 0

@@ -110,8 +110,8 @@ runs:
         mkdir -p mutants_by_packages
 
         # Check that the file exists before performing actions on it
-        if [ ! -s all_mutants.txt ]; then
-          echo "The file containing mutants (all_mutants.txt) is missing or empty!"
+        if [ ! -f all_mutants.txt ]; then
+          echo "The file containing mutants (all_mutants.txt) is missing!"
           exit 1
         fi
 
