@@ -195,11 +195,14 @@ runs:
 
         case $exit_code in
           0)
-              if [[ -f ./mutants-shards/unviable.txt ]]; then
+              if [[ ! -d ./mutants-shards ]]; then
+                echo "No mutants found to test!"    
+              elif [[ -f ./mutants-shards/unviable.txt ]]; then
                 echo "Found unviable mutants!"
                 exit 5
+              else
+                echo "All new and updated functions are caught!"  
               fi
-            echo "All new and updated functions are caught!"
             ;;
           1)
             echo "Invalid command line arguments!"
@@ -222,3 +225,4 @@ runs:
             exit $exit_code
           ;;
         esac
+        exit 0
