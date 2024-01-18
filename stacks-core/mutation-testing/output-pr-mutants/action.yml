@@ -195,7 +195,7 @@ runs:
 
         case $exit_code in
           0)
-              if [[ ! -d ./mutants-shards ]]; then
+              if [[ ! -f ./mutants-shards/caught.txt && ! -f ./mutants-shards/missed.txt && ! -f ./mutants-shards/timeout.txt && ! -f ./mutants-shards/unviable.txt ]]; then
                 echo "No mutants found to test!"    
               elif [[ -f ./mutants-shards/unviable.txt ]]; then
                 echo "Found unviable mutants!"
