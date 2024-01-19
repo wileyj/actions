@@ -33,7 +33,7 @@ runs:
       id: relative_diff
       shell: bash
       run: |
-        git diff origin/${{ github.base_ref }}.. > git.diff
+        git diff $(git merge-base origin/${{ github.base_ref }} HEAD)..HEAD > git.diff
 
     - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
       name: Install cargo-mutants
