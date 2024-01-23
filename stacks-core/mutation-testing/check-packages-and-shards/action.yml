@@ -32,7 +32,7 @@ runs:
       id: install_cargo_mutants
       name: Install cargo-mutants
       with:
-        tool: cargo-mutants@23.12.2 # v23.12.2
+        tool: cargo-mutants@24.1.1 # v24.1.1
 
     - name: Relative diff
       id: relative_diff
