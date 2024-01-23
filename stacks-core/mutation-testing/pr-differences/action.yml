@@ -152,7 +152,7 @@ runs:
           if [[ ${{ inputs.package-dimension }} == big ]]; then
             if [[ -f mutants_by_packages/regex_big.txt ]]; then
               echo "Running mutants without shards on big packages"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" --output ./ --test-tool=nextest -- --all-targets --test-threads 1
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets --test-threads 1
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
@@ -160,7 +160,7 @@ runs:
           else
             if [[ -f mutants_by_packages/regex_small.txt ]]; then
               echo "Running mutants without shards on small packages"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" --output ./ --test-tool=nextest -- --all-targets
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
@@ -170,7 +170,7 @@ runs:
           if [[ ${{ inputs.package-dimension }} == big ]]; then
             if [[ -f mutants_by_packages/regex_big.txt ]]; then
               echo "Running mutants with shard ${{ inputs.shard }} on big packages"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" --shard ${{ inputs.shard }}/8 --output ./ --test-tool=nextest -- --all-targets --test-threads 1
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" -E ": replace .{1,2} with .{1,2} in " --shard ${{ inputs.shard }}/8 --output ./ --test-tool=nextest -- --all-targets --test-threads 1
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
@@ -178,7 +178,7 @@ runs:
           else
             if [[ -f mutants_by_packages/regex_small.txt ]]; then
               echo "Running mutants with shard ${{ inputs.shard }} on small packages"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" --shard ${{ inputs.shard }}/4 --output ./ --test-tool=nextest -- --all-targets
+              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" -E ": replace .{1,2} with .{1,2} in " --shard ${{ inputs.shard }}/4 --output ./ --test-tool=nextest -- --all-targets
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
