@@ -6,11 +6,7 @@ Monorepo of [composite actions](https://docs.github.com/en/actions/creating-acti
 - [codecov](./cleanup) - Uploads codecov reports with a retry if it fails (optionally it can run grcov to generate a report to send)
 - [openapi](./cleanup) - Generates and uploads an [OpenAPI](https://spec.openapis.org/oas/latest.html) artifact
 - [docker](./docker) - Generic Docker setup workflows
-- [stacks-core/cache](./stacks-core/cache/) - cache actions for the [stacks-core](https://github.com/stacks-network/stacks-core) repo
-- [stacks-core/testenv](./stacks-core/testenv/) - Test environment actions for the [stacks-core](https://github.com/stacks-network/stacks-core) repo
-- [stacks-core/run-tests](./stacks-core/run-tests) - Run tests with [nextest](https://nexte.st) for the [stacks-core](https://github.com/stacks-network/stacks-core) repo
-- [stacks-core/mutation-testing](./stacks-core/mutation-testing/) - Run mutation testing for the [stacks-core](https://github.com/stacks-network/stacks-core) repo
-- [stacks-core/create-source-binary](./stacks-core/create-source-binary) - Create the release binaries for the [stacks-core](https://github.com/stacks-network/stacks-core) repo 
+- [stacks-core](./stacks-core/) - actions for the [stacks-core](https://github.com/stacks-network/stacks-core) repo
 
 ## Why does this exist?
 

@@ -9,6 +9,7 @@ Builds a binary for the given architecture and uploads it to artifacts.
 | Input            | Description                   | Required | Default                  |
 | ---------------- | ----------------------------- | -------- | ------------------------ |
 | `arch`           | Binary's build architecture   | `true`   | null                     |
+| `tag`            | The tag for the release       | `false`  | null                     |
 
 ## Usage
 
@@ -19,15 +20,11 @@ jobs:
   build:
     name: Job
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 10
-      matrix:
-        platform: ${{ fromJson(inputs.arch) }}
     steps:
       - name: Build Binary
         id: build_binary
-        timeout-minutes: 30
         uses: stacks-network/actions/stacks-core/create-source-binary@main
         with:
-          arch: ${{ matrix.platform }}
+          arch: linux-glibc-x64
+          tag: 2.4.0.1.0-rc2
 ```
