@@ -3,7 +3,7 @@ name: Create Binaries
 
 inputs:
   arch:
-    description: "Stringified JSON object of platform matrix"
+    description: "Architecture to build binary for"
     required: true
     type: string
   tag:
