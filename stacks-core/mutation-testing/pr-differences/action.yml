@@ -41,6 +41,12 @@ runs:
       with:
         tool: cargo-mutants@24.1.1 # v24.1.1
 
+    - uses: baptiste0928/cargo-install@1cd874a5478fdca35d868ccc74640c5aabbb8f1b # v3.0.0
+      name: Install cargo-nextest
+      with:
+        crate: cargo-nextest
+        locked: true
+
     - name: Update git diff
       id: update_git_diff
       shell: bash
