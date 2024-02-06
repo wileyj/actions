@@ -41,6 +41,12 @@ runs:
       with:
         tool: cargo-mutants@24.1.1 # v24.1.1
 
+    - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
+      name: Install cargo-nextest
+      id: install_cargo_nextest
+      with:
+        tool: nextest # Latest version
+
     - name: Update git diff
       id: update_git_diff
       shell: bash
