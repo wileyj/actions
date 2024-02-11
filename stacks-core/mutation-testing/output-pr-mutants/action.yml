@@ -17,6 +17,9 @@ inputs:
   shards_for_small_packages:
     description: "True if the small packages were running using matrix."
     required: true
+  stacks_signer:
+    description: "True if there were mutants on `stacks-signer` package."
+    required: true
 
 runs:
   using: "composite"
@@ -50,6 +53,11 @@ runs:
           else
             folders+=("mutants-shard-small--1")
           fi
+        fi
+
+        # Check and append the folder that should be uploaded to artifacts for the `stacks-signer` package
+        if ${{ inputs.stacks_signer }} == "true"; then
+          folders+=("mutants-shard-stacks-signer--1")
         fi
 
         files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")

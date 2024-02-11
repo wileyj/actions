@@ -6,17 +6,20 @@ branding:
 
 outputs:
   run_big_packages:
-    description: "True if there are packages on `stackslib` or `stacks-node`."
+    description: "True if there are mutants on `stackslib` or `stacks-node`."
     value: ${{ steps.check_packages_and_shards.outputs.run_big_packages }}
   big_packages_with_shards:
     description: "True if there are more than 16 mutants on `stackslib` and `stacks-node`."
     value: ${{ steps.check_packages_and_shards.outputs.big_packages_with_shards }}
   run_small_packages:
-    description: "True if there are packages on other packages than `stackslib` or `stacks-node`."
+    description: "True if there are mutants on other packages than `stackslib` or `stacks-node`."
     value: ${{ steps.check_packages_and_shards.outputs.run_small_packages }}
   small_packages_with_shards:
     description: "True if there are more than 79 (119 if `big_packages_with_shards` is true) mutants on small packages."
     value: ${{ steps.check_packages_and_shards.outputs.small_packages_with_shards }}
+  run_stacks_signer:
+    description: "True if there are mutants on `stacks-signer` package."
+    value: ${{ steps.check_packages_and_shards.outputs.run_stacks_signer }}
 
 runs:
   using: "composite"
@@ -122,6 +125,9 @@ runs:
             "testnet" | "stackslib")
               echo "$line" >> "mutants_by_packages/big_packages.txt"
               ;;
+            "stacks-signer")
+              echo "$line" >> "mutants_by_packages/stacks_signer.txt"
+              ;;
             *)
               echo "$line" >> "mutants_by_packages/small_packages.txt"
               ;;
@@ -145,6 +151,13 @@ runs:
         # If small_packages file exists, count how many mutants there are
         if [[ -s mutants_by_packages/small_packages.txt ]]; then
           number_of_small_mutants=$(cat mutants_by_packages/small_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
+        fi
+
+        # If stacks_signer file exists and is not empty, run mutants on stacks-signer package
+        if [[ -s mutants_by_packages/stacks_signer.txt ]]; then
+          echo "run_stacks_signer=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "run_stacks_signer=false" >> "$GITHUB_OUTPUT"
         fi
 
         # Set the mutants limit for when to run with shards on the small packages
