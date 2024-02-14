@@ -9,8 +9,8 @@ inputs:
     description: "The number of the shard to run (`-1` if ran without shards)"
     required: false
     default: -1
-  package-dimension:
-    description: "The dimension of the package. `big` for `stacks-node` and `stackslib`, `small` for others, `stacks-signer` for `stacks-signer`."
+  package:
+    description: "The package to run mutants on. `stackslib`, `stacks-node` and `stacks-signer` are independent, all others are run as `small`."
     required: true
 
 runs:
@@ -35,11 +35,10 @@ runs:
       run: |
         git diff $(git merge-base origin/${{ github.base_ref }} HEAD)..HEAD > git.diff
 
-    - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
-      name: Install cargo-mutants
+    - name: Install cargo-mutants
       id: install_cargo_mutants
-      with:
-        tool: cargo-mutants@24.1.1 # v24.1.1
+      run: |
+        cargo install --git https://github.com/ASuciuX/cargo-mutants --branch feat/variable-test-timeout cargo-mutants # v24.2.0 - with test timeout multiplier implementation
 
     - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
       name: Install cargo-nextest
@@ -122,19 +121,22 @@ runs:
           exit 1
         fi
 
-        # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
+        # Split the differences from git into packages: 'stackslib', 'stacks-node', 'stacks-signer' and small packages (all others) and put them into separate files
         while IFS= read -r line; do
           package=$(echo "$line" | cut -d'/' -f1)
 
           case $package in
-            "testnet" | "stackslib")
-              echo "$line" >> "mutants_by_packages/big_packages.txt"
+            "stackslib")
+              echo "$line" >> "mutants_by_packages/stackslib.txt"
+              ;;
+            "testnet")
+              echo "$line" >> "mutants_by_packages/stacks-node.txt"
               ;;
             "stacks-signer")
-              echo "$line" >> "mutants_by_packages/stacks_signer.txt"
+              echo "$line" >> "mutants_by_packages/stacks-signer.txt"
               ;;
             *)
-              echo "$line" >> "mutants_by_packages/small_packages.txt"
+              echo "$line" >> "mutants_by_packages/small-packages.txt"
               ;;
           esac
         done < all_mutants.txt
@@ -150,13 +152,20 @@ runs:
 
           regex_pattern="${regex_pattern%|}"
 
-          if [[ "$package" == "mutants_by_packages/big_packages.txt" ]]; then
-            echo "$regex_pattern" > mutants_by_packages/regex_big.txt
-          elif [[ "$package" == "mutants_by_packages/stacks_signer.txt" ]]; then
-            echo "$regex_pattern" > mutants_by_packages/regex_stacks_signer.txt
-          else
-            echo "$regex_pattern" > mutants_by_packages/regex_small.txt
-          fi
+          case $package in
+            "mutants_by_packages/stackslib.txt")
+              echo "$regex_pattern" > mutants_by_packages/regex-stackslib.txt
+              ;;
+            "mutants_by_packages/stacks-node.txt")
+              echo "$regex_pattern" > mutants_by_packages/regex-stacks-node.txt
+              ;;
+            "mutants_by_packages/stacks-signer.txt")
+              echo "$regex_pattern" > mutants_by_packages/regex-stacks-signer.txt
+              ;;
+            *)
+              echo "$regex_pattern" > mutants_by_packages/regex-small-packages.txt
+              ;;
+          esac
         done
 
         exit 0
@@ -170,44 +179,66 @@ runs:
 
         # Check which type of mutants to run: big, small, with or without shards, then capture the exit code
         if [[ ${{ inputs.shard }} == -1 ]]; then
-          if [[ ${{ inputs.package-dimension }} == big ]]; then
-            if [[ -f mutants_by_packages/regex_big.txt ]]; then
-              echo "Running mutants without shards on big packages"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets --test-threads 1
+          if [[ ${{ inputs.package }} == stackslib ]]; then
+            if [[ -f mutants_by_packages/regex-stackslib.txt ]]; then
+              echo "Running mutants without shards on stackslib package"
+              cargo mutants --timeout-multiplier 1.5 --no-shuffle -vV -F "$(<mutants_by_packages/regex-stackslib.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets --test-threads 1
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
             fi
-          elif [[ ${{ inputs.package-dimension }} == stacks-signer ]]; then
-            if [[ -f mutants_by_packages/regex_stacks_signer.txt ]]; then
-              echo "Found mutants on stacks-signer package, running them"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_stacks_signer.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets --test-threads 1
+          elif [[ ${{ inputs.package }} == stacks-node ]]; then
+            if [[ -f mutants_by_packages/regex-stacks-node.txt ]]; then
+              echo "Running mutants without shards on stacks-node package"
+              cargo mutants --timeout-multiplier 1.5 --no-shuffle -vV -F "$(<mutants_by_packages/regex-stacks-node.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets --test-threads 1
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
+          elif [[ ${{ inputs.package }} == stacks-signer ]]; then
+            if [[ -f mutants_by_packages/regex-stacks-signer.txt ]]; then
+              # Run a basic cargo build (for debugging)
+              cargo build
+
+              # Run a basic cargo nextest (for debugging)
+              cargo nextest run -p stacks-signer --test-threads 1
+
+              echo "Running mutants without shards on stacks-signer package"
+              cargo mutants --timeout-multiplier 1.5 --no-shuffle -vV -F "$(<mutants_by_packages/regex-stacks-signer.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets --test-threads 1
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
             fi
           else
-            if [[ -f mutants_by_packages/regex_small.txt ]]; then
+            if [[ -f mutants_by_packages/regex-small-packages.txt ]]; then
               echo "Running mutants without shards on small packages"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets
+              cargo mutants --timeout-multiplier 1.5 --no-shuffle -vV -F "$(<mutants_by_packages/regex-small-packages.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
             fi
           fi
         else
-          if [[ ${{ inputs.package-dimension }} == big ]]; then
-            if [[ -f mutants_by_packages/regex_big.txt ]]; then
-              echo "Running mutants with shard ${{ inputs.shard }} on big packages"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_big.txt)" -E ": replace .{1,2} with .{1,2} in " --shard ${{ inputs.shard }}/8 --output ./ --test-tool=nextest -- --all-targets --test-threads 1
+          if [[ ${{ inputs.package }} == stackslib ]]; then
+            if [[ -f mutants_by_packages/regex-stackslib.txt ]]; then
+              echo "Running mutants with shard ${{ inputs.shard }} on stackslib package"
+              cargo mutants --timeout-multiplier 1.5 --no-shuffle -vV -F "$(<mutants_by_packages/regex-stackslib.txt)" -E ": replace .{1,2} with .{1,2} in " --shard ${{ inputs.shard }}/8 --output ./ --test-tool=nextest -- --all-targets --test-threads 1
+              exit_code=$?
+            else
+              echo "File containing mutants doesn't exist!"
+            fi
+          elif [[ ${{ inputs.package }} == stacks-node ]]; then
+            if [[ -f mutants_by_packages/regex-stacks-node.txt ]]; then
+              echo "Running mutants with shard ${{ inputs.shard }} on stacks-node package"
+              cargo mutants --timeout-multiplier 1.5 --no-shuffle -vV -F "$(<mutants_by_packages/regex-stacks-node.txt)" -E ": replace .{1,2} with .{1,2} in " --shard ${{ inputs.shard }}/4 --output ./ --test-tool=nextest -- --all-targets --test-threads 1
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
             fi
           else
-            if [[ -f mutants_by_packages/regex_small.txt ]]; then
+            if [[ -f mutants_by_packages/regex-small-packages.txt ]]; then
               echo "Running mutants with shard ${{ inputs.shard }} on small packages"
-              cargo mutants --no-shuffle -vV -F "$(<mutants_by_packages/regex_small.txt)" -E ": replace .{1,2} with .{1,2} in " --shard ${{ inputs.shard }}/4 --output ./ --test-tool=nextest -- --all-targets
+              cargo mutants --timeout-multiplier 1.5 --no-shuffle -vV -F "$(<mutants_by_packages/regex-small-packages.txt)" -E ": replace .{1,2} with .{1,2} in " --shard ${{ inputs.shard }}/4 --output ./ --test-tool=nextest -- --all-targets
               exit_code=$?
             else
               echo "File containing mutants doesn't exist!"
@@ -216,9 +247,9 @@ runs:
         fi
 
         # Create the folder only containing the outcomes (.txt files) and make a file containing the exit code of the command
-        mkdir mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}
-        echo "$exit_code" > ./mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}/exit_code.txt
-        mv ./mutants.out/*.txt mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}/
+        mkdir mutants-shard-${{ inputs.package }}-${{ inputs.shard }}
+        echo "$exit_code" > ./mutants-shard-${{ inputs.package }}-${{ inputs.shard }}/exit_code.txt
+        mv ./mutants.out/*.txt mutants-shard-${{ inputs.package }}-${{ inputs.shard }}/
 
         # Enable immediate exit on error again
         set -e
@@ -227,5 +258,5 @@ runs:
       id: upload_artifact
       uses: actions/upload-artifact@1eb3cb2b3e0f29609092a73eb033bb759a334595 # v4.1.0
       with:
-        name: mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}
-        path: mutants-shard-${{ inputs.package-dimension }}-${{ inputs.shard }}
+        name: mutants-shard-${{ inputs.package }}-${{ inputs.shard }}
+        path: mutants-shard-${{ inputs.package }}-${{ inputs.shard }}
