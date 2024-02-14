@@ -179,6 +179,8 @@ runs:
           echo "run_stackslib=true" >> "$GITHUB_OUTPUT"
           if [[ $number_of_stackslib_mutants -gt 7 ]]; then
             echo "stackslib_with_shards=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "stackslib_with_shards=false" >> "$GITHUB_OUTPUT"
           fi
         fi
 
@@ -187,6 +189,8 @@ runs:
           echo "run_stacks_node=true" >> "$GITHUB_OUTPUT"
           if [[ $number_of_stacks_node_mutants -gt 19 ]]; then
             echo "stacks_node_with_shards=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "stacks_node_with_shards=false" >> "$GITHUB_OUTPUT"
           fi
         fi
 
@@ -195,6 +199,8 @@ runs:
           echo "run_small_packages=true" >> "$GITHUB_OUTPUT"
           if [[ $number_of_small_mutants -gt 79 ]]; then
             echo "small_packages_with_shards=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "small_packages_with_shards=false" >> "$GITHUB_OUTPUT"
           fi
         fi
 
