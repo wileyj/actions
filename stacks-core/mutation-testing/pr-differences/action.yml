@@ -37,6 +37,7 @@ runs:
 
     - name: Install cargo-mutants
       id: install_cargo_mutants
+      shell: bash
       run: |
         cargo install --git https://github.com/ASuciuX/cargo-mutants --branch feat/variable-test-timeout cargo-mutants # v24.2.0 - with test timeout multiplier implementation
 
