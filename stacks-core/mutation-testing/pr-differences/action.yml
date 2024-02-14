@@ -198,6 +198,9 @@ runs:
             fi
           elif [[ ${{ inputs.package }} == stacks-signer ]]; then
             if [[ -f mutants_by_packages/regex-stacks-signer.txt ]]; then
+              # Run an initial cargo nextest
+              cargo nextest run -p stacks-signer --test-threads 1
+
               echo "Running mutants without shards on stacks-signer package"
               cargo mutants --timeout-multiplier 1.5 --no-shuffle -vV -F "$(<mutants_by_packages/regex-stacks-signer.txt)" -E ": replace .{1,2} with .{1,2} in " --output ./ --test-tool=nextest -- --all-targets --test-threads 1
               exit_code=$?
