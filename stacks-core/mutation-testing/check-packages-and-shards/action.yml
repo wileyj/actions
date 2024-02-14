@@ -170,7 +170,7 @@ runs:
         fi
 
         # If stacks_signer file exists and is not empty, run mutants on stacks-signer package
-        if [[ -s mutants_by_packages/stacks_signer.txt ]]; then
+        if [[ -s mutants_by_packages/stacks-signer.txt ]]; then
           echo "run_stacks_signer=true" >> "$GITHUB_OUTPUT"
         fi
 
