@@ -31,5 +31,5 @@ runs:
         shasum="$(sha512sum release/*)"
         echo "Generated checksums:"
         echo "$shasum"
-        echo "$shasum > ${{ inputs.hashfile_name }})";
+        echo "$shasum" > "${{ inputs.hashfile_name }}";
         exit 0;
