@@ -5,18 +5,27 @@ branding:
   color: "gray-dark"
 
 outputs:
-  run_big_packages:
-    description: "True if there are packages on `stackslib` or `stacks-node`."
-    value: ${{ steps.check_packages_and_shards.outputs.run_big_packages }}
-  big_packages_with_shards:
-    description: "True if there are more than 16 mutants on `stackslib` and `stacks-node`."
-    value: ${{ steps.check_packages_and_shards.outputs.big_packages_with_shards }}
+  run_stackslib:
+    description: "True if there are mutants on `stackslib` package."
+    value: ${{ steps.check_packages_and_shards.outputs.run_stackslib }}
+  stackslib_with_shards:
+    description: "True if there are more than 7 mutants on `stackslib`."
+    value: ${{ steps.check_packages_and_shards.outputs.stackslib_with_shards }}
+  run_stacks_node:
+    description: "True if there are mutants on `stacks-node` package."
+    value: ${{ steps.check_packages_and_shards.outputs.run_stacks_node }}
+  stacks_node_with_shards:
+    description: "True if there are more than 19 mutants on `stacks-node`."
+    value: ${{ steps.check_packages_and_shards.outputs.stacks_node_with_shards }}
   run_small_packages:
-    description: "True if there are packages on other packages than `stackslib` or `stacks-node`."
+    description: "True if there are mutants on other packages than `stackslib`, `stacks-node` or `stacks-signer`."
     value: ${{ steps.check_packages_and_shards.outputs.run_small_packages }}
   small_packages_with_shards:
-    description: "True if there are more than 79 (119 if `big_packages_with_shards` is true) mutants on small packages."
+    description: "True if there are more than 79 mutants on small packages."
     value: ${{ steps.check_packages_and_shards.outputs.small_packages_with_shards }}
+  run_stacks_signer:
+    description: "True if there are mutants on `stacks-signer` package."
+    value: ${{ steps.check_packages_and_shards.outputs.run_stacks_signer }}
 
 runs:
   using: "composite"
@@ -28,11 +37,11 @@ runs:
       with:
         fetch-depth: 0
 
-    - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
+    - name: Install cargo-mutants
+      shell: bash
       id: install_cargo_mutants
-      name: Install cargo-mutants
-      with:
-        tool: cargo-mutants@24.1.1 # v24.1.1
+      run: |
+        cargo install --git https://github.com/ASuciuX/cargo-mutants --branch feat/variable-test-timeout cargo-mutants # v24.2.0 - with test timeout multiplier implementation
 
     - name: Relative diff
       id: relative_diff
@@ -115,15 +124,22 @@ runs:
           exit 1
         fi
 
-        # Split the differences from git into 2 parts, big packages ('stacks-node' and 'stackslib') and small packages (all others) and put them into separate files
+        # Split the differences from git into packages: 'stackslib', 'stacks-node', 'stacks-signer' and small packages (all others) and put them into separate files
         while IFS= read -r line; do
           package=$(echo "$line" | cut -d'/' -f1)
+
           case $package in
-            "testnet" | "stackslib")
-              echo "$line" >> "mutants_by_packages/big_packages.txt"
+            "stackslib")
+              echo "$line" >> "mutants_by_packages/stackslib.txt"
+              ;;
+            "testnet")
+              echo "$line" >> "mutants_by_packages/stacks-node.txt"
+              ;;
+            "stacks-signer")
+              echo "$line" >> "mutants_by_packages/stacks-signer.txt"
               ;;
             *)
-              echo "$line" >> "mutants_by_packages/small_packages.txt"
+              echo "$line" >> "mutants_by_packages/small-packages.txt"
               ;;
           esac
         done < all_mutants.txt
@@ -134,45 +150,69 @@ runs:
       id: check_packages_and_shards
       shell: bash
       run: |
-        number_of_big_mutants=0
+        number_of_stackslib_mutants=0
+        number_of_stacks_node_mutants=0
         number_of_small_mutants=0
 
-        # If big_packages file exists, count how many mutants there are
-        if [[ -s mutants_by_packages/big_packages.txt ]]; then
-          number_of_big_mutants=$(cat mutants_by_packages/big_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
+        # If stackslib.txt file exists, count how many mutants there are
+        if [[ -s mutants_by_packages/stackslib.txt ]]; then
+          number_of_stackslib_mutants=$(cat mutants_by_packages/stackslib.txt | awk 'END { print NR }' | tr -d '[:space:]')
         fi
 
-        # If small_packages file exists, count how many mutants there are
-        if [[ -s mutants_by_packages/small_packages.txt ]]; then
-          number_of_small_mutants=$(cat mutants_by_packages/small_packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
+        # If stacks-node.txt file exists, count how many mutants there are
+        if [[ -s mutants_by_packages/stacks-node.txt ]]; then
+          number_of_stacks_node_mutants=$(cat mutants_by_packages/stacks-node.txt | awk 'END { print NR }' | tr -d '[:space:]')
         fi
 
-        # Set the mutants limit for when to run with shards on the small packages
-        # If there are mutants from big packages, check whether to run with or without shards, otherwise there's nothing to run
-        if [[ $number_of_big_mutants -gt 15 ]]; then
-          small_packages_shard_limit=119
-          echo "run_big_packages=true" >> "$GITHUB_OUTPUT"
-          echo "big_packages_with_shards=true" >> "$GITHUB_OUTPUT"
+        # If small-packages.txt file exists, count how many mutants there are
+        if [[ -s mutants_by_packages/small-packages.txt ]]; then
+          number_of_small_mutants=$(cat mutants_by_packages/small-packages.txt | awk 'END { print NR }' | tr -d '[:space:]')
+        fi
+
+        # If stacks_signer file exists and is not empty, run mutants on stacks-signer package
+        if [[ -s mutants_by_packages/stacks-signer.txt ]]; then
+          echo "run_stacks_signer=true" >> "$GITHUB_OUTPUT"
         else
-          small_packages_shard_limit=79
-          if [[ $number_of_big_mutants -ne 0 ]]; then
-            echo "run_big_packages=true" >> "$GITHUB_OUTPUT"
-            echo "big_packages_with_shards=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "run_big_packages=false" >> "$GITHUB_OUTPUT"
-          fi
+          echo "run_stacks_signer=false" >> "$GITHUB_OUTPUT"
         fi
 
-        # If there are mutants from small packages, check whether to run with or without shards, otherwise there's nothing to run
+        # If there are mutants from stackslib package, check whether to run or not and with or without shards
+        if [[ $number_of_stackslib_mutants -ne 0 ]]; then
+          echo "run_stackslib=true" >> "$GITHUB_OUTPUT"
+          if [[ $number_of_stackslib_mutants -gt 7 ]]; then
+            echo "stackslib_with_shards=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "stackslib_with_shards=false" >> "$GITHUB_OUTPUT"
+          fi
+        else
+          echo "run_stackslib=false" >> "$GITHUB_OUTPUT"
+          echo "stackslib_with_shards=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        # If there are mutants from stacks-node package, check whether to run or not and with or without shards
+        if [[ $number_of_stacks_node_mutants -ne 0 ]]; then
+          echo "run_stacks_node=true" >> "$GITHUB_OUTPUT"
+          if [[ $number_of_stacks_node_mutants -gt 19 ]]; then
+            echo "stacks_node_with_shards=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "stacks_node_with_shards=false" >> "$GITHUB_OUTPUT"
+          fi
+        else
+          echo "run_stacks_node=false" >> "$GITHUB_OUTPUT"
+          echo "stacks_node_with_shards=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        # If there are mutants from small packages, check whether to run or not and with or without shards
         if [[ $number_of_small_mutants -ne 0 ]]; then
           echo "run_small_packages=true" >> "$GITHUB_OUTPUT"
-          if [[ $number_of_small_mutants -gt $small_packages_shard_limit ]]; then
+          if [[ $number_of_small_mutants -gt 79 ]]; then
             echo "small_packages_with_shards=true" >> "$GITHUB_OUTPUT"
           else
             echo "small_packages_with_shards=false" >> "$GITHUB_OUTPUT"
           fi
         else
           echo "run_small_packages=false" >> "$GITHUB_OUTPUT"
+          echo "small_packages_with_shards=false" >> "$GITHUB_OUTPUT"
         fi
 
         exit 0

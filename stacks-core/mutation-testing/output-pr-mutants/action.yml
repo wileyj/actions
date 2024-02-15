@@ -5,17 +5,26 @@ branding:
   color: "gray-dark"
 
 inputs:
-  big_packages:
-    description: "True if there were big packages running."
+  stackslib_package:
+    description: "True if there were mutants running on stackslib package."
     required: true
-  shards_for_big_packages:
-    description: "True if the big packages were running using matrix."
+  shards_for_stackslib_package:
+    description: "True if mutants on stackslib were running using matrix."
+    required: true
+  stacks_node_package:
+    description: "True if there were mutants running on stacks-node package."
+    required: true
+  shards_for_stacks_node_package:
+    description: "True if mutants on stacks-node were running using matrix."
     required: true
   small_packages:
-    description: "True if there were small packages running."
+    description: "True if there were mutants running on small packages."
     required: true
   shards_for_small_packages:
-    description: "True if the small packages were running using matrix."
+    description: "True if mutants on small packages were running using matrix."
+    required: true
+  stacks_signer:
+    description: "True if there were mutants running on stacks-signer package."
     required: true
 
 runs:
@@ -30,14 +39,25 @@ runs:
       id: append_mutant_outcomes
       shell: bash
       run: |
-        # Check and append the folders that should be uploaded to artifacts for the big packages
-        if ${{ inputs.big_packages }} == "true"; then
-          if ${{ inputs.shards_for_big_packages }} == "true"; then
+        # Check and append the folders that should be uploaded to artifacts for the stackslib package
+        if ${{ inputs.stackslib_package }} == "true"; then
+          if ${{ inputs.shards_for_stackslib_package }} == "true"; then
             for i in {0..7}; do
-              folders+=("mutants-shard-big-$i")
+              folders+=("mutants-shard-stackslib-$i")
             done
           else
-            folders+=("mutants-shard-big--1")
+            folders+=("mutants-shard-stackslib--1")
+          fi
+        fi
+
+        # Check and append the folders that should be uploaded to artifacts for the stacks-node package
+        if ${{ inputs.stacks_node_package }} == "true"; then
+          if ${{ inputs.shards_for_stacks_node_package }} == "true"; then
+            for i in {0..3}; do
+              folders+=("mutants-shard-stacks-node-$i")
+            done
+          else
+            folders+=("mutants-shard-stacks-node--1")
           fi
         fi
 
@@ -50,6 +70,11 @@ runs:
           else
             folders+=("mutants-shard-small--1")
           fi
+        fi
+
+        # Check and append the folder that should be uploaded to artifacts for the stacks-signer package
+        if ${{ inputs.stacks_signer }} == "true"; then
+          folders+=("mutants-shard-stacks-signer--1")
         fi
 
         files=("missed.txt" "caught.txt" "timeout.txt" "unviable.txt")

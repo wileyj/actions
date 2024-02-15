@@ -1,16 +1,19 @@
 # Check Packages and Shards action
 
-Checks whether to run mutants on big ([stackslib](https://github.com/stacks-network/stacks-core/tree/develop/stackslib)/[stacks-node](https://github.com/stacks-network/stacks-core/tree/develop/testnet/stacks-node)) or small packages (all others), and whether to run them using strategy matrix or not.
+Checks whether to run mutants on [stackslib](https://github.com/stacks-network/stacks-core/tree/develop/stackslib), [stacks-node](https://github.com/stacks-network/stacks-core/tree/develop/testnet/stacks-node), [stacks-signer](https://github.com/stacks-network/stacks-core/tree/develop/stacks-signer), or small packages (all others), and whether to run them using strategy matrix or not.
 
 ## Documentation
 
 ### Outputs
 | Output | Description |
 | ------------------------------- | ----------------------------------------------------- |
-| `run_big_packages` | True if there are mutants on `stackslib` or `stacks-node` packages, false otherwise.
-| `big_packages_with_shards` | True if there are more than 15 mutants on big packages.
+| `run_stackslib` | True if there are mutants on `stackslib` package, false otherwise.
+| `stackslib_with_shards` | True if there are more than 7 mutants on `stackslib` package.
+| `run_stacks_node` | True if there are mutants on `stacks-node` package, false otherwise.
+| `stacks_node_with_shards` | True if there are more than 19 mutants on `stacks-node` package.
 | `run_small_packages` | True if there are mutants on small packages, false otherwise.
-| `small_packages_with_shards` | True if there are more than 79 (119 if `big_packages_with_shards` is true) mutants on small packages.
+| `small_packages_with_shards` | True if there are more than 79 mutants on small packages.
+| `run_stacks_signer` | True if there are mutants on `stacks-signer` package.
 
 ## Usage
 
