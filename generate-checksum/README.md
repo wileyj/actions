@@ -20,7 +20,7 @@ jobs:
     name: Job
     runs-on: ubuntu-latest
     steps:
-      - name: OpenAPI
-        id: openapi
+      - name: Generate Checksum
+        id: generate_checksum
         uses: stacks-network/actions/generate-checksum@main
 ```
