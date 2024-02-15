@@ -23,10 +23,13 @@ runs:
       id: generate_checksum
       shell: bash
       run: |
-        if command -v sha512sum > /dev/null 2>&1; then
-          echo "$(sha512sum release/* > ${{ inputs.hashfile_name }})";
-          exit 0;
-        else
+        if ! command -v sha512sum > /dev/null 2>&1; then
           echo "sha512sum command doesn't exist!";
           exit 1;
         fi
+
+        shasum="$(sha512sum release/*)"
+        echo "Generated checksums:"
+        echo "$shasum"
+        echo "$shasum > ${{ inputs.hashfile_name }})";
+        exit 0;
