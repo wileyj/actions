@@ -172,6 +172,8 @@ runs:
         # If stacks_signer file exists and is not empty, run mutants on stacks-signer package
         if [[ -s mutants_by_packages/stacks-signer.txt ]]; then
           echo "run_stacks_signer=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "run_stacks_signer=false" >> "$GITHUB_OUTPUT"
         fi
 
         # If there are mutants from stackslib package, check whether to run or not and with or without shards
@@ -182,6 +184,9 @@ runs:
           else
             echo "stackslib_with_shards=false" >> "$GITHUB_OUTPUT"
           fi
+        else
+          echo "run_stackslib=false" >> "$GITHUB_OUTPUT"
+          echo "stackslib_with_shards=false" >> "$GITHUB_OUTPUT"
         fi
 
         # If there are mutants from stacks-node package, check whether to run or not and with or without shards
@@ -192,6 +197,9 @@ runs:
           else
             echo "stacks_node_with_shards=false" >> "$GITHUB_OUTPUT"
           fi
+        else
+          echo "run_stacks_node=false" >> "$GITHUB_OUTPUT"
+          echo "stacks_node_with_shards=false" >> "$GITHUB_OUTPUT"
         fi
 
         # If there are mutants from small packages, check whether to run or not and with or without shards
@@ -202,6 +210,9 @@ runs:
           else
             echo "small_packages_with_shards=false" >> "$GITHUB_OUTPUT"
           fi
+        else
+          echo "run_small_packages=false" >> "$GITHUB_OUTPUT"
+          echo "small_packages_with_shards=false" >> "$GITHUB_OUTPUT"
         fi
 
         exit 0
