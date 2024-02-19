@@ -22,19 +22,9 @@ runs:
 
         # Function to print output to GitHub Step Summary
         print_to_step_summary() {
-          echo "## Jobs Status" >> "$GITHUB_STEP_SUMMARY"
-
+          echo "### Jobs Status" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-
           echo "Some jobs that are required to succeed have failed." >> "$GITHUB_STEP_SUMMARY"
-
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-
-          echo "### Failed Jobs:" >> "$GITHUB_STEP_SUMMARY"
-
-          for job in "${failing_jobs[@]}"; do
-            echo "- **$job**" >> "$GITHUB_STEP_SUMMARY"
-          done
         }
 
         # Check that 'jq' command exists
