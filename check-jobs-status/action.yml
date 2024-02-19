@@ -19,7 +19,6 @@ runs:
       run: |
         # Check the jobs status and print the failures
         failing_jobs=()
-        successful_jobs=()
 
         # Function to print output to GitHub Step Summary
         print_to_step_summary() {
@@ -36,14 +35,6 @@ runs:
           for job in "${failing_jobs[@]}"; do
             echo "- **$job**" >> "$GITHUB_STEP_SUMMARY"
           done
-
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-
-          echo "### Successful Jobs:" >> "$GITHUB_STEP_SUMMARY"
-
-          for job in "${successful_jobs[@]}"; do
-            echo "- **$job**" >> "$GITHUB_STEP_SUMMARY"
-          done
         }
 
         # Check that 'jq' command exists
@@ -57,8 +48,6 @@ runs:
           result=$(echo '${{ inputs.jobs }}' | jq -r ".[\"$job_name\"].result")
           if [[ "$result" == "failure" ]]; then
             failing_jobs+=("$job_name")
-          else
-            successful_jobs+=("$job_name")
           fi
         done
 
