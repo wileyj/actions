@@ -46,7 +46,7 @@ runs:
         # Search for failures and append them to a list
         for job_name in $(echo '${{ inputs.jobs }}' | jq -r 'keys[]'); do
           result=$(echo '${{ inputs.jobs }}' | jq -r ".[\"$job_name\"].result")
-          if [[ "$result" == "failure" ]]; then
+          if [[ "$result" != "success" ]]; then
             failing_jobs+=("$job_name")
           fi
         done
