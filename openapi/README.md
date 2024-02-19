@@ -6,10 +6,10 @@ Generates an HTML artifact of a provided openapi.yml file using `redoc`, checks 
 
 ### Inputs
 
-| Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `input` | OpenAPI input file to use | true | null |
-| `output` | OpenAPI artifact filename | false | `./open-api-docs.html` |
+| Input    | Description               | Required | Default                |
+| -------- | ------------------------- | -------- | ---------------------- |
+| `input`  | OpenAPI input file to use | true     | null                   |
+| `output` | OpenAPI artifact filename | false    | `./open-api-docs.html` |
 
 ## Usage
 

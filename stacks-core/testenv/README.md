@@ -7,10 +7,10 @@
 ## Documentation
 
 ### Inputs
-| Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `genesis` | Restore genesis test cache | `true` | false` |
 
+| Input     | Description                | Required | Default |
+| --------- | -------------------------- | -------- | ------- |
+| `genesis` | Restore genesis test cache | `true`   | false`  |
 
 ## Usage
 

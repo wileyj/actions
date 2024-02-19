@@ -1,0 +1,42 @@
+## Github workflow to generate a sha512 checksum for the build archive
+name: Generate Checksum
+
+inputs:
+  hashfile_name:
+    description: "The name of the generated checksum file"
+    required: false
+    default: "CHECKSUMS.txt"
+
+runs:
+  using: "composite"
+  steps:
+    ## Downloads the artifacts built in `create-source-binary.yml`
+    - name: Download Artifacts
+      id: download_artifacts
+      uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      with:
+        name: artifact
+        path: release
+
+    ## Generate a checksums file to be added to the release page
+    - name: Generate Checksums
+      id: generate_checksum
+      shell: bash
+      run: |
+        # If sha512sum command doesn't exist on the host, exit
+        if ! command -v sha512sum > /dev/null 2>&1; then
+          echo "sha512sum command doesn't exist!";
+          exit 1;
+        fi
+
+        # Generate the hashes and exit if the variable is empty
+        shasum="$(sha512sum release/*)"
+        if [[ -z "$shasum" ]]; then
+          echo "Checksum could not be generated!";
+          exit 1;
+        fi
+
+        echo "Generated checksums:"
+        echo "$shasum"
+        echo "$shasum" > "${{ inputs.hashfile_name }}";
+        exit 0;

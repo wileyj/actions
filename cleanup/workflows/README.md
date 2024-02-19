@@ -1,19 +1,20 @@
 # Github Actions Workflow Cleanup action
 
 Deletes the following Github Action workflow artifacts after a specified time period (in days):
+
 - caches
 - workflows
 - failed workflows
 
-
 ## Documentation
 
 ### Inputs
-| Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `cache-ttl` | Number of days to retain caches | false | `7` |
-| `workflow-ttl` | Number of days to retain successful workflows | false | `30` |
-| `failed-workflow-ttl` | Number of days to retain successful workflows | false | `15` |
+
+| Input                 | Description                                   | Required | Default |
+| --------------------- | --------------------------------------------- | -------- | ------- |
+| `cache-ttl`           | Number of days to retain caches               | false    | `7`     |
+| `workflow-ttl`        | Number of days to retain successful workflows | false    | `30`    |
+| `failed-workflow-ttl` | Number of days to retain successful workflows | false    | `15`    |
 
 ## Usage
 
@@ -37,12 +38,13 @@ jobs:
     steps:
       - name: Cleanup Workflows
         id: workflow_cleanup
-        uses: wileyj/actions/cleanup/workflows@main 
+        uses: wileyj/actions/cleanup/workflows@main
         with:
           token: ${{ secrets.GH_TOKEN }}
 ```
 
 ### schedule
+
 When running via a schedule, the inputs need to be provided via env var
 
 ```yaml
@@ -63,7 +65,7 @@ jobs:
     steps:
       - name: Cleanup Workflows
         id: workflow_cleanup
-        uses: wileyj/actions/cleanup/workflows@main  
+        uses: wileyj/actions/cleanup/workflows@main
         with:
           token: ${{ secrets.GH_TOKEN }}
           cache-ttl: ${{ inputs.cache-ttl || env.CACHE_TTL}}

@@ -1,6 +1,6 @@
 # Contributing to the Stacks Network github actions monorepo
 
-_Modified version of the [stacks-core CONTRIBUTING.md](https://github.com/wileyj/stacks-core/blob/master/CONTRIBUTING.md)_
+_Modified version of the [stacks-core CONTRIBUTING.md](https://github.com/stacks-network/stacks-core/blob/master/CONTRIBUTING.md)_
 
 The governing idea behind this monorepo of [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) can be summarized in a single sentence:
 

@@ -3,8 +3,12 @@ name: Create Binaries
 
 inputs:
   arch:
-    description: "Stringified JSON object of platform matrix"
+    description: "Architecture to build binary for"
     required: true
+    type: string
+  tag:
+    description: "Release Tag"
+    required: false
     type: string
 
 runs:
@@ -29,11 +33,11 @@ runs:
 
     ## Compress the binary artifact
     - name: Compress artifact
-      shell: bash
       id: compress_artifact
+      shell: bash
       run: zip --junk-paths ${{ inputs.arch }} ./release/${{ inputs.arch }}/*
 
-    ## Upload the binary artifact to the github action (used in `github-release.yml` to create a release)
+    ## Upload the binary artifact to the github action
     - name: Upload artifact
       id: upload_artifact
       uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3

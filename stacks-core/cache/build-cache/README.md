@@ -6,9 +6,9 @@ Builds the [nextest](https://nexte.st) archive cache for stacks-core tests
 
 ### Inputs
 
-| Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `genesis` | Builds the [nextest](https://nexte.st) archive for genesis tests | false | `false` |
+| Input     | Description                                                      | Required | Default |
+| --------- | ---------------------------------------------------------------- | -------- | ------- |
+| `genesis` | Builds the [nextest](https://nexte.st) archive for genesis tests | false    | `false` |
 
 ## Usage
 
@@ -26,6 +26,7 @@ jobs:
 ```
 
 ### Genesis Tests
+
 ```yaml
 name: Action
 on: push
