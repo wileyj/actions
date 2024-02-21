@@ -18,12 +18,22 @@ inputs:
 runs:
   using: "composite"
   steps:
+    ## Set the archive name based on the target cpu
+    - name: Set Archive Name
+      id: set_archive_name
+      shell: bash
+      run: |
+        echo "archive-name=${{ inputs.arch }}.zip >> "$GITHUB_ENV"
+        if [[ ${{ matrix.cpu }} == *x86* ]]; then
+          echo "archive_name=${{ inputs.arch }}_${{ inputs.cpu }}.zip >> "$GITHUB_ENV"
+        fi
+
     ## Setup Docker for the builds
     - name: Docker setup
       uses: stacks-network/actions/docker@main
 
     ## Build the binaries using defined dockerfiles
-    - name: Build Binary (${{ inputs.arch }}_${{ inputs.cpu }})
+    - name: Build Binary (${{ env.archive_name }})
       id: build_binaries
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # 5.0.0
       with:
@@ -47,4 +57,4 @@ runs:
       id: upload_artifact
       uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
       with:
-        path: ${{ inputs.arch }}.zip
+        path: ${{ env.archive_name }}
