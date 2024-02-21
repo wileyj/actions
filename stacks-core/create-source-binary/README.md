@@ -10,6 +10,7 @@ Builds a binary for the given architecture and uploads it to artifacts.
 | ---------------- | ----------------------------- | -------- | ------------------------ |
 | `arch`           | Binary's build architecture   | `true`   | null                     |
 | `tag`            | The tag for the release       | `false`  | null                     |
+| `cpu`            | The target CPU                | `true`   | null                     |
 
 ## Usage
 
@@ -27,4 +28,5 @@ jobs:
         with:
           arch: linux-glibc-x64
           tag: 2.4.0.1.0-rc2
+          cpu: native
 ```

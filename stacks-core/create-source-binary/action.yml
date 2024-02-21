@@ -10,6 +10,10 @@ inputs:
     description: "Release Tag"
     required: false
     type: string
+  cpu:
+    description: "The target CPU"
+    required: true
+    type: string
 
 runs:
   using: "composite"
@@ -19,7 +23,7 @@ runs:
       uses: stacks-network/actions/docker@main
 
     ## Build the binaries using defined dockerfiles
-    - name: Build Binary (${{ inputs.arch }})
+    - name: Build Binary (${{ inputs.arch }}_${{ inputs.cpu }})
       id: build_binaries
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # 5.0.0
       with:
@@ -28,6 +32,7 @@ runs:
         build-args: |
           STACKS_NODE_VERSION=${{ inputs.tag || env.GITHUB_SHA_SHORT }}
           OS_ARCH=${{ inputs.arch }}
+          TARGET_CPU=${{ inputs.cpu }}
           GIT_BRANCH=${{ env.GITHUB_REF_SHORT }}
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
 
