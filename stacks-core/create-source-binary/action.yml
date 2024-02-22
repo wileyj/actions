@@ -23,9 +23,9 @@ runs:
       id: set_archive_name
       shell: bash
       run: |
-        echo "archive-name=${{ inputs.arch }}.zip >> "$GITHUB_ENV"
+        echo "archive-name=${{ inputs.arch }}.zip" >> "$GITHUB_ENV"
         if [[ ${{ matrix.cpu }} == *x86* ]]; then
-          echo "archive_name=${{ inputs.arch }}_${{ inputs.cpu }}.zip >> "$GITHUB_ENV"
+          echo "archive_name=${{ inputs.arch }}_${{ inputs.cpu }}.zip" >> "$GITHUB_ENV"
         fi
 
     - name: Test Prints
