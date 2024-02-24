@@ -5,29 +5,61 @@ inputs:
   arch:
     description: "Architecture to build binary for"
     required: true
-    type: string
+  cpu:
+    description: "CPU to build binary for"
+    required: true
   tag:
     description: "Release Tag"
-    required: false
-    type: string
+    required: true
 
 runs:
   using: "composite"
   steps:
     ## Setup Docker for the builds
     - name: Docker setup
+      id: docker_setup
       uses: wileyj/actions/docker@main
 
+    ## Set env vars based on the type of arch build
+    - name: Set local env vars
+      id: set_env
+      shell: bash
+      run: |
+        case ${{ inputs.cpu }} in
+          x86-64)
+            TARGET_CPU="${{ inputs.cpu }}"
+            DOCKERFILE_CPU="x64"
+            ARCHIVE_NAME="x64"
+            ;;
+          x86-64-v3)
+            TARGET_CPU="${{ inputs.cpu }}"
+            DOCKERFILE_CPU="x64"
+            ARCHIVE_NAME="x64-v3"
+            ;;
+          *)
+            TARGET_CPU=""
+            DOCKERFILE_CPU="${{ inputs.cpu }}"
+            ARCHIVE_NAME="${{ inputs.cpu }}"
+            ;;
+        esac
+        echo "DOCKERFILE=Dockerfile.${{ inputs.arch }}-${DOCKERFILE_CPU}" >> "$GITHUB_ENV"
+        echo "ZIPFILE=${{ inputs.arch }}_${ARCHIVE_NAME}" >> "$GITHUB_ENV"
+        echo "TARGET_CPU=${TARGET_CPU}" >> "$GITHUB_ENV"
+        echo "Setting DOCKERFILE to: ${{ env.DOCKERFILE }}"
+        echo "Setting ZIPFILE to: ${{ env.ZIPFILE }}"
+        echo "Setting TARGET_CPU to: ${{ env.TARGET_CPU }}"
+
     ## Build the binaries using defined dockerfiles
-    - name: Build Binary (${{ inputs.arch }})
+    - name: Build Binary (${{ inputs.arch }}_${{ inputs.cpu }})
       id: build_binaries
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # 5.0.0
       with:
-        file: build-scripts/Dockerfile.${{ inputs.arch }}
-        outputs: type=local,dest=./release/${{ inputs.arch }}
+        file: build-scripts/${{ env.DOCKERFILE }}
+        outputs: type=local,dest=./release/${{ matrix.arch }}
         build-args: |
           STACKS_NODE_VERSION=${{ inputs.tag || env.GITHUB_SHA_SHORT }}
           OS_ARCH=${{ inputs.arch }}
+          TARGET_CPU=${{ env.TARGET_CPU }}
           GIT_BRANCH=${{ env.GITHUB_REF_SHORT }}
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
 
@@ -35,11 +67,12 @@ runs:
     - name: Compress artifact
       id: compress_artifact
       shell: bash
-      run: zip --junk-paths ${{ inputs.arch }} ./release/${{ inputs.arch }}/*
+      run: |
+        zip --junk-paths ${{ env.ZIPFILE }} ./release/${{ matrix.arch }}/*
 
     ## Upload the binary artifact to the github action
     - name: Upload artifact
       id: upload_artifact
       uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
       with:
-        path: ${{ inputs.arch }}.zip
+        path: ${{ env.ZIPFILE }}.zip
