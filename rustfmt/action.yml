@@ -36,10 +36,10 @@ runs:
             cat <<MARKDOWN_INTRO >> $GITHUB_STEP_SUMMARY
         # Rustfmt Results
 
-        \`cargo fmt\` reported formatting errors in the following locations.
+        \`cargo ${{ inputs.alias }}\` reported formatting errors in the following locations.
         You can fix them by executing the following command and committing the changes.
         \`\`\`bash
-        cargo fmt --all
+        cargo ${{ inputs.alias }} --all
         \`\`\`
         MARKDOWN_INTRO
 
