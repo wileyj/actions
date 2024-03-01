@@ -23,13 +23,15 @@ runs:
       shell: bash
       run: |
         # Split alias command's options
+        alias=$(grep -e "${{ inputs.alias }}.*=" ./.cargo/config| tr -d '"' | awk '/^${{ inputs.alias }}[[:space:]]*=/ {sub(/^${{ inputs.alias }}[[:space:]]*=[[:space:]]*/, ""); print; exit}'
+
         before_empty_dashes=""
         after_empty_dashes=""
         reached_empty_dashes=false
 
         IFS=' '
 
-        read -ra args <<< "${{ inputs.alias }}"
+        read -ra args <<< "$alias"
 
         if [[ "${args[0]}" != "fmt" ]]; then
           echo "The alias command is not 'fmt'!";
