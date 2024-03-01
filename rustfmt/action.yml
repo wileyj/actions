@@ -33,9 +33,8 @@ runs:
 
         read -ra args <<< "$alias"
 
-        if [[ "${args[0]}" != "fmt" ]]; then
-          echo "The alias command is not 'fmt'!";
-          exit 1;
+        if [[ "${args[0]}" != "fmt" && "${{ inputs.alias }}" != "fmt" ]]; then
+          echo "The provided alias is invalid!";
         fi
 
         for arg in "${args[@]}"; do
@@ -53,7 +52,7 @@ runs:
 
         # Run cargo and store the original output
         CARGO_STATUS=0
-        CARGO_OUTPUT=$(cargo $before_empty_dashes --all --manifest-path=${{ inputs.manifest-path }} -- $after_empty_dashes --color=always --check 2>/dev/null) || CARGO_STATUS=$?
+        CARGO_OUTPUT=$(cargo ${before_empty_dashes:-fmt} --all --manifest-path=${{ inputs.manifest-path }} -- $after_empty_dashes --color=always --check 2>/dev/null) || CARGO_STATUS=$?
 
         if [ ${CARGO_STATUS} -eq 0 ]; then
             cat <<MARKDOWN_INTRO >> $GITHUB_STEP_SUMMARY
