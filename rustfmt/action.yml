@@ -23,7 +23,7 @@ runs:
       shell: bash
       run: |
         # Split alias command's options
-        alias="$(grep -e "${{ inputs.alias }}.*=" ./.cargo/config| tr -d '"' | awk '/^${{ inputs.alias }}[[:space:]]*=/ {sub(/^${{ inputs.alias }}[[:space:]]*=[[:space:]]*/, ""); print; exit}')"
+        alias=$(grep -e "${{ inputs.alias }}.*=" ./.cargo/config| tr -d '"' | awk '/^${{ inputs.alias }}[[:space:]]*=/ {sub(/^${{ inputs.alias }}[[:space:]]*=[[:space:]]*/, ""); print; exit}')
 
         before_empty_dashes=""
         after_empty_dashes=""
