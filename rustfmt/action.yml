@@ -22,9 +22,36 @@ runs:
     - name: Rustfmt Job Summary
       shell: bash
       run: |
+        # Split alias command's options
+        before_empty_dashes=""
+        after_empty_dashes=""
+        reached_empty_dashes=false
+
+        IFS=' '
+
+        read -ra args <<< "${{ inputs.alias }}"
+
+        if [[ "${args[0]}" != "fmt" ]]; then
+          echo "The alias command is not 'fmt'!";
+          exit 1;
+        fi
+
+        for arg in "${args[@]}"; do
+          if [[ "$arg" == "--" ]]; then
+            reached_empty_dashes=true;
+            continue;
+          fi
+
+          if $reached_empty_dashes; then
+            after_empty_dashes="$after_empty_dashes $arg";
+          else
+            before_empty_dashes="$before_empty_dashes $arg";
+          fi
+        done
+
         # Run cargo and store the original output
         CARGO_STATUS=0
-        CARGO_OUTPUT=$(cargo ${{ inputs.alias }} --all --manifest-path=${{ inputs.manifest-path }} -- --color=always --check 2>/dev/null) || CARGO_STATUS=$?
+        CARGO_OUTPUT=$(cargo $before_empty_dashes --all --manifest-path=${{ inputs.manifest-path }} -- $after_empty_dashes --color=always --check 2>/dev/null) || CARGO_STATUS=$?
 
         if [ ${CARGO_STATUS} -eq 0 ]; then
             cat <<MARKDOWN_INTRO >> $GITHUB_STEP_SUMMARY
