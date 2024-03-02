@@ -8,6 +8,7 @@ Monorepo of [composite actions](https://docs.github.com/en/actions/creating-acti
 - [docker](./docker) - Generic Docker setup workflows
 - [generate-checksum](./generate-checksum/) - Generate a 512-bit `sha` hash of the uploaded artifacts
 - [check-jobs-status](./check-jobs-status/) - Check the result of every job parsed as input. Only succeeds if none of the given jobs have failed.
+- [rustfmt](./rustfmt) - Run rustfmt for the given codebase
 - [stacks-core](./stacks-core/) - actions for the [stacks-core](https://github.com/stacks-network/stacks-core) repo
 
 ## Why does this exist?
