@@ -19,11 +19,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    ## Checkout the code
-    - name: Checkout the latest code
-      id: git_checkout
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-
     ## Setup Docker for the builds
     - name: Docker setup
       id: docker_setup
@@ -83,7 +78,7 @@ runs:
       id: build_binaries
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # 5.0.0
       with:
-        file: ./build-scripts/${{ env.DOCKERFILE }}
+        file: ${{ github.action_path }}/build-scripts/${{ env.DOCKERFILE }}
         outputs: type=local,dest=./release/${{ inputs.arch }}
         build-args: |
           STACKS_NODE_VERSION=${{ inputs.tag || env.GITHUB_SHA_SHORT }}
