@@ -6,10 +6,11 @@ Builds a binary for the given architecture and uploads it to artifacts.
 
 ### Inputs
 
-| Input            | Description                   | Required | Default                  |
-| ---------------- | ----------------------------- | -------- | ------------------------ |
-| `arch`           | Binary's build architecture   | `true`   | null                     |
-| `tag`            | The tag for the release       | `false`  | null                     |
+| Input  | Description                 | Required | Default |
+| ------ | --------------------------- | -------- | ------- |
+| `arch` | Binary's build architecture | `true`   | null    |
+| `tag`  | The tag for the release     | `true`   | null    |
+| `cpu`  | The target CPU              | `true`   | null    |
 
 ## Usage
 
@@ -25,6 +26,7 @@ jobs:
         id: build_binary
         uses: stacks-network/actions/stacks-core/create-source-binary@main
         with:
-          arch: linux-glibc-x64
+          arch: linux-glibc
+          cpu: x86-64
           tag: 2.4.0.1.0-rc2
 ```

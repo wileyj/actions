@@ -1,15 +1,17 @@
-FROM rust:bullseye as build
+FROM rust:bookworm as build
 
 ARG STACKS_NODE_VERSION="No Version Info"
 ARG GIT_BRANCH='No Branch Info'
 ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
 ARG TARGET=x86_64-pc-windows-gnu
+ARG TARGET_CPU
+ENV RUSTFLAGS="${TARGET_CPU:+${RUSTFLAGS} -Ctarget-cpu=${TARGET_CPU}}"
 WORKDIR /src
 
 COPY . .
 
-RUN apt-get update && apt-get install -y git gcc-mingw-w64-x86-64
+RUN apt-get update && apt-get install -y git gcc-mingw-w64-x86-64 libclang-dev
 
 # Run all the build steps in ramdisk in an attempt to speed things up
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
