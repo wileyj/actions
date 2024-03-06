@@ -75,6 +75,8 @@ runs:
       run: |
         echo "pwd: $(pwd)"
         echo "ls: $(ls)"
+        echo "ls github.action_path: $(ls  ${{ github.action_path }} )"
+        echo "ls GITHUB_ACTION_PATH: $(ls ${GITHUB_ACTION_PATH} )"
 
     ## Build the binaries using defined dockerfiles
     - name: Build Binary (${{ inputs.arch }}_${{ inputs.cpu }})
