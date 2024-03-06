@@ -7,10 +7,10 @@ branding:
 
 inputs:
   arch:
-    description: "Architecture to build binary for"
+    description: "Architecture to build binary"
     required: true
   cpu:
-    description: "CPU to build binary for"
+    description: "CPU to build binary"
     required: true
   tag:
     description: "Release Tag"
@@ -69,7 +69,7 @@ runs:
       id: build_binaries
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # 5.0.0
       with:
-        file: build-scripts/${{ env.DOCKERFILE }}
+        file: ${{ github.action_path }}/build-scripts/${{ env.DOCKERFILE }}
         outputs: type=local,dest=./release/${{ inputs.arch }}
         build-args: |
           STACKS_NODE_VERSION=${{ inputs.tag || env.GITHUB_SHA_SHORT }}
