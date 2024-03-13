@@ -39,7 +39,7 @@ runs:
       id: install_cargo_mutants
       shell: bash
       run: |
-        cargo install --git https://github.com/ASuciuX/cargo-mutants --branch feat/variable-test-timeout cargo-mutants # v24.2.0 - with test timeout multiplier implementation
+        cargo install --version 24.2.1 cargo-mutants --locked # v24.2.1
 
     - uses: taiki-e/install-action@ac89944b5b150d78567ab6c02badfbe48b0b55aa # v2.20.16
       name: Install cargo-nextest
