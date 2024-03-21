@@ -39,7 +39,7 @@ jobs:
     steps:
       - name: Check Cache
         id: check_cache
-        uses: wileyj/actions/stacks-core/cache/bitcoin@main
+        uses: stacks-network/actions/stacks-core/cache/bitcoin@main
 ```
 
 ### Restore Cache
@@ -54,7 +54,7 @@ jobs:
     steps:
       - name: Restore Cargo Cache
         id: restore_cache
-        uses: wileyj/actions/stacks-core/cache/bitcoin@main
+        uses: stacks-network/actions/stacks-core/cache/bitcoin@main
         with:
           action: restore
 ```
@@ -71,7 +71,7 @@ jobs:
     steps:
       - name: Save Cargo Cache
         id: save_cache
-        uses: wileyj/actions/stacks-core/cache/bitcoin@main
+        uses: stacks-network/actions/stacks-core/cache/bitcoin@main
         with:
           action: save
 ```

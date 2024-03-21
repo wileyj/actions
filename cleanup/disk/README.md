@@ -29,5 +29,5 @@ jobs:
     steps:
       - name: Cleanup Runner
         id: runner_cleanup
-        uses: wileyj/actions/cleanup/disk/disk@main
+        uses: stacks-network/actions/cleanup/disk/disk@main
 ```

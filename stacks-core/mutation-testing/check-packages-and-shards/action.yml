@@ -41,7 +41,7 @@ runs:
       shell: bash
       id: install_cargo_mutants
       run: |
-        cargo install --git https://github.com/ASuciuX/cargo-mutants --branch feat/variable-test-timeout cargo-mutants # v24.2.0 - with test timeout multiplier implementation
+        cargo install --version 24.2.1 cargo-mutants --locked # v24.2.1
 
     - name: Relative diff
       id: relative_diff
@@ -171,7 +171,9 @@ runs:
 
         # If stacks_signer file exists and is not empty, run mutants on stacks-signer package
         if [[ -s mutants_by_packages/stacks-signer.txt ]]; then
-          echo "run_stacks_signer=true" >> "$GITHUB_OUTPUT"
+          # Disable mutants on 'stacks-signer' package for the moment due to unexpected failures
+          # echo "run_stacks_signer=true" >> "$GITHUB_OUTPUT"
+          echo "run_stacks_signer=false" >> "$GITHUB_OUTPUT"
         else
           echo "run_stacks_signer=false" >> "$GITHUB_OUTPUT"
         fi

@@ -22,5 +22,5 @@ jobs:
     steps:
       - name: Generate Checksum
         id: generate_checksum
-        uses: wileyj/actions/generate-checksum@main
+        uses: stacks-network/actions/generate-checksum@main
 ```

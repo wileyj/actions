@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Cleanup Workflows
         id: workflow_cleanup
-        uses: wileyj/actions/cleanup/workflows@main
+        uses: stacks-network/actions/cleanup/workflows@main
         with:
           token: ${{ secrets.GH_TOKEN }}
 ```
@@ -65,7 +65,7 @@ jobs:
     steps:
       - name: Cleanup Workflows
         id: workflow_cleanup
-        uses: wileyj/actions/cleanup/workflows@main
+        uses: stacks-network/actions/cleanup/workflows@main
         with:
           token: ${{ secrets.GH_TOKEN }}
           cache-ttl: ${{ inputs.cache-ttl || env.CACHE_TTL}}

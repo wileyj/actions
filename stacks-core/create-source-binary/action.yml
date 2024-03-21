@@ -7,10 +7,10 @@ branding:
 
 inputs:
   arch:
-    description: "Architecture to build binary for"
+    description: "Architecture to build binary"
     required: true
   cpu:
-    description: "CPU to build binary for"
+    description: "CPU to build binary"
     required: true
   tag:
     description: "Release Tag"
@@ -22,7 +22,7 @@ runs:
     ## Setup Docker for the builds
     - name: Docker setup
       id: docker_setup
-      uses: wileyj/actions/docker@main
+      uses: stacks-network/actions/docker@main
 
     ## Set env vars based on the type of arch build
     - name: Set local env vars
@@ -63,15 +63,6 @@ runs:
         echo "DOCKERFILE=Dockerfile.${{ inputs.arch }}-${DOCKERFILE_CPU}" >> "$GITHUB_ENV"
         echo "ZIPFILE=${{ inputs.arch }}-${ARCHIVE_NAME}" >> "$GITHUB_ENV"
         echo "TARGET_CPU=${TARGET_CPU}" >> "$GITHUB_ENV"
-
-    - name: Echo(s)
-      id: echo
-      shell: bash
-      run: |
-        echo "pwd: $(pwd)"
-        echo "ls: $(ls)"
-        echo "ls github.action_path: $(ls  ${{ github.action_path }} )"
-        echo "ls GITHUB_ACTION_PATH: $(ls ${GITHUB_ACTION_PATH} )"
 
     ## Build the binaries using defined dockerfiles
     - name: Build Binary (${{ inputs.arch }}_${{ inputs.cpu }})
