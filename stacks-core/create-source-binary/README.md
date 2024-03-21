@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Build Binary
         id: build_binary
-        uses: stacks-network/actions/stacks-core/create-source-binary@main
+        uses: wileyj/actions/stacks-core/create-source-binary@main
         with:
           arch: linux-glibc
           cpu: x86-64
