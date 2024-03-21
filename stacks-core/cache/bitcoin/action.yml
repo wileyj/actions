@@ -56,7 +56,7 @@ runs:
       if: |
         inputs.action == 'restore'
       id: restore_cache
-      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+      uses: Wandalen/wretry.action@4ca71ac27896a6670a57267cf3ddec528278c86f # v2.0.0
       with:
         action: actions/cache/restore@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with: |
@@ -84,7 +84,7 @@ runs:
         inputs.action == 'save' &&
         steps.check_cache.outputs.cache-hit != 'true'
       id: save_cache
-      uses: Wandalen/wretry.action@a163f62ae554a8f3cbe27b23db15b60c0ae2e93c # v1.3.0
+      uses: Wandalen/wretry.action@4ca71ac27896a6670a57267cf3ddec528278c86f # v2.0.0
       with:
         action: actions/cache/save@704facf57e6136b1bc63b828d79edcd491f0ee84 # v3.3.2
         with: |

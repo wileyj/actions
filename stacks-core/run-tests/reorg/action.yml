@@ -54,16 +54,3 @@ runs:
           --success-output ${{ inputs.success-output }} \
           --status-level ${{ inputs.status-level }} \
           "${{ inputs.test-name }}"
-
-    - name: Check bitcoind logs
-      id: check_logs
-      shell: bash
-      run: |
-        if [ -f "/tmp/bitcoind.log" ]; then
-          echo "Found file: /tmp/bitcoind.log"
-          cat /tmp/bitcoind.log
-          exit 0
-        fi
-        echo "Missing logfile /tmp/bitcoind.log"
-        ls -altr /tmp
-        exit 1
