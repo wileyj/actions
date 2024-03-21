@@ -1,0 +1,69 @@
+name: "Run Reorg Tests"
+description: "Run Reorg Tests"
+branding:
+  icon: "archive"
+  color: "gray-dark"
+
+inputs:
+  test-name:
+    description: "Test name to run"
+    required: true
+  threads:
+    description: "Number of test threads"
+    required: false
+    default: "num-cpus"
+  archive-file:
+    description: "Archive file to use for tests"
+    required: true
+    default: "~/test_archive.tar.zst"
+  success-output:
+    description: "Success output"
+    required: false
+    default: "immediate-final"
+  status-level:
+    description: "Output status level"
+    required: false
+    default: "fail"
+  retries:
+    description: "Number of test retries"
+    required: false
+    default: "2"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check Sysctl options
+      id: sysctl
+      shell: bash
+      run: |
+        echo "tcp_keepalive_time(7200): $(cat /proc/sys/net/ipv4/tcp_keepalive_time)"
+        echo "tcp_keepalive_probes(9): $(cat /proc/sys/net/ipv4/tcp_keepalive_probes)"
+        echo "tcp_keepalive_intvl(75): $(cat /proc/sys/net/ipv4/tcp_keepalive_intvl)"
+
+    - name: Run Tests
+      id: run-tests
+      shell: bash
+      run: |
+        cargo nextest run \
+          --verbose \
+          --archive-file ${{ inputs.archive-file }} \
+          --test-threads ${{ inputs.threads }} \
+          --retries ${{ inputs.retries }} \
+          --run-ignored all \
+          --fail-fast \
+          --success-output ${{ inputs.success-output }} \
+          --status-level ${{ inputs.status-level }} \
+          "${{ inputs.test-name }}"
+
+    - name: Check bitcoind logs
+      id: check_logs
+      shell: bash
+      run: |
+        if [ -f "/tmp/bitcoind.log" ]; then
+          echo "Found file: /tmp/bitcoind.log"
+          cat /tmp/bitcoind.log
+          exit 0
+        fi
+        echo "Missing logfile /tmp/bitcoind.log"
+        ls -altr /tmp
+        exit 1
