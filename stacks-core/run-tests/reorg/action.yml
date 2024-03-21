@@ -33,6 +33,7 @@ runs:
   using: "composite"
   steps:
     - name: Check Sysctl options
+      if: always()
       id: sysctl_check
       shell: bash
       run: |
@@ -44,6 +45,7 @@ runs:
         # echo "tcp_tw_recycle (): $(cat /proc/sys/net/ipv4/tcp_tw_recycle)" ## shouldn't be present
 
     - name: Set Sysctl options
+      if: always()
       id: sysctl_set
       shell: bash
       run: |
@@ -61,7 +63,8 @@ runs:
         echo
 
     - name: Check Sysctl options (after setting)
-      id: sysctl_check
+      if: always()
+      id: sysctl_check2
       shell: bash
       run: |
         echo "tcp_keepalive_time (7200): $(cat /proc/sys/net/ipv4/tcp_keepalive_time)"
