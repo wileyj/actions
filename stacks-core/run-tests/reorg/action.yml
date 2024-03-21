@@ -103,5 +103,4 @@ runs:
           lsof -p $(ps -ef | grep bitcoind  | grep -v grep | awk {'print $2'})
           echo ""
           echo "netstat: $(netstat -anp | grep bitcoind)"
-          echo "netstat -o $(netstat -o | grep 8333)"
         fi
