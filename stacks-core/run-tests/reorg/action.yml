@@ -55,11 +55,11 @@ runs:
     #   run: |
     #     sudo sysctl -w net.ipv4.tcp_fin_timeout=1
 
-    - name: Sysctl set tcp_tw_reuse
-      if: always()
-      shell: bash
-      run: |
-        sudo sysctl -w net.ipv4.tcp_tw_reuse=1
+    # - name: Sysctl set tcp_tw_reuse
+    #   if: always()
+    #   shell: bash
+    #   run: |
+    #     sudo sysctl -w net.ipv4.tcp_tw_reuse=1
 
     # - name: Sysctl set tcp_rfc1337
     #   if: always()
@@ -70,15 +70,15 @@ runs:
     # net.ipv4.tcp_syncookies = 1
     # net.ipv4.tcp_keepalive_intvl = 30 # This determines the wait time between isAlive interval probes.
 
-    - name: Debug
-      if: always()
-      id: debug
-      shell: bash
-      run: |
-        echo "tcp_tw_reuse"
-        sudo sysctl -a | grep tcp_tw_reuse
-        echo "***************************************************************************"
-        echo
+    # - name: Debug
+    #   if: always()
+    #   id: debug
+    #   shell: bash
+    #   run: |
+    #     echo "tcp_tw_reuse"
+    #     sudo sysctl -a | grep tcp_tw_reuse
+    #     echo "***************************************************************************"
+    #     echo
 
     - name: Run Tests
       id: run-tests
@@ -105,9 +105,9 @@ runs:
         if [ -f "/tmp/bitcoind.log" ]; then
           echo "Found file: /tmp/bitcoind.log"
           cat /tmp/bitcoind.log
-          echo "lsof:"
-          lsof -p $(ps -ef | grep bitcoind  | grep -v grep | awk {'print $2'})
-          echo ""
-          echo "netstat: $(netstat -anp | grep bitcoind)"
-          echo "netstat -o $(netstat -o | grep 8333)"
+          # echo "lsof:"
+          # lsof -p $(ps -ef | grep bitcoind  | grep -v grep | awk {'print $2'})
+          # echo ""
+          # echo "netstat: $(netstat -anp | grep bitcoind)"
+          # echo "netstat -o $(netstat -o | grep 8333)"
         fi
