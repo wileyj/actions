@@ -100,8 +100,6 @@ runs:
       id: check_logs
       shell: bash
       run: |
-        netstat -anlp
-        lsof -p
         if [ -f "/tmp/bitcoind.log" ]; then
           echo "Found file: /tmp/bitcoind.log"
           cat /tmp/bitcoind.log
