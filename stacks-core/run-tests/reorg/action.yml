@@ -53,10 +53,10 @@ runs:
       run: |
         sudo sysctl -w net.ipv4.tcp_tw_reuse=1
 
-    - name: Sysctl set tcp_tw_recycle
-      shell: bash
-      run: |
-        sudo sysctl -w net.ipv4.tcp_tw_recycle=1
+    # - name: Sysctl set tcp_tw_recycle
+    #   shell: bash
+    #   run: |
+    #     sudo sysctl -w net.ipv4.tcp_tw_recycle=1
 
     - name: Sysctl set tcp_fin_timeout
       shell: bash
@@ -73,10 +73,6 @@ runs:
         echo
         echo "tcp_tw_reuse"
         sudo sysctl -a | grep tcp_tw_reuse
-        echo "***************************************************************************"
-        echo
-        echo "tcp_tw_recycle"
-        sudo sysctl -a | grep tcp_tw_recycle
         echo "***************************************************************************"
         echo
         echo "tcp_fin_timeout"
