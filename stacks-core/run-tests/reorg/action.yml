@@ -65,7 +65,7 @@ runs:
       if: always()
       shell: bash
       run: |
-        sudo sysctl -w net.ipv4.tcp_rfc1337 = 1
+        sudo sysctl -w net.ipv4.tcp_rfc1337=1
     # net.ipv4.tcp_synack_retries = 2
     # net.ipv4.tcp_syncookies = 1
 
