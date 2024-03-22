@@ -42,23 +42,45 @@ runs:
         echo "tcp_keepalive_intvl (75): $(cat /proc/sys/net/ipv4/tcp_keepalive_intvl)"
         echo "tcp_fin_timeout (60): $(cat /proc/sys/net/ipv4/tcp_fin_timeout)"
         echo "tcp_tw_reuse (2): $(cat /proc/sys/net/ipv4/tcp_tw_reuse)"
-        # echo "tcp_tw_recycle (): $(cat /proc/sys/net/ipv4/tcp_tw_recycle)" ## shouldn't be present
 
-    - name: Set Sysctl options
-      if: always()
-      id: sysctl_set
+    - name: Increase file limit
       shell: bash
       run: |
-        # echo "Setting tcp_fin_timeout"
-        # echo 30 > /proc/sys/net/ipv4/tcp_fin_timeout
-        # echo ""***************************************************************************"
-        # echo
-        echo "Setting tcp_tw_reuse"
-        echo 1 > /proc/sys/net/ipv4/tcp_tw_reuse
+        sudo sysctl -w fs.file-max=65536
+
+    - name: Sysctl set tcp_tw_reuse
+      shell: bash
+      run: |
+        sudo sysctl -w net.ipv4.tcp_tw_reuse=1
+
+    - name: Sysctl set tcp_tw_recycle
+      shell: bash
+      run: |
+        sudo sysctl -w net.ipv4.tcp_tw_recycle=1
+
+    - name: Sysctl set tcp_fin_timeout
+      shell: bash
+      run: |
+        sudo sysctl -w net.ipv4.tcp_fin_timeout=30
+
+    - name: Debug
+      id: debug
+      shell: bash
+      run: |
+        echo "ulimit"
+        ulimit -a
+        echo "***************************************************************************"
+        echo
+        echo "tcp_tw_reuse"
+        sudo sysctl -a | grep tcp_tw_reuse
         echo "***************************************************************************"
         echo
         echo "tcp_tw_recycle"
-        echo 1 > /proc/sys/net/ipv4/tcp_tw_recycle 
+        sudo sysctl -a | grep tcp_tw_recycle
+        echo "***************************************************************************"
+        echo
+        echo "tcp_fin_timeout"
+        sudo sysctl -a | grep tcp_fin_timeout
         echo "***************************************************************************"
         echo
 
