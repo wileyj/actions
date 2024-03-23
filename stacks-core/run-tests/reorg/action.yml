@@ -102,7 +102,7 @@ runs:
       run: |
         if [ -f "/tmp/bitcoind.log" ]; then
           echo "Found file: /tmp/bitcoind.log"
-          cat /tmp/bitcoind.log
+          tail -50 /tmp/bitcoind.log
           # echo "lsof:"
           # lsof -p $(ps -ef | grep bitcoind  | grep -v grep | awk {'print $2'})
           # echo ""
