@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y git libclang-dev llvm
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
-    && cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} --bin stacks-node --bin stacks-inspect --bin clarity-cli --bin blockstack-cli stacks-signer \
+    && cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} --bin stacks-node --bin stacks-inspect --bin clarity-cli --bin blockstack-cli --bin stacks-signer \
     && mkdir -p /out \
     && cp -R ${BUILD_DIR}/target/${TARGET}/release/. /out
 
