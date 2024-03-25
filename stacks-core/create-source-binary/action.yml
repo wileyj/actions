@@ -22,11 +22,15 @@ runs:
     ## Setup Docker for the builds
     - name: Docker setup
       id: docker_setup
+      if: |
+        inputs.arch == 'linux-glibc'
       uses: stacks-network/actions/docker@main
 
     ## Set env vars based on the type of arch build
     - name: Set local env vars
       id: set_env
+      if: |
+        inputs.arch == 'linux-glibc'
       shell: bash
       run: |
         case ${{ inputs.cpu }} in
@@ -67,6 +71,8 @@ runs:
     ## Build the binaries using defined dockerfiles
     - name: Build Binary (${{ inputs.arch }}_${{ inputs.cpu }})
       id: build_binaries
+      if: |
+        inputs.arch == 'linux-glibc'
       uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # 5.0.0
       with:
         file: ${{ github.action_path }}/build-scripts/${{ env.DOCKERFILE }}
@@ -81,6 +87,8 @@ runs:
     ## Compress the binary artifact
     - name: Compress artifact
       id: compress_artifact
+      if: |
+        inputs.arch == 'linux-glibc'
       shell: bash
       run: |
         zip --junk-paths ${{ env.ZIPFILE }} ./release/${{ inputs.arch }}/*
