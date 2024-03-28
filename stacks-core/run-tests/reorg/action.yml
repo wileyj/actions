@@ -100,12 +100,9 @@ runs:
       id: check_logs
       shell: bash
       run: |
+        echo "Process 1: $(ps -p 1)"
         if [ -f "/tmp/bitcoind.log" ]; then
           echo "Found file: /tmp/bitcoind.log"
           tail -50 /tmp/bitcoind.log
-          # echo "lsof:"
-          # lsof -p $(ps -ef | grep bitcoind  | grep -v grep | awk {'print $2'})
-          # echo ""
           echo "netstat: $(sudo netstat -anp | grep bitcoind)"
-          # echo "netstat -o $(netstat -o | grep 8333)"
         fi
