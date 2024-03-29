@@ -6,6 +6,10 @@ ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
 ARG OSXCROSS="https://github.com/hirosystems/docker-osxcross-rust/releases/download/MacOSX12.0.sdk/osxcross-d904031_MacOSX12.0.sdk.tar.zst"
 ARG TARGET=aarch64-apple-darwin
+# test start
+ARG TARGET_CPU
+ENV RUSTFLAGS="${TARGET_CPU:+${RUSTFLAGS} -Ctarget-cpu=${TARGET_CPU}}"
+# test end
 WORKDIR /src
 
 COPY . .

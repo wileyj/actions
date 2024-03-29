@@ -5,6 +5,10 @@ ARG GIT_BRANCH='No Branch Info'
 ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
 ARG TARGET=armv7-unknown-linux-musleabihf
+# test start
+ARG TARGET_CPU
+ENV RUSTFLAGS="${TARGET_CPU:+${RUSTFLAGS} -Ctarget-cpu=${TARGET_CPU}}"
+# test end
 WORKDIR /src
 
 COPY . .
