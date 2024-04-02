@@ -5,7 +5,6 @@ ARG GIT_BRANCH='No Branch Info'
 ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
 ARG TARGET=x86_64-unknown-linux-musl
-# Allow us to override the default `--target-cpu` for the given target triplet
 ARG TARGET_CPU
 ENV RUSTFLAGS="${TARGET_CPU:+${RUSTFLAGS} -Ctarget-cpu=${TARGET_CPU}}"
 WORKDIR /src
@@ -14,13 +13,14 @@ COPY . .
 
 RUN apk update && apk add git musl-dev make
 
-# Run all the build steps in ramdisk in an attempt to increase build time
+# Run all the build steps in ramdisk in an attempt to speed things up
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
-    && cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} \
+    && cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} --bin stacks-node --bin stacks-inspect --bin clarity-cli --bin blockstack-cli --bin stacks-signer \
     && mkdir -p /out \
-    && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
+    && cp -R ${BUILD_DIR}/target/${TARGET}/release/. /out
 
 FROM scratch AS export-stage
-COPY --from=build /out/* /
+COPY --from=build /out/stacks-inspect /out/blockstack-cli /out/clarity-cli /out/stacks-node /out/stacks-signer /
+
