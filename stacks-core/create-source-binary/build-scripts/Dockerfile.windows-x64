@@ -13,15 +13,15 @@ COPY . .
 
 RUN apt-get update && apt-get install -y git gcc-mingw-w64-x86-64 libclang-dev
 
-# Run all the build steps in ramdisk in an attempt to speed things up
+# Run all the build steps in ramdisk in an attempt to improve build time
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
     && CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc \
     CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc \
-    cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} --bin stacks-node --bin stacks-inspect --bin clarity-cli --bin blockstack-cli \
+    cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} \
     && mkdir -p /out \
-    && cp -R ${BUILD_DIR}/target/${TARGET}/release/. /out
+    && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 
 FROM scratch AS export-stage
-COPY --from=build /out/stacks-inspect.exe /out/blockstack-cli.exe /out/clarity-cli.exe /out/stacks-node.exe /
+COPY --from=build /out/* /

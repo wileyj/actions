@@ -11,16 +11,16 @@ COPY . .
 
 RUN apt-get update && apt-get install -y git gcc-arm-linux-gnueabihf libclang-dev llvm
 
-# Run all the build steps in ramdisk in an attempt to speed things up
+# Run all the build steps in ramdisk in an attempt to improve build time
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
     && CC=arm-linux-gnueabihf-gcc \
     CC_armv7_unknown_linux_gnueabihf=arm-linux-gnueabihf-gcc \
     CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc \
-    cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} --bin stacks-node --bin stacks-inspect --bin clarity-cli --bin blockstack-cli \
+    cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} \
     && mkdir -p /out \
-    && cp -R ${BUILD_DIR}/target/${TARGET}/release/. /out
+    && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 
 FROM scratch AS export-stage
-COPY --from=build /out/stacks-inspect /out/blockstack-cli /out/clarity-cli /out/stacks-node /
+COPY --from=build /out/* /
