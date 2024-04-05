@@ -216,7 +216,7 @@ runs:
           0)
               if [[ ! -f ./mutants-shards/caught.txt && ! -f ./mutants-shards/missed.txt && ! -f ./mutants-shards/timeout.txt && ! -f ./mutants-shards/unviable.txt ]]; then
                 echo "No mutants found to test!"    
-              elif [[ -f ./mutants-shards/unviable.txt ]]; then
+              elif [[ -s ./mutants-shards/unviable.txt ]]; then
                 echo "Found unviable mutants!"
                 exit 5
               else
