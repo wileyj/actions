@@ -22,7 +22,7 @@ RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && rustup target add ${TARGET} \
     && . /opt/osxcross/env-macos-aarch64 \
     && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} \
-    && mkdir -p /out \ 
+    && mkdir -p /out \
     && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/ 
 
 FROM scratch AS export-stage
