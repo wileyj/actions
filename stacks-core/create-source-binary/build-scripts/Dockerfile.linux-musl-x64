@@ -17,7 +17,7 @@ RUN apk update && apk add git musl-dev make
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
-    && cargo build --features monitoring_prom,slog_json,portable --release --workspace --target ${TARGET} \
+    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} \
     && mkdir -p /out \
     && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 
