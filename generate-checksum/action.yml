@@ -42,7 +42,7 @@ runs:
           exit 1;
         fi
 
-        shasum="$(sha512sum ./*)"
+        shasum="$(sha512sum *)"
         if [[ -z "$shasum" ]]; then
           echo "Checksum could not be generated!";
           exit 1;
