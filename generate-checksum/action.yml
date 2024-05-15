@@ -35,7 +35,14 @@ runs:
         fi
 
         # Generate the hashes and exit if the variable is empty
-        shasum="$(sha512sum release/*)"
+        if [ -d release ]; then
+          cd release
+        else
+          echo "Artifact directory does not exist!"
+          exit 1;
+        fi
+
+        shasum="$(sha512sum *)"
         if [[ -z "$shasum" ]]; then
           echo "Checksum could not be generated!";
           exit 1;
@@ -43,5 +50,5 @@ runs:
 
         echo "Generated checksums:"
         echo "$shasum"
-        echo "$shasum" > "${{ inputs.hashfile_name }}";
+        echo "$shasum" > "../${{ inputs.hashfile_name }}";
         exit 0;
