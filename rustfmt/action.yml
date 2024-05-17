@@ -33,6 +33,7 @@ runs:
         done
         if [ -z "$config_file" ]; then
           echo "No config file found!";
+          exit 1;
         fi
 
         # Split alias command's options
@@ -48,6 +49,7 @@ runs:
 
         if [[ "${args[0]}" != "fmt" && "${{ inputs.alias }}" != "fmt" ]]; then
           echo "The provided alias is invalid!";
+          exit 1;
         fi
 
         for arg in "${args[@]}"; do
