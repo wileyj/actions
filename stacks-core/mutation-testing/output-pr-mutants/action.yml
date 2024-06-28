@@ -198,6 +198,7 @@ runs:
         # Print uncaught (missed/timeout/unviable) mutants to summary
         if [ -s ./mutants-shards/missed.txt -o -s ./mutants-shards/timeout.txt -o -s ./mutants-shards/unviable.txt ]; then
           echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Documentation - How to treat Mutants Output](https://github.com/stacks-network/actions/tree/main/stacks-core/mutation-testing#how-mutants-output-should-be-treated)" >> "$GITHUB_STEP_SUMMARY"
           write_section "Missed:" "./mutants-shards/missed.txt"
           write_section "Timeout:" "./mutants-shards/timeout.txt"
           write_section "Unviable:" "./mutants-shards/unviable.txt"
