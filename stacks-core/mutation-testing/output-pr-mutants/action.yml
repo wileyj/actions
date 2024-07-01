@@ -198,6 +198,7 @@ runs:
         # Print uncaught (missed/timeout/unviable) mutants to summary
         if [ -s ./mutants-shards/missed.txt -o -s ./mutants-shards/timeout.txt -o -s ./mutants-shards/unviable.txt ]; then
           echo "# Uncaught Mutants" >> "$GITHUB_STEP_SUMMARY"
+          echo "[Documentation - How to treat Mutants Output](https://github.com/stacks-network/actions/tree/main/stacks-core/mutation-testing#how-mutants-output-should-be-treated)" >> "$GITHUB_STEP_SUMMARY"
           write_section "Missed:" "./mutants-shards/missed.txt"
           write_section "Timeout:" "./mutants-shards/timeout.txt"
           write_section "Unviable:" "./mutants-shards/unviable.txt"
@@ -212,11 +213,16 @@ runs:
         # Get most relevant exit code from the file and match it
         exit_code=$(<"mutants-shards/exit_code.txt")
 
+        yellow_bold="\033[1;33m"
+        reset="\033[0m"
+        summary_link_message="${yellow_bold}Click here for more information on how to fix:${reset} ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#:~:text=Output%20Mutants%20summary"
+
         case $exit_code in
           0)
               if [[ ! -f ./mutants-shards/caught.txt && ! -f ./mutants-shards/missed.txt && ! -f ./mutants-shards/timeout.txt && ! -f ./mutants-shards/unviable.txt ]]; then
                 echo "No mutants found to test!"    
               elif [[ -s ./mutants-shards/unviable.txt ]]; then
+                echo -e "$summary_link_message"
                 echo "Found unviable mutants!"
                 exit 5
               else
@@ -224,22 +230,27 @@ runs:
               fi
             ;;
           1)
+            echo -e "$summary_link_message"
             echo "Invalid command line arguments!"
             exit $exit_code
             ;;
           2)
+            echo -e "$summary_link_message"
             echo "Found missed mutants!"
             exit $exit_code
             ;;
           3)
+            echo -e "$summary_link_message"
             echo "Found timeout mutants!"
             exit $exit_code
             ;;
           4)
+            echo -e "$summary_link_message"
             echo "Building the packages failed without any mutations!"
             exit $exit_code
             ;;
           *)
+            echo -e "$summary_link_message"
             echo "Unknown exit code: $exit_code"
             exit $exit_code
           ;;
