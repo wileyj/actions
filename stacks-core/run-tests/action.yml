@@ -45,4 +45,4 @@ runs:
           --fail-fast \
           --success-output ${{ inputs.success-output }} \
           --status-level ${{ inputs.status-level }} \
-          "${{ inputs.test-name }}"
+          -E "test(=${{ inputs.test-name }})"

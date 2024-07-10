@@ -96,7 +96,7 @@ jobs:
       ## Setup docker buildx
       - name: Set up Docker Buildx
         id: docker_buildx
-        uses: docker/setup-buildx-action@f95db51fddba0c2d1ec667646a06c2ce06100226 # v3.0.0
+        uses: docker/setup-buildx-action@d70bba72b1f3fd22344832f00baa16ece964efeb # v3.3.0
 ```
 
 Which uses [this commit](https://github.com/docker/setup-buildx-action/commit/f95db51fddba0c2d1ec667646a06c2ce06100226)
