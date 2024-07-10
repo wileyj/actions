@@ -147,7 +147,7 @@ inputs:
     default: ""
   log-output:
     description: "Log output parameters, value must be either `true` or `false`"
-    default: "false"
+    default: "true"
 
 outputs:
   issues:
