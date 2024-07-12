@@ -29,4 +29,6 @@ jobs:
       - name: Check Release
         id: check_release
         uses: stacks-network/actions/stacks-core/check-release@main
+        with:
+          tag: "release/2.5.0.0.5-rc6"
 ```
