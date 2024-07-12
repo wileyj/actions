@@ -54,11 +54,6 @@ runs:
           esac
         fi
 
-        echo "branch name: $branch_name"
-        echo "tag: $tag"
-        echo "docker_tag: $docker_tag"
-        echo "is_release: $is_release"
-
         echo "tag=$tag" >> "$GITHUB_OUTPUT"
         echo "docker_tag=$docker_tag" >> "$GITHUB_OUTPUT"
         echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
