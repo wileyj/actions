@@ -5,6 +5,7 @@ ARG GIT_BRANCH='No Branch Info'
 ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
 ARG TARGET=aarch64-unknown-linux-gnu
+ARG TAG="No Tag Info"
 WORKDIR /src
 
 COPY . .
@@ -15,10 +16,18 @@ RUN apt-get update && apt-get install -y git gcc-aarch64-linux-gnu libclang-dev 
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
+    && case "${TAG}" in \
+        signer-*) \
+            BUILD_ARG="--bin stacks-signer" \
+            ;; \
+        *) \
+            BUILD_ARG="" \
+            ;; \
+    esac \
     && CC=aarch64-linux-gnu-gcc \
     CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc \
     CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
-    cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} \
+    cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
     && mkdir -p /out \
     && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 

@@ -1,0 +1,66 @@
+## Composite action to check if the branch is a release tag or not
+name: Check Release
+
+inputs:
+  tag:
+    description: "The branch name against which the step runs"
+    required: false
+    default: ""
+
+outputs:
+  tag:
+    description: "The release tag, if there is one (empty otherwise)."
+    value: ${{ steps.check_release.outputs.tag }}
+  docker_tag:
+    description: "The release tag for docker, if there is one (empty otherwise)."
+    value: ${{ steps.check_release.outputs.docker_tag }}
+  is_release:
+    description: "True if the branch is a release one, false otherwise."
+    value: ${{ steps.check_release.outputs.is_release }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set Release Outputs
+      id: check_release
+      shell: bash
+      run: |
+        branch_name=${{ inputs.tag }}
+
+        stacks_core_version_regex="([0-9].[0-9].[0-9].[0-9].[0-9]+(-rc[0-9]+)?)"    # matches x.x.x.x.x || x.x.x.x.x-rcx
+        signer_version_regex="([0-9].[0-9].[0-9].[0-9].[0-9].[0-9]+(-rc[0-9]+)?)"   # matches x.x.x.x.x.x || x.x.x.x.x.x-rcx
+
+        stacks_core_regex_base="release/"
+        signer_regex_base="release/signer-"
+
+        stacks_core_regex="${stacks_core_regex_base}${stacks_core_version_regex}"
+        signer_regex="${signer_regex_base}${signer_version_regex}"
+
+        tag=""
+        docker_tag=""
+        is_release=false
+
+        if [[ "$branch_name" =~ ^${stacks_core_regex}$ || "$branch_name" =~ ^${signer_regex}$ ]]; then
+          tag=$(echo "$branch_name" | sed "s|^${stacks_core_regex_base}||g")
+          case ${branch_name} in
+            release/signer-[0-9]*)
+              docker_tag=$(echo "$branch_name" | sed "s|^${signer_regex_base}||g")
+              is_release=true
+              ;;
+            *)
+              docker_tag=${tag}
+              is_release=true
+              ;;
+          esac
+        fi
+
+        echo "branch name: $branch_name"
+        echo "tag: $tag"
+        echo "docker_tag: $docker_tag"
+        echo "is_release: $is_release"
+
+        echo "tag=$tag" >> "$GITHUB_OUTPUT"
+        echo "docker_tag=$docker_tag" >> "$GITHUB_OUTPUT"
+        echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
+
+        exit 0
