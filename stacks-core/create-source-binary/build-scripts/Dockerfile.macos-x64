@@ -8,7 +8,7 @@ ARG OSXCROSS="https://github.com/hirosystems/docker-osxcross-rust/releases/downl
 ARG TARGET=x86_64-apple-darwin
 ARG TARGET_CPU
 ENV RUSTFLAGS="${TARGET_CPU:+${RUSTFLAGS} -Ctarget-cpu=${TARGET_CPU}}"
-ARG TAG="No Tag Info"
+ARG TAG
 WORKDIR /src
 
 COPY . .

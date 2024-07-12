@@ -6,7 +6,7 @@ ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
 ARG OSXCROSS="https://github.com/hirosystems/docker-osxcross-rust/releases/download/MacOSX12.0.sdk/osxcross-d904031_MacOSX12.0.sdk.tar.zst"
 ARG TARGET=aarch64-apple-darwin
-ARG TAG="No Tag Info"
+ARG TAG
 WORKDIR /src
 
 COPY . .
