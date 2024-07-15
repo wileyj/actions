@@ -8,6 +8,7 @@ ARG OSXCROSS="https://github.com/hirosystems/docker-osxcross-rust/releases/downl
 ARG TARGET=x86_64-apple-darwin
 ARG TARGET_CPU
 ENV RUSTFLAGS="${TARGET_CPU:+${RUSTFLAGS} -Ctarget-cpu=${TARGET_CPU}}"
+ARG TAG
 WORKDIR /src
 
 COPY . .
@@ -23,7 +24,15 @@ RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
     && . /opt/osxcross/env-macos-x86_64 \
-    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} \
+    && case "${TAG}" in \
+        signer-*) \
+            BUILD_ARG="--bin stacks-signer" \
+            ;; \
+        *) \
+            BUILD_ARG="" \
+            ;; \
+    esac \
+    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
     && mkdir -p /out \
     && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 

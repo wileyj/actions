@@ -5,6 +5,7 @@ ARG GIT_BRANCH='No Branch Info'
 ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
 ARG TARGET=aarch64-unknown-linux-musl
+ARG TAG
 WORKDIR /src
 
 COPY . .
@@ -13,7 +14,15 @@ COPY . .
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
-    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} \
+    && case "${TAG}" in \
+        signer-*) \
+            BUILD_ARG="--bin stacks-signer" \
+            ;; \
+        *) \
+            BUILD_ARG="" \
+            ;; \
+    esac \
+    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
     && mkdir -p /out \
     && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 

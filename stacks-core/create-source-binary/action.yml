@@ -77,6 +77,7 @@ runs:
           TARGET_CPU=${{ env.TARGET_CPU }}
           GIT_BRANCH=${{ env.GITHUB_REF_SHORT }}
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
+          TAG=${{ inputs.tag }}
 
     ## Compress the binary artifact
     - name: Compress artifact

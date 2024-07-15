@@ -8,6 +8,7 @@ ARG TARGET=x86_64-unknown-linux-gnu
 # Allow us to override the default `--target-cpu` for the given target triplet
 ARG TARGET_CPU
 ENV RUSTFLAGS="${TARGET_CPU:+${RUSTFLAGS} -Ctarget-cpu=${TARGET_CPU}}"
+ARG TAG
 WORKDIR /src
 
 COPY . .
@@ -18,7 +19,15 @@ RUN apt-get update && apt-get install -y git libclang-dev llvm
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
     && cd ${BUILD_DIR} \
     && rustup target add ${TARGET} \
-    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} \
+    && case "${TAG}" in \
+        signer-*) \
+            BUILD_ARG="--bin stacks-signer" \
+            ;; \
+        *) \
+            BUILD_ARG="" \
+            ;; \
+    esac \
+    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
     && mkdir -p /out \
     && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 
