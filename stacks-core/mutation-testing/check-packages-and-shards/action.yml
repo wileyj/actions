@@ -41,7 +41,7 @@ runs:
       shell: bash
       id: install_cargo_mutants
       run: |
-        cargo install --version 24.2.1 cargo-mutants --locked # v24.2.1
+        cargo install --version 24.7.1 cargo-mutants --locked # v24.2.1
 
     - name: Relative diff
       id: relative_diff
