@@ -39,7 +39,7 @@ runs:
       id: install_cargo_mutants
       shell: bash
       run: |
-        cargo install --version 24.7.1 cargo-mutants --locked # v24.2.1
+        cargo install --version 24.7.1 cargo-mutants --locked # v24.7.1
 
     - uses: taiki-e/install-action@2f990e9c484f0590cb76a07296e9677b417493e9 # v2.33.23
       name: Install cargo-nextest
