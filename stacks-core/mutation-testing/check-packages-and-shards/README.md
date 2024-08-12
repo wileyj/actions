@@ -6,9 +6,9 @@ Checks whether to run mutants on [stackslib](https://github.com/stacks-network/s
 
 ### Inputs
 
-| Input       | Description                                     | Required | Default |
-| ----------- | ----------------------------------------------- | -------- | ------- |
-| `automated` | True if the workflow is being automatically run |   true   |    -    |
+| Input       | Description                                  | Required | Default |
+| ----------- | -------------------------------------------- | -------- | ------- |
+| `automated` | False if the workflow is being manually run. |   true   |    -    |
 
 ### Outputs
 | Output | Description |

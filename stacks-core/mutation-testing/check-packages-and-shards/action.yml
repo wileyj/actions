@@ -6,7 +6,7 @@ branding:
 
 inputs:
   automated:
-    description: "True if the workflow is being automatically run."
+    description: "False if the workflow is being manually run."
     required: true
 
 outputs:
@@ -188,7 +188,7 @@ runs:
 
         # If there are mutants from stackslib package, check whether to run or not and with or without shards
         if [[ $number_of_stackslib_mutants -ne 0 ]]; then
-          if [[ "${{ inputs.automated }}" == "true" && $number_of_stackslib_mutants -gt 72 ]]; then
+          if [[ "${{ inputs.automated }}" != "false" && $number_of_stackslib_mutants -gt 72 ]]; then
             stackslib_too_many_mutants=true
             echo "run_stackslib=false" >> "$GITHUB_OUTPUT"
             echo "stackslib_with_shards=false" >> "$GITHUB_OUTPUT"
@@ -207,7 +207,7 @@ runs:
 
         # If there are mutants from stacks-node package, check whether to run or not and with or without shards
         if [[ $number_of_stacks_node_mutants -ne 0 ]]; then
-          if [[ "${{ inputs.automated }}" == "true" && $number_of_stacks_node_mutants -gt 540 ]]; then
+          if [[ "${{ inputs.automated }}" != "false" && $number_of_stacks_node_mutants -gt 540 ]]; then
             stacks_node_too_many_mutants=true
             echo "run_stacks_node=false" >> "$GITHUB_OUTPUT"
             echo "stacks_node_with_shards=false" >> "$GITHUB_OUTPUT"
