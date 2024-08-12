@@ -4,6 +4,12 @@ Checks whether to run mutants on [stackslib](https://github.com/stacks-network/s
 
 ## Documentation
 
+### Inputs
+
+| Input       | Description                                     | Required | Default |
+| ----------- | ----------------------------------------------- | -------- | ------- |
+| `automated` | True if the workflow is being automatically run |   true   |    -    |
+
 ### Outputs
 | Output | Description |
 | ------------------------------- | ----------------------------------------------------- |
