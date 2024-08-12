@@ -243,13 +243,14 @@ runs:
           echo "The following packages surpass the default Continuous Integration (CI) runtime limit of 6 hours:" >> "$GITHUB_STEP_SUMMARY"
 
           if [[ $stackslib_too_many_mutants == true ]]; then
-            echo "- `stackslib` has $number_of_stackslib_mutants mutants, while the limit is 72." >> "$GITHUB_STEP_SUMMARY"
+            echo "- stackslib has $number_of_stackslib_mutants mutants, while the limit is 72." >> "$GITHUB_STEP_SUMMARY"
           fi
 
           if [[ $stacks_node_too_many_mutants == true ]]; then 
-            echo "- `stacks-node` has $number_of_stacks_node_mutants mutants, while the limit is 540." >> "$GITHUB_STEP_SUMMARY"
+            echo "- stacks-node has $number_of_stacks_node_mutants mutants, while the limit is 540." >> "$GITHUB_STEP_SUMMARY"
           fi
 
+          echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "To ensure these packages are processed, it's recommended to tag @admin in the pull request (PR) so the CI can be extended for this/these package(s)." >> "$GITHUB_STEP_SUMMARY"
           echo "Alternatively, you can run the packages locally by following the instructions in the documentation (link to docs), but it will take more time." >> "$GITHUB_STEP_SUMMARY"
         fi
