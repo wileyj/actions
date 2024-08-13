@@ -6,9 +6,9 @@ Checks whether to run mutants on [stackslib](https://github.com/stacks-network/s
 
 ### Inputs
 
-| Input       | Description                                  | Required | Default |
-| ----------- | -------------------------------------------- | -------- | ------- |
-| `automated` | False if the workflow is being manually run. |   true   |    -    |
+| Input            | Description                                         | Required | Default |
+| ---------------- | --------------------------------------------------- | -------- | ------- |
+| `ignore_timeout` | Whether to ignore the mutants timeout limit or not. |   true   |    -    |
 
 ### Outputs
 | Output | Description |
