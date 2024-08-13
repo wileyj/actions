@@ -31,6 +31,9 @@ outputs:
   run_stacks_signer:
     description: "True if there are mutants on `stacks-signer` package."
     value: ${{ steps.check_packages_and_shards.outputs.run_stacks_signer }}
+  too_many_mutants:
+    description: "True if the workflow would timeout because of the amount of mutants."
+    value: ${{ steps.check_packages_and_shards.outputs.too_many_mutants }}
 
 runs:
   using: "composite"
@@ -239,6 +242,8 @@ runs:
 
         # Print uncaught (missed/timeout/unviable) mutants to summary
         if [[ $stacks_node_too_many_mutants == true || $stackslib_too_many_mutants == true ]]; then
+          echo "too_many_mutants=true" >> "$GITHUB_OUTPUT"
+
           echo "# Packages Exceeding Default CI Runtime" >> "$GITHUB_STEP_SUMMARY"
           echo "The following packages surpass the default Continuous Integration (CI) runtime limit of 6 hours:" >> "$GITHUB_STEP_SUMMARY"
 
@@ -253,6 +258,8 @@ runs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "To ensure these packages are processed, it's recommended to tag @admin in the pull request (PR) so the CI can be extended for this/these package(s)." >> "$GITHUB_STEP_SUMMARY"
           echo "Alternatively, you can run the packages locally by following the instructions in the documentation (link to docs), but it will take more time." >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "too_many_mutants=false" >> "$GITHUB_OUTPUT"
         fi
 
         exit 0
