@@ -52,7 +52,7 @@ runs:
       id: relative_diff
       shell: bash
       run: |
-        git diff $(git merge-base origin/${{ github.base_ref || "develop" }} HEAD)..HEAD > git.diff
+        git diff $(git merge-base origin/${{ github.base_ref || 'develop' }} HEAD)..HEAD > git.diff
 
     - name: Update git diff
       id: update_git_diff
