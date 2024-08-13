@@ -15,6 +15,7 @@ Write the mutants tested in the previous jobs of the same workflow to github ste
 | `small_packages` | True if there were mutants running on small packages | true |  |
 | `shards_for_small_packages` | True if mutants on small packages were running using matrix | true |  |
 | `stacks_signer` | True if there were mutants running on stacks-signer package | true |  |
+| `too_many_mutants` | True if the workflow would timeout because of the amount of mutants. | true |  |
 
 ## Usage
 
