@@ -1,4 +1,4 @@
-import { getInput, setOutput, setFailed } from '@actions/core';
+import { getInput, setOutput } from '@actions/core';
 import { getOctokit, context } from '@actions/github';
 
 const GITHUB_API_VERSION = '2022-11-28';
@@ -31,13 +31,6 @@ async function run() {
     setOutput('is_team_member', isTeamMember);
   } catch (error) {
     setOutput('is_team_member', false);
-    if (error instanceof Error) {
-      console.error('Error:', error.message);
-      setFailed(error.message);
-    } else {
-      console.error('An unknown error occurred');
-      setFailed('An unknown error occurred');
-    }
   }
 }
 
