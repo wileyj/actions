@@ -4,6 +4,11 @@ branding:
   icon: "check"
   color: "gray-dark"
 
+inputs:
+  ignore_timeout:
+    description: "Whether to ignore the mutants timeout limit or not."
+    required: true
+
 outputs:
   run_stackslib:
     description: "True if there are mutants on `stackslib` package."
@@ -26,6 +31,9 @@ outputs:
   run_stacks_signer:
     description: "True if there are mutants on `stacks-signer` package."
     value: ${{ steps.check_packages_and_shards.outputs.run_stacks_signer }}
+  too_many_mutants:
+    description: "True if the workflow would timeout because of the amount of mutants."
+    value: ${{ steps.check_packages_and_shards.outputs.too_many_mutants }}
 
 runs:
   using: "composite"
@@ -47,7 +55,7 @@ runs:
       id: relative_diff
       shell: bash
       run: |
-        git diff $(git merge-base origin/${{ github.base_ref }} HEAD)..HEAD > git.diff
+        git diff $(git merge-base origin/${{ github.base_ref || 'develop' }} HEAD)..HEAD > git.diff
 
     - name: Update git diff
       id: update_git_diff
@@ -154,6 +162,9 @@ runs:
         number_of_stacks_node_mutants=0
         number_of_small_mutants=0
 
+        stackslib_too_many_mutants=false
+        stacks_node_too_many_mutants=false
+
         # If stackslib.txt file exists, count how many mutants there are
         if [[ -s mutants_by_packages/stackslib.txt ]]; then
           number_of_stackslib_mutants=$(cat mutants_by_packages/stackslib.txt | awk 'END { print NR }' | tr -d '[:space:]')
@@ -180,11 +191,17 @@ runs:
 
         # If there are mutants from stackslib package, check whether to run or not and with or without shards
         if [[ $number_of_stackslib_mutants -ne 0 ]]; then
-          echo "run_stackslib=true" >> "$GITHUB_OUTPUT"
-          if [[ $number_of_stackslib_mutants -gt 7 ]]; then
-            echo "stackslib_with_shards=true" >> "$GITHUB_OUTPUT"
-          else
+          if [[ "${{ inputs.ignore_timeout }}" != "true" && $number_of_stackslib_mutants -gt 72 ]]; then
+            stackslib_too_many_mutants=true
+            echo "run_stackslib=false" >> "$GITHUB_OUTPUT"
             echo "stackslib_with_shards=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_stackslib=true" >> "$GITHUB_OUTPUT"
+            if [[ $number_of_stackslib_mutants -gt 7 ]]; then
+              echo "stackslib_with_shards=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "stackslib_with_shards=false" >> "$GITHUB_OUTPUT"
+            fi
           fi
         else
           echo "run_stackslib=false" >> "$GITHUB_OUTPUT"
@@ -193,11 +210,17 @@ runs:
 
         # If there are mutants from stacks-node package, check whether to run or not and with or without shards
         if [[ $number_of_stacks_node_mutants -ne 0 ]]; then
-          echo "run_stacks_node=true" >> "$GITHUB_OUTPUT"
-          if [[ $number_of_stacks_node_mutants -gt 19 ]]; then
-            echo "stacks_node_with_shards=true" >> "$GITHUB_OUTPUT"
-          else
+          if [[ "${{ inputs.ignore_timeout }}" != "true" && $number_of_stacks_node_mutants -gt 540 ]]; then
+            stacks_node_too_many_mutants=true
+            echo "run_stacks_node=false" >> "$GITHUB_OUTPUT"
             echo "stacks_node_with_shards=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "run_stacks_node=true" >> "$GITHUB_OUTPUT"
+            if [[ $number_of_stacks_node_mutants -gt 19 ]]; then
+              echo "stacks_node_with_shards=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "stacks_node_with_shards=false" >> "$GITHUB_OUTPUT"
+            fi
           fi
         else
           echo "run_stacks_node=false" >> "$GITHUB_OUTPUT"
@@ -215,6 +238,28 @@ runs:
         else
           echo "run_small_packages=false" >> "$GITHUB_OUTPUT"
           echo "small_packages_with_shards=false" >> "$GITHUB_OUTPUT"
+        fi
+
+        # Print uncaught (missed/timeout/unviable) mutants to summary
+        if [[ $stacks_node_too_many_mutants == true || $stackslib_too_many_mutants == true ]]; then
+          echo "too_many_mutants=true" >> "$GITHUB_OUTPUT"
+
+          echo "# Packages Exceeding Default CI Runtime" >> "$GITHUB_STEP_SUMMARY"
+          echo "The following packages surpass the default Continuous Integration (CI) runtime limit of 6 hours:" >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ $stackslib_too_many_mutants == true ]]; then
+            echo "- stackslib has $number_of_stackslib_mutants mutants, while the limit is 72." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          if [[ $stacks_node_too_many_mutants == true ]]; then 
+            echo "- stacks-node has $number_of_stacks_node_mutants mutants, while the limit is 540." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "To ensure these packages are processed, it's recommended to tag @admin in the pull request (PR) so the CI can be extended for this/these package(s)." >> "$GITHUB_STEP_SUMMARY"
+          echo "Alternatively, you can run the packages locally by following the instructions in the documentation (link to docs), but it will take more time." >> "$GITHUB_STEP_SUMMARY"
+        else
+          echo "too_many_mutants=false" >> "$GITHUB_OUTPUT"
         fi
 
         exit 0

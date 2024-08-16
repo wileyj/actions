@@ -1,0 +1,27 @@
+name: 'team-membership'
+description: 'Check if a user has membership in a specific team within an organization'
+branding:
+  icon: 'check'
+  color: 'gray-dark'
+inputs:
+  organization:
+    description: 'Organization name (default is repo owner)'
+    required: false
+    default: ${{ github.repository_owner }}
+  username:
+    description: 'Username to get teams or check team membership'
+    required: true
+  team:
+    description: 'Team to check the membership'
+    required: true
+  GITHUB_TOKEN:
+    description: 'GITHUB_TOKEN'
+    required: true
+
+outputs:
+  is_team_member:
+    description: 'Boolean indicating whether the user is a member of the specified team'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

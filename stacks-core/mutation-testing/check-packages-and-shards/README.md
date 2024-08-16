@@ -4,6 +4,12 @@ Checks whether to run mutants on [stackslib](https://github.com/stacks-network/s
 
 ## Documentation
 
+### Inputs
+
+| Input            | Description                                         | Required | Default |
+| ---------------- | --------------------------------------------------- | -------- | ------- |
+| `ignore_timeout` | Whether to ignore the mutants timeout limit or not. |   true   |    -    |
+
 ### Outputs
 | Output | Description |
 | ------------------------------- | ----------------------------------------------------- |
@@ -14,6 +20,7 @@ Checks whether to run mutants on [stackslib](https://github.com/stacks-network/s
 | `run_small_packages` | True if there are mutants on small packages, false otherwise.
 | `small_packages_with_shards` | True if there are more than 79 mutants on small packages.
 | `run_stacks_signer` | True if there are mutants on `stacks-signer` package.
+| `too_many_mutants` | True if the workflow would timeout because of the amount of mutants.
 
 ## Usage
 

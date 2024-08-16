@@ -26,6 +26,8 @@ inputs:
   stacks_signer:
     description: "True if there were mutants running on stacks-signer package."
     required: true
+  too_many_mutants:
+    description: "True if the workflow would timeout because of the amount of mutants."
 
 runs:
   using: "composite"
@@ -255,4 +257,10 @@ runs:
             exit $exit_code
           ;;
         esac
+
+        if ${{ inputs.too_many_mutants }} == "true"; then
+          echo "Mutants on some of the packages were not run because the workflow would have been timeouted."
+          exit 1
+        fi
+
         exit 0
