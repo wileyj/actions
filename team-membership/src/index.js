@@ -30,6 +30,7 @@ async function run() {
 
     setOutput('is_team_member', isTeamMember);
   } catch (error) {
+    console.log(`Is the user a team member? false`);
     setOutput('is_team_member', false);
   }
 }
