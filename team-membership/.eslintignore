@@ -1,0 +1,12 @@
+# Ignore built files
+dist
+build
+
+# Ignore node_modules
+node_modules
+
+# Ignore coverage reports
+coverage
+
+# Ignore configuration files
+*.config.js
