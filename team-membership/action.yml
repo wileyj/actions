@@ -23,5 +23,5 @@ outputs:
     description: 'Boolean indicating whether the user is a member of the specified team'
 
 runs:
-  using: 'node16'
+  using: 'node20'
   main: 'dist/index.js'
