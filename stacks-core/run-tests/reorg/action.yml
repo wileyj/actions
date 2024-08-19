@@ -87,12 +87,12 @@ runs:
         cargo nextest run \
           --verbose \
           --archive-file ${{ inputs.archive-file }} \
-          --test-threads ${{ inputs.threads }} \
+          --test-threads 1 \
           --retries 0 \
           --run-ignored all \
-          --fail-fast \
-          --success-output ${{ inputs.success-output }} \
-          --status-level ${{ inputs.status-level }} \
+          --no-fail-fast \
+          --success-output immediate-final \
+          --status-level fail \
           -E "test(=${{ inputs.test-name }})"
 
     # - name: Check bitcoind logs
