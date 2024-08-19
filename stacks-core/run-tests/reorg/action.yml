@@ -93,6 +93,7 @@ runs:
           --fail-fast \
           --success-output ${{ inputs.success-output }} \
           --status-level ${{ inputs.status-level }} \
+          --leak-timeout 5000ms \
           "${{ inputs.test-name }}"
 
     # - name: Check bitcoind logs
