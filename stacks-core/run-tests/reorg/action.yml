@@ -88,7 +88,7 @@ runs:
           --verbose \
           --archive-file ${{ inputs.archive-file }} \
           --test-threads ${{ inputs.threads }} \
-          --retries ${{ inputs.retries }} \
+          --retries 0 \
           --run-ignored all \
           --fail-fast \
           --success-output ${{ inputs.success-output }} \
