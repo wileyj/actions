@@ -86,14 +86,14 @@ runs:
       run: |
         cargo nextest run \
           --verbose \
-          --archive-file ${{ inputs.archive-file }} \
+          --archive-file ~/test_archive.tar.zst \
           --test-threads 1 \
           --retries 0 \
           --run-ignored all \
           --no-fail-fast \
           --success-output immediate-final \
           --status-level fail \
-          -E "test(=${{ inputs.test-name }})"
+          -E "test(=tests::neon_integrations::mock_miner_replay)"
 
     # - name: Check bitcoind logs
     #   if: always()
