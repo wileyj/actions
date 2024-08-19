@@ -256,8 +256,8 @@ runs:
           fi
 
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "To ensure these packages are processed, it's recommended to tag @admin in the pull request (PR) so the CI can be extended for this/these package(s)." >> "$GITHUB_STEP_SUMMARY"
-          echo "Alternatively, you can run the packages locally by following the instructions in the documentation (link to docs), but it will take more time." >> "$GITHUB_STEP_SUMMARY"
+          echo "To ensure these packages are processed, it's recommended to tag [@stacks-network/blockchain-team](https://github.com/orgs/stacks-network/teams/blockchain-team) team in the pull request so the CI can be extended for these packages." >> "$GITHUB_STEP_SUMMARY"
+          echo "Alternatively, you can run the packages locally by following the instructions in the [documentation](https://github.com/stacks-network/stacks-core/blob/develop/docs/mutation-testing.md), but it will take more time and the CI action has a better formatted output." >> "$GITHUB_STEP_SUMMARY"
         else
           echo "too_many_mutants=false" >> "$GITHUB_OUTPUT"
         fi

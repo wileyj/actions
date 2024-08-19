@@ -1,6 +1,7 @@
 # Check Packages and Shards action
 
 Checks whether to run mutants on [stackslib](https://github.com/stacks-network/stacks-core/tree/develop/stackslib), [stacks-node](https://github.com/stacks-network/stacks-core/tree/develop/testnet/stacks-node), [stacks-signer](https://github.com/stacks-network/stacks-core/tree/develop/stacks-signer), or small packages (all others), and whether to run them using strategy matrix or not.
+If manually run on CI, it requires a member of [@stacks-network/blockchain-team](https://github.com/orgs/stacks-network/teams/blockchain-team) to trigger the whole mutants workflow.
 
 ## Documentation
 

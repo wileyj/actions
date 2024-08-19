@@ -1,8 +1,11 @@
 # TeamMembership action
 
-Check if the specified user belongs to a given team.
+Modified version of this [composite action](https://github.com/marcocarvalho/team-membership).
 
-It emits one outputs which are available via the `steps` [output context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context)
+The primary difference in this action is that it focuses on checking if a specified user is a member of a given team. 
+Additionally, this version runs on Node.js 20 instead of Node.js 16.
+
+The action produces a single output, which can be accessed through the `steps` [output context](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#steps-context).
 
 ## Documentation
 
