@@ -45,5 +45,4 @@ runs:
           --fail-fast \
           --success-output ${{ inputs.success-output }} \
           --status-level ${{ inputs.status-level }} \
-          --no-capture \
           -E "test(=${{ inputs.test-name }})"
