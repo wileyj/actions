@@ -27,7 +27,7 @@ inputs:
   retries:
     description: "Number of test retries"
     required: false
-    default: "2"
+    default: "0"
 
 runs:
   using: "composite"
