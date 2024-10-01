@@ -39,7 +39,7 @@ runs:
         cargo nextest run \
           --verbose \
           --archive-file ${{ inputs.archive-file }} \
-          --test-threads ${{ inputs.threads }} \
+          ${{ inputs.threads == '1' && '--no-capture' || format('--test-threads {0}', inputs.threads) }} \
           --retries ${{ inputs.retries }} \
           --run-ignored all \
           --fail-fast \
