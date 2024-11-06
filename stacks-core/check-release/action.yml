@@ -8,15 +8,24 @@ inputs:
     default: ""
 
 outputs:
-  tag:
-    description: "The release tag, if there is one (empty otherwise)."
-    value: ${{ steps.check_release.outputs.tag }}
-  docker_tag:
-    description: "The release tag for docker, if there is one (empty otherwise)."
-    value: ${{ steps.check_release.outputs.docker_tag }}
-  is_release:
+  node_tag:
+    description: "The node release tag, if there is one (empty otherwise)."
+    value: ${{ steps.check_release.outputs.node_tag }}
+  node_docker_tag:
+    description: "The node release tag for docker, if there is one (empty otherwise)."
+    value: ${{ steps.check_release.outputs.node_docker_tag }}
+  signer_tag:
+    description: "The signer release tag, if there is one (empty otherwise)."
+    value: ${{ steps.check_release.outputs.signer_tag }}
+  signer_docker_tag:
+    description: "The signer release tag for docker, if there is one (empty otherwise)."
+    value: ${{ steps.check_release.outputs.signer_docker_tag }}
+  is_node_release:
     description: "True if the branch is a release one, false otherwise."
-    value: ${{ steps.check_release.outputs.is_release }}
+    value: ${{ steps.check_release.outputs.is_node_release }}
+  is_signer_release:
+    description: "True if the branch is a release one, false otherwise."
+    value: ${{ steps.check_release.outputs.is_signer_release }}
 
 runs:
   using: "composite"
@@ -36,26 +45,36 @@ runs:
         stacks_core_regex="${stacks_core_regex_base}${stacks_core_version_regex}"
         signer_regex="${signer_regex_base}${signer_version_regex}"
 
-        tag=""
-        docker_tag=""
-        is_release=false
+        node_tag=""
+        node_docker_tag=""
+        signer_tag=""
+        signer_docker_tag=""
+        is_node_release=false
+        is_signer_release=false
 
         if [[ "$branch_name" =~ ^${stacks_core_regex}$ || "$branch_name" =~ ^${signer_regex}$ ]]; then
-          tag=$(echo "$branch_name" | sed "s|^${stacks_core_regex_base}||g")
           case ${branch_name} in
             release/signer-[0-9]*)
-              docker_tag=$(echo "$branch_name" | sed "s|^${signer_regex_base}||g")
-              is_release=true
+              signer_tag=$(echo "$branch_name" | sed "s|^${stacks_core_regex_base}||g")
+              signer_docker_tag=$(echo "$branch_name" | sed "s|^${signer_regex_base}||g")
+              is_signer_release=true
               ;;
             *)
-              docker_tag=${tag}
-              is_release=true
+              node_tag=$(echo "$branch_name" | sed "s|^${stacks_core_regex_base}||g")
+              node_docker_tag=${node_tag}
+              signer_tag="signer-$(echo ${node_tag} | sed 's/\(-[^-]*\)*$/.0\1/')"
+              signer_docker_tag=$(echo ${node_tag} | sed 's/\(-[^-]*\)*$/.0\1/')
+              is_node_release=true
+              is_signer_release=true
               ;;
           esac
         fi
 
-        echo "tag=$tag" >> "$GITHUB_OUTPUT"
-        echo "docker_tag=$docker_tag" >> "$GITHUB_OUTPUT"
-        echo "is_release=$is_release" >> "$GITHUB_OUTPUT"
+        echo "node_tag=$node_tag" >> "$GITHUB_OUTPUT"
+        echo "node_docker_tag=$node_docker_tag" >> "$GITHUB_OUTPUT"
+        echo "signer_tag=$signer_tag" >> "$GITHUB_OUTPUT"
+        echo "signer_docker_tag=$signer_docker_tag" >> "$GITHUB_OUTPUT"
+        echo "is_node_release=$is_node_release" >> "$GITHUB_OUTPUT"
+        echo "is_signer_release=$is_signer_release" >> "$GITHUB_OUTPUT"
 
         exit 0
