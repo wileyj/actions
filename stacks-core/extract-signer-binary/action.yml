@@ -49,7 +49,7 @@ runs:
             ;;
         esac
         echo "ZIPFILE=${{ inputs.arch }}-${ARCHIVE_NAME}" >> "$GITHUB_ENV"
-        echo "CACHE_NAME=${{ inputs.cache_pattern }}-binary-build-${{ env.ZIPFILE }}" >> "$GITHUB_ENV"
+        echo "CACHE_NAME=${{ inputs.cache_pattern }}-binary-build-${{ inputs.arch }}-${ARCHIVE_NAME}" >> "$GITHUB_ENV"
 
     ## Downloads the artifacts built in `create-source-binary.yml`
     - name: Download Artifacts
