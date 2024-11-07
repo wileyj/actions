@@ -60,6 +60,13 @@ runs:
         path: release
         merge-multiple: true
 
+    - name: Test Prints
+      shell: bash
+      run: |
+        ls
+        echo "---"
+        ls release
+
     ## Remove everything but the signer from the archive
     - name: Remove binaries
       id: remove_binaries
