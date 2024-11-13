@@ -12,11 +12,11 @@ inputs:
   cpu:
     description: "CPU to build binary"
     required: true
-  tag:
-    description: "Release Tag"
+  signer_tag:
+    description: "Signer Release Tag"
     required: true
-  cache_pattern:
-    description: "The artifact pattern of the cache"
+  node_tag:
+    description: "The artifact pattern of the node cache"
     required: true
 
 runs:

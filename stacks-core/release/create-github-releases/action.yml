@@ -1,0 +1,41 @@
+## Github workflow to create and upload github releases
+name: Create Releases
+description: "Create GitHub Releases"
+branding:
+  icon: "archive"
+  color: "gray-dark"
+
+inputs:
+  node_tag:
+    description: "Node Release Tag"
+    required: true
+  signer_tag:
+    description: "Signer Release Tag"
+    required: true
+  is_node_release:
+    description: "True if it is a node release"
+    required: true
+  is_signer_release:
+    description: "True if it is a signer release"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    ## Creates the node release
+    - name: Create Node Release
+      if: |
+        inputs.is_node_release == 'true'
+      id: create_node_release
+      uses: stacks-network/actions/stacks-core/release/create-release@feat/release-signer-alongside-node
+      with:
+        tag: ${{ inputs.node_tag }}
+
+    ## Creates the signer release
+    - name: Create Signer Release
+      if: |
+        inputs.is_signer_release == 'true'
+      id: create_signer_release
+      uses: stacks-network/actions/stacks-core/release/create-release@feat/release-signer-alongside-node
+      with:
+        tag: ${{ inputs.signer_tag }}
