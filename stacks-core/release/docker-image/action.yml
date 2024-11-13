@@ -36,11 +36,13 @@ runs:
       id: set_env
       if: |
         github.repository_owner != 'stacks-network'
+      shell: bash
       run: |
         echo "docker-org=${{ github.repository_owner }}" >> "$GITHUB_ENV"
 
     - name: Check Signer Release
       id: check_signer_release
+      shell: bash
       run: |
         case "${{ inputs.tag }}" in
           signer-*)
