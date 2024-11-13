@@ -24,6 +24,12 @@ inputs:
   is_signer_release:
     description: "True if it is a signer release"
     required: true
+  DOCKERHUB_USERNAME:
+    description: "Docker username for publishing images"
+    required: true
+  DOCKERHUB_PASSWORD:
+    description: "Docker password for publishing images"
+    required: true
 
 runs:
   using: "composite"
@@ -47,3 +53,5 @@ runs:
       with:
         tag: ${{ inputs.signer_tag }}
         docker_tag: ${{ inputs.signer_docker_tag }}
+        DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
