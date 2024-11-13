@@ -9,6 +9,9 @@ inputs:
   tag:
     description: "Release Tag"
     required: true
+  GH_TOKEN:
+    description: "GitHub Token"
+    required: true
 
 runs:
   using: "composite"
@@ -34,7 +37,7 @@ runs:
       id: upload_release
       uses: softprops/action-gh-release@69320dbe05506a9a39fc8ae11030b214ec2d1f87 #v2.0.5
       env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        GITHUB_TOKEN: ${{ inputs.GH_TOKEN }}
       with:
         name: Release ${{ inputs.tag || github.ref }}
         tag_name: ${{ inputs.tag || github.ref }}
