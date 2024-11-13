@@ -72,5 +72,5 @@ runs:
       id: upload_artifact
       uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
       with:
-        name: ${{ inputs.tag }}-binary-build-${{ env.ZIPFILE }}
+        name: ${{ inputs.signer_tag }}-binary-build-${{ env.ZIPFILE }}
         path: ./release/${{ env.ZIPFILE }}.zip
