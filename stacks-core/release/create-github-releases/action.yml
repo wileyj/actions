@@ -42,4 +42,4 @@ runs:
       uses: stacks-network/actions/stacks-core/release/create-release@feat/release-signer-alongside-node
       with:
         tag: ${{ inputs.signer_tag }}
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_TOKEN: ${{ inputs.GH_TOKEN }}
