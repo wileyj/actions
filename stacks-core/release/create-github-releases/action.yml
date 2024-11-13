@@ -33,6 +33,7 @@ runs:
       uses: stacks-network/actions/stacks-core/release/create-release@feat/release-signer-alongside-node
       with:
         tag: ${{ inputs.node_tag }}
+        GH_TOKEN: ${{ inputs.GH_TOKEN }}
 
     ## Creates the signer release
     - name: Create Signer Release
