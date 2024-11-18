@@ -25,9 +25,9 @@ RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
             ;; \
     esac \
     && CC=arm-linux-gnueabihf-gcc \
-    CC_armv7_unknown_linux_gnueabihf=arm-linux-gnueabihf-gcc \
-    CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc \
-    cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
+    && CC_armv7_unknown_linux_gnueabihf=arm-linux-gnueabihf-gcc \
+    && CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc \
+    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
     # Conditionally rebuild `stacks-signer` if GIT_BRANCH does NOT contain "signer"
     && if echo "${GIT_BRANCH}" | grep -vq "signer"; then \
         STACKS_NODE_VERSION="${STACKS_NODE_VERSION}.0"; \

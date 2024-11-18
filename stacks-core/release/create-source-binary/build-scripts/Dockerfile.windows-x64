@@ -27,8 +27,8 @@ RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
             ;; \
     esac \
     && CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc \
-    CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc \
-    cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
+    && CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc \
+    && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
     # Conditionally rebuild `stacks-signer` if GIT_BRANCH does NOT contain "signer"
     && if echo "${GIT_BRANCH}" | grep -vq "signer"; then \
         STACKS_NODE_VERSION="${STACKS_NODE_VERSION}.0"; \
