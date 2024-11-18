@@ -12,8 +12,8 @@ inputs:
   cpu:
     description: "CPU to build binary"
     required: true
-  signer_tag:
-    description: "Signer Release Tag"
+  docker_signer_tag:
+    description: "Docker Signer Release Tag"
     required: true
   node_tag:
     description: "The artifact pattern of the node cache"
@@ -72,5 +72,5 @@ runs:
       id: upload_artifact
       uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
       with:
-        name: ${{ inputs.signer_tag }}-binary-build-${{ env.ZIPFILE }}
+        name: ${{ inputs.docker_signer_tag }}-binary-build-${{ env.ZIPFILE }}
         path: ./release/${{ env.ZIPFILE }}.zip

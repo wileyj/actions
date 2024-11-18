@@ -6,13 +6,13 @@ Builds the binaries for the given architecture and uploads it to artifacts. In c
 
 ### Inputs
 
-| Input             | Description                  | Required | Default |
-| ----------------- | ---------------------------- | -------- | ------- |
-|       `arch`      | Binary's build architecture  | `true`   | null    |
-|       `cpu`       | The target CPU               | `true`   | null    |
-|     `node_tag`    | Node Release Tag             | `true`   | null    |
-|    `signer_tag`   | Signer Release Tag           | `true`   | null    |
-| `is_node_release` | True if it is a node release | `true`   | null    |
+| Input               | Description                  | Required | Default |
+| ------------------- | ---------------------------- | -------- | ------- |
+|        `arch`       | Binary's build architecture  | `true`   | null    |
+|        `cpu`        | The target CPU               | `true`   | null    |
+|      `node_tag`     | Node Release Tag             | `true`   | null    |
+| `docker_signer_tag` | Docker Signer Release Tag    | `true`   | null    |
+|  `is_node_release`  | True if it is a node release | `true`   | null    |
 
 ## Usage
 
@@ -31,6 +31,6 @@ jobs:
           arch: linux-glibc
           cpu: x86-64
           node_tag: 2.4.0.1.0-rc2
-          signer_tag: 2.4.0.1.0.0-rc2
+          docker_signer_tag: 2.4.0.1.0.0-rc2
           is_node_release: 'true'
 ```
