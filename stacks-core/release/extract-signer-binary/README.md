@@ -10,7 +10,7 @@ Extracts the signer binary for the given architecture from the existing archives
 | ------------------- | -------------------------------------- | -------- | ------- |
 |        `arch`       | Binary's build architecture            |  `true`  |   null  |
 |        `cpu`        | The target CPU                         |  `true`  |   null  |
-| `docker_signer_tag` | Docker Signer Release Tag              |  `true`  |   null  |
+| `signer_docker_tag` | Signer Docker Release Tag              |  `true`  |   null  |
 |      `node_tag`     | The artifact pattern of the node cache |  `true`  |   null  |
 
 ## Usage
@@ -29,6 +29,6 @@ jobs:
         with:
           arch: linux-glibc
           cpu: x86-64
-          docker_signer_tag: 3.0.0.0.1.0-rc1
+          signer_docker_tag: 3.0.0.0.1.0-rc1
           node_tag: 3.0.0.0.1-rc1
 ```
