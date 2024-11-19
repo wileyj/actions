@@ -9,8 +9,8 @@ inputs:
   node_tag:
     description: "Node Release Tag"
     required: true
-  signer_tag:
-    description: "Signer Release Tag"
+  signer_docker_tag:
+    description: "Signer Docker Release Tag"
     required: true
   is_node_release:
     description: "True if it is a node release"
@@ -42,5 +42,5 @@ runs:
       id: create_signer_release
       uses: stacks-network/actions/stacks-core/release/create-release@feat/release-signer-alongside-node
       with:
-        tag: ${{ inputs.signer_tag }}
+        tag: ${{ inputs.signer_docker_tag }}
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
