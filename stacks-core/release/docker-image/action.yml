@@ -74,11 +74,11 @@ runs:
         images: |
           ${{env.docker-org}}/stacks-signer
         tags: |
-          type=raw,value=latest,enable=${{ inputs.docker_tag != '' && ${{ env.docker_tag_rc == 'true' }} && matrix.dist == 'debian' }}
+          type=raw,value=latest,enable=${{ inputs.docker_tag != '' && env.docker_tag_rc == 'true' && matrix.dist == 'debian' }}
           type=raw,value=${{ inputs.docker_tag }}-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && matrix.dist == 'debian'}}
           type=raw,value=${{ inputs.docker_tag }},enable=${{ inputs.docker_tag != '' && matrix.dist == 'debian' }}
           type=ref,event=tag,enable=${{ matrix.dist == 'debian' }}
-          type=raw,value=latest-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && ${{ env.docker_tag_rc == 'true' }} && matrix.dist == 'alpine' }}
+          type=raw,value=latest-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && env.docker_tag_rc == 'true' && matrix.dist == 'alpine' }}
           type=raw,value=${{ inputs.docker_tag }}-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && matrix.dist == 'alpine' }}
 
     - name: Docker Metadata ( ${{matrix.dist}} )
@@ -91,11 +91,11 @@ runs:
           ${{env.docker-org}}/${{ github.event.repository.name }}
           ${{env.docker-org}}/stacks-blockchain
         tags: |
-          type=raw,value=latest,enable=${{ inputs.docker_tag != '' && ${{ env.docker_tag_rc == 'true' }} && matrix.dist == 'debian' }}
+          type=raw,value=latest,enable=${{ inputs.docker_tag != '' && env.docker_tag_rc == 'true' && matrix.dist == 'debian' }}
           type=raw,value=${{ inputs.docker_tag }}-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && matrix.dist == 'debian'}}
           type=raw,value=${{ inputs.docker_tag }},enable=${{ inputs.docker_tag != '' && matrix.dist == 'debian' }}
           type=ref,event=tag,enable=${{ matrix.dist == 'debian' }}
-          type=raw,value=latest-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && ${{ env.docker_tag_rc == 'true' }} && matrix.dist == 'alpine' }}
+          type=raw,value=latest-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && env.docker_tag_rc == 'true' && matrix.dist == 'alpine' }}
           type=raw,value=${{ inputs.docker_tag }}-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && matrix.dist == 'alpine' }}
 
     ## Build docker image for signer release
