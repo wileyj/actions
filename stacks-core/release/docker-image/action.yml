@@ -18,6 +18,9 @@ inputs:
   DOCKERHUB_PASSWORD:
     description: "Docker password for publishing images"
     required: true
+  dist:
+    description: "Linux Distribution to build for"
+    required: true
 
 runs:
   using: "composite"

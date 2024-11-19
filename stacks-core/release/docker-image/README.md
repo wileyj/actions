@@ -12,6 +12,7 @@ Creates a docker image for the given tag and uploads it to dockerhub.
 |     `docker_tag`     | Version tag for docker images         |  `true`  |   null  |
 | `DOCKERHUB_USERNAME` | Docker username for publishing images |  `true`  |   null  |
 | `DOCKERHUB_PASSWORD` | Docker password for publishing images |  `true`  |   null  |
+|        `dist`        | Linux Distribution to build for       |  `true`  |   null  |
 
 ## Usage
 

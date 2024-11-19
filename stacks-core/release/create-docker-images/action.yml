@@ -30,6 +30,9 @@ inputs:
   DOCKERHUB_PASSWORD:
     description: "Docker password for publishing images"
     required: true
+  dist:
+    description: "Linux Distribution to build for"
+    required: true
 
 runs:
   using: "composite"
@@ -45,6 +48,7 @@ runs:
         docker_tag: ${{ inputs.node_docker_tag }}
         DOCKERHUB_USERNAME: ${{ inputs.DOCKERHUB_USERNAME }}
         DOCKERHUB_PASSWORD: ${{ inputs.DOCKERHUB_PASSWORD }}
+        dist: ${{ inputs.dist }}
 
     ## Creates the signer docker image
     - name: Create Signer Docker Image
@@ -57,3 +61,4 @@ runs:
         docker_tag: ${{ inputs.signer_docker_tag }}
         DOCKERHUB_USERNAME: ${{ inputs.DOCKERHUB_USERNAME }}
         DOCKERHUB_PASSWORD: ${{ inputs.DOCKERHUB_PASSWORD }}
+        dist: ${{ inputs.dist }}
