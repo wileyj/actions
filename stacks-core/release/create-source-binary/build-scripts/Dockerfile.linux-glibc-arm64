@@ -24,9 +24,9 @@ RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
             BUILD_ARG="" \
             ;; \
     esac \
-    && CC=aarch64-linux-gnu-gcc \
-    && CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc \
-    && CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
+    && export CC=aarch64-linux-gnu-gcc \
+    && export CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc \
+    && export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
     && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
     # Conditionally rebuild `stacks-signer` if GIT_BRANCH does NOT contain "signer"
     && if echo "${GIT_BRANCH}" | grep -vq "signer"; then \
