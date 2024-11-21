@@ -15,6 +15,9 @@ inputs:
   node_tag:
     description: "Node Release Tag"
     required: true
+  signer_tag:
+    description: "Signer Release Tag"
+    required: true
   signer_docker_tag:
     description: "Signer Docker Release Tag"
     required: true
@@ -83,7 +86,7 @@ runs:
           TARGET_CPU=${{ env.TARGET_CPU }}
           GIT_BRANCH=${{ env.GITHUB_REF_SHORT }}
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
-          TAG=${{ inputs.node_tag || inputs.signer_docker_tag }}
+          TAG=${{ inputs.node_tag || inputs.signer_tag }}
 
     ## Compress the binary artifact
     - name: Compress artifact

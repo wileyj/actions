@@ -11,6 +11,7 @@ Builds the binaries for the given architecture and uploads it to artifacts. In c
 |        `arch`       | Binary's build architecture  | `true`   | null    |
 |        `cpu`        | The target CPU               | `true`   | null    |
 |      `node_tag`     | Node Release Tag             | `true`   | null    |
+|     `signer_tag`    | Signer Release Tag           | `true`   | null    |
 | `signer_docker_tag` | Signer Docker Release Tag    | `true`   | null    |
 |  `is_node_release`  | True if it is a node release | `true`   | null    |
 
@@ -31,6 +32,7 @@ jobs:
           arch: linux-glibc
           cpu: x86-64
           node_tag: 2.4.0.1.0-rc2
+          signer_tag: signer-2.4.0.1.0-rc2
           signer_docker_tag: 2.4.0.1.0.0-rc2
           is_node_release: 'true'
 ```
