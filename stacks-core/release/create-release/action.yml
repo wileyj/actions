@@ -31,7 +31,7 @@ runs:
     ## Generate a checksums file to be added to the release page
     - name: Generate Checksums
       id: generate_checksum
-      uses: stacks-network/actions/generate-checksum@feat/release-signer-alongside-node
+      uses: stacks-network/actions/generate-checksum@main
       with:
         artifact_download_pattern: "${{ inputs.docker_tag }}-binary-build-*"
 

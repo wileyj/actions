@@ -20,7 +20,7 @@ runs:
     # Cleanup Runner
     - name: Cleanup Runner
       id: runner_cleanup
-      uses: stacks-network/actions/cleanup/disk@feat/release-signer-alongside-node
+      uses: stacks-network/actions/cleanup/disk@main
 
     # Checkout the stacks-core code
     - name: Checkout stacks-core repo
