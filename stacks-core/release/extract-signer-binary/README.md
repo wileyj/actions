@@ -6,12 +6,12 @@ Extracts the signer binary for the given architecture from the existing archives
 
 ### Inputs
 
-|    Input            |               Description              | Required | Default |
+| Input               | Description                            | Required | Default |
 | ------------------- | -------------------------------------- | -------- | ------- |
-|        `arch`       | Binary's build architecture            |  `true`  |   null  |
-|        `cpu`        | The target CPU                         |  `true`  |   null  |
-| `signer_docker_tag` | Signer Docker Release Tag              |  `true`  |   null  |
-|      `node_tag`     | The artifact pattern of the node cache |  `true`  |   null  |
+| `arch`              | Binary's build architecture            | `true`   | null    |
+| `cpu`               | The target CPU                         | `true`   | null    |
+| `signer_docker_tag` | Signer Docker Release Tag              | `true`   | null    |
+| `node_tag`          | The artifact pattern of the node cache | `true`   | null    |
 
 ## Usage
 

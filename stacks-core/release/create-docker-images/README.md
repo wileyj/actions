@@ -6,17 +6,17 @@ Creates docker images for the node and the signer.
 
 ### Inputs
 
-|        Input         |               Description             | Required | Default |
+| Input                | Description                           | Required | Default |
 | -------------------- | ------------------------------------- | -------- | ------- |
-|     `node_tag`       | Node Release Tag                      |  `true`  |   null  |
-|  `node_docker_tag`   | Node Docker Release Tag               |  `true`  |   null  |
-|    `signer_tag`      | Signer Release Tag                    |  `true`  |   null  |
-| `signer_docker_tag`  | Signer Docker Release Tag             |  `true`  |   null  |
-|  `is_node_release`   | True if it is a node release          |  `true`  |   null  |
-| `is_signer_release`  | True if it is a signer release        |  `true`  |   null  |
-| `DOCKERHUB_USERNAME` | Docker username for publishing images |  `true`  |   null  |
-| `DOCKERHUB_PASSWORD` | Docker password for publishing images |  `true`  |   null  |
-|        `dist`        | Linux Distribution to build for       |  `true`  |   null  |
+| `node_tag`           | Node Release Tag                      | `true`   | null    |
+| `node_docker_tag`    | Node Docker Release Tag               | `true`   | null    |
+| `signer_tag`         | Signer Release Tag                    | `true`   | null    |
+| `signer_docker_tag`  | Signer Docker Release Tag             | `true`   | null    |
+| `is_node_release`    | True if it is a node release          | `true`   | null    |
+| `is_signer_release`  | True if it is a signer release        | `true`   | null    |
+| `DOCKERHUB_USERNAME` | Docker username for publishing images | `true`   | null    |
+| `DOCKERHUB_PASSWORD` | Docker password for publishing images | `true`   | null    |
+| `dist`               | Linux Distribution to build for       | `true`   | null    |
 
 ## Usage
 

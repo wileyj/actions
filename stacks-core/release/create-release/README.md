@@ -6,11 +6,11 @@ Creates a github release for the given tag.
 
 ### Inputs
 
-|     Input    |     Description    | Required | Default |
+| Input        | Description        | Required | Default |
 | ------------ | ------------------ | -------- | ------- |
-|    `tag`     | Release Tag        |  `true`  |   null  |
-| `docker_tag` | Release Docker Tag |  `true`  |   null  |
-|  `GH_TOKEN`  | GitHub Token       |  `true`  |   null  |
+| `tag`        | Release Tag        | `true`   | null    |
+| `docker_tag` | Release Docker Tag | `true`   | null    |
+| `GH_TOKEN`   | GitHub Token       | `true`   | null    |
 
 ## Usage
 

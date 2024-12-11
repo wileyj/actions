@@ -8,12 +8,12 @@ Builds the binaries for the given architecture and uploads it to artifacts. In c
 
 | Input               | Description                  | Required | Default |
 | ------------------- | ---------------------------- | -------- | ------- |
-|        `arch`       | Binary's build architecture  | `true`   | null    |
-|        `cpu`        | The target CPU               | `true`   | null    |
-|      `node_tag`     | Node Release Tag             | `true`   | null    |
-|     `signer_tag`    | Signer Release Tag           | `true`   | null    |
+| `arch`              | Binary's build architecture  | `true`   | null    |
+| `cpu`               | The target CPU               | `true`   | null    |
+| `node_tag`          | Node Release Tag             | `true`   | null    |
+| `signer_tag`        | Signer Release Tag           | `true`   | null    |
 | `signer_docker_tag` | Signer Docker Release Tag    | `true`   | null    |
-|  `is_node_release`  | True if it is a node release | `true`   | null    |
+| `is_node_release`   | True if it is a node release | `true`   | null    |
 
 ## Usage
 

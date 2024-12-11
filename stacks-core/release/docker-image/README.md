@@ -6,13 +6,13 @@ Creates a docker image for the given tag and uploads it to dockerhub.
 
 ### Inputs
 
-|        Input         |               Description             | Required | Default |
+| Input                | Description                           | Required | Default |
 | -------------------- | ------------------------------------- | -------- | ------- |
-|        `tag`         | Version tag of release                |  `true`  |   null  |
-|     `docker_tag`     | Version tag for docker images         |  `true`  |   null  |
-| `DOCKERHUB_USERNAME` | Docker username for publishing images |  `true`  |   null  |
-| `DOCKERHUB_PASSWORD` | Docker password for publishing images |  `true`  |   null  |
-|        `dist`        | Linux Distribution to build for       |  `true`  |   null  |
+| `tag`                | Version tag of release                | `true`   | null    |
+| `docker_tag`         | Version tag for docker images         | `true`   | null    |
+| `DOCKERHUB_USERNAME` | Docker username for publishing images | `true`   | null    |
+| `DOCKERHUB_PASSWORD` | Docker password for publishing images | `true`   | null    |
+| `dist`               | Linux Distribution to build for       | `true`   | null    |
 
 ## Usage
 
