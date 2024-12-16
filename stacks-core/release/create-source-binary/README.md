@@ -32,7 +32,7 @@ jobs:
           arch: linux-glibc
           cpu: x86-64
           node_tag: 2.4.0.1.0-rc2
-          signer_tag: signer-2.4.0.1.0-rc2
+          signer_tag: signer-2.4.0.1.0.0-rc2
           signer_docker_tag: 2.4.0.1.0.0-rc2
           is_node_release: 'true'
 ```

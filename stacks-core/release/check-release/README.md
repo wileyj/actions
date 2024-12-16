@@ -16,7 +16,7 @@ Checks whether the tag parsed as argument matches a stacks-node release, a stack
 | `node_docker_tag`   | The node release tag for docker, if there is one (empty otherwise).   |
 | `signer_tag`        | The signer release tag, if there is one (empty otherwise).            |
 | `signer_docker_tag` | The signer release tag for docker, if there is one (empty otherwise). |
-|  `is_node_release`  | True if the branch is a node release one, false otherwise.            |
+| `is_node_release`   | True if the branch is a node release one, false otherwise.            |
 | `is_signer_release` | True if the branch is a signer release one, false otherwise.          |
 
 ## Usage

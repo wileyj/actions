@@ -103,8 +103,8 @@ runs:
         name: ${{ inputs.node_tag || inputs.signer_docker_tag }}-binary-build-${{ env.ZIPFILE }}
         path: ${{ env.ZIPFILE }}.zip
 
-    ## Extract the signer binaries from the previously built node archives
-    - name: Extract signer binary
+    ## Extract and upload the signer binaries from the previously built node archives
+    - name: Extract and upload signer binary
       if: |
         inputs.is_node_release == 'true'
       id: extract_signer_binary
