@@ -12,17 +12,8 @@ inputs:
   cpu:
     description: "CPU to build binary"
     required: true
-  node_tag:
-    description: "Node Release Tag"
-    required: true
-  signer_tag:
-    description: "Signer Release Tag"
-    required: true
-  signer_docker_tag:
-    description: "Signer Docker Release Tag"
-    required: true
-  is_node_release:
-    description: "True if it is a node release"
+  tag:
+    description: "Release Tag"
     required: true
 
 runs:
@@ -81,12 +72,12 @@ runs:
         file: ${{ github.action_path }}/build-scripts/${{ env.DOCKERFILE }}
         outputs: type=local,dest=./release/${{ inputs.arch }}
         build-args: |
-          STACKS_NODE_VERSION=${{ inputs.node_tag || inputs.signer_docker_tag || env.GITHUB_SHA_SHORT }}
+          STACKS_NODE_VERSION=${{ inputs.tag || env.GITHUB_SHA_SHORT }}
           OS_ARCH=${{ inputs.arch }}
           TARGET_CPU=${{ env.TARGET_CPU }}
           GIT_BRANCH=${{ env.GITHUB_REF_SHORT }}
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
-          TAG=${{ inputs.node_tag || inputs.signer_tag }}
+          TAG=${{ inputs.tag }}
 
     ## Compress the binary artifact
     - name: Compress artifact
@@ -100,17 +91,5 @@ runs:
       id: upload_artifact
       uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
       with:
-        name: ${{ inputs.node_tag || inputs.signer_docker_tag }}-binary-build-${{ env.ZIPFILE }}
+        name: ${{ inputs.tag }}-binary-build-${{ env.ZIPFILE }}
         path: ${{ env.ZIPFILE }}.zip
-
-    ## Extract and upload the signer binaries from the previously built node archives
-    - name: Extract and upload signer binary
-      if: |
-        inputs.is_node_release == 'true'
-      id: extract_signer_binary
-      uses: stacks-network/actions/stacks-core/release/extract-signer-binary@main
-      with:
-        arch: ${{ inputs.arch }}
-        cpu: ${{ inputs.cpu }}
-        signer_docker_tag: ${{ inputs.signer_docker_tag }}
-        node_tag: ${{ inputs.node_tag }}

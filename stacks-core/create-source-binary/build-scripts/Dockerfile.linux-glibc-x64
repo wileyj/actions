@@ -4,13 +4,16 @@ ARG STACKS_NODE_VERSION="No Version Info"
 ARG GIT_BRANCH='No Branch Info'
 ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
-ARG TARGET=aarch64-unknown-linux-gnu
+ARG TARGET=x86_64-unknown-linux-gnu
+# Allow us to override the default `--target-cpu` for the given target triplet
+ARG TARGET_CPU
+ENV RUSTFLAGS="${TARGET_CPU:+${RUSTFLAGS} -Ctarget-cpu=${TARGET_CPU}}"
 ARG TAG
 WORKDIR /src
 
 COPY . .
 
-RUN apt-get update && apt-get install -y git gcc-aarch64-linux-gnu libclang-dev llvm
+RUN apt-get update && apt-get install -y git libclang-dev llvm
 
 # Run all the build steps in ramdisk in an attempt to improve build time
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
@@ -24,16 +27,7 @@ RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
             BUILD_ARG="" \
             ;; \
     esac \
-    && export CC=aarch64-linux-gnu-gcc \
-    && export CC_aarch64_unknown_linux_gnu=aarch64-linux-gnu-gcc \
-    && export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc \
     && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
-    # Conditionally rebuild `stacks-signer` if GIT_BRANCH does NOT contain "signer"
-    && if echo "${GIT_BRANCH}" | grep -vq "signer"; then \
-        STACKS_NODE_VERSION="${STACKS_NODE_VERSION}.0"; \
-        cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} --bin stacks-signer; \
-    fi \
-    # End conditional
     && mkdir -p /out \
     && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 
