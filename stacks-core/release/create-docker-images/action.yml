@@ -1,0 +1,64 @@
+## Github workflow to create and upload github releases
+name: Create Releases
+description: "Create GitHub Releases"
+branding:
+  icon: "archive"
+  color: "gray-dark"
+
+inputs:
+  node_tag:
+    description: "Node Release Tag"
+    required: true
+  node_docker_tag:
+    description: "Node Docker Release Tag"
+    required: true
+  signer_tag:
+    description: "Signer Release Tag"
+    required: true
+  signer_docker_tag:
+    description: "Signer Docker Release Tag"
+    required: true
+  is_node_release:
+    description: "True if it is a node release"
+    required: true
+  is_signer_release:
+    description: "True if it is a signer release"
+    required: true
+  DOCKERHUB_USERNAME:
+    description: "Docker username for publishing images"
+    required: true
+  DOCKERHUB_PASSWORD:
+    description: "Docker password for publishing images"
+    required: true
+  dist:
+    description: "Linux Distribution to build for"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    ## Creates the node docker image
+    - name: Create Node Docker Image
+      if: |
+        inputs.is_node_release == 'true'
+      id: create_node_release
+      uses: stacks-network/actions/stacks-core/release/docker-image@main
+      with:
+        tag: ${{ inputs.node_tag }}
+        docker_tag: ${{ inputs.node_docker_tag }}
+        DOCKERHUB_USERNAME: ${{ inputs.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ inputs.DOCKERHUB_PASSWORD }}
+        dist: ${{ inputs.dist }}
+
+    ## Creates the signer docker image
+    - name: Create Signer Docker Image
+      if: |
+        inputs.is_signer_release == 'true'
+      id: create_signer_release
+      uses: stacks-network/actions/stacks-core/release/docker-image@main
+      with:
+        tag: ${{ inputs.signer_tag }}
+        docker_tag: ${{ inputs.signer_docker_tag }}
+        DOCKERHUB_USERNAME: ${{ inputs.DOCKERHUB_USERNAME }}
+        DOCKERHUB_PASSWORD: ${{ inputs.DOCKERHUB_PASSWORD }}
+        dist: ${{ inputs.dist }}
