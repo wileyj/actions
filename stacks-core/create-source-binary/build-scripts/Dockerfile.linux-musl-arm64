@@ -1,16 +1,14 @@
-FROM rust:bookworm as build
+FROM messense/rust-musl-cross:aarch64-musl as build
 
 ARG STACKS_NODE_VERSION="No Version Info"
 ARG GIT_BRANCH='No Branch Info'
 ARG GIT_COMMIT='No Commit Info'
 ARG BUILD_DIR=/build
-ARG TARGET=armv7-unknown-linux-gnueabihf
+ARG TARGET=aarch64-unknown-linux-musl
 ARG TAG
 WORKDIR /src
 
 COPY . .
-
-RUN apt-get update && apt-get install -y git gcc-arm-linux-gnueabihf libclang-dev llvm
 
 # Run all the build steps in ramdisk in an attempt to improve build time
 RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
@@ -24,16 +22,7 @@ RUN --mount=type=tmpfs,target=${BUILD_DIR} cp -R /src/. ${BUILD_DIR}/ \
             BUILD_ARG="" \
             ;; \
     esac \
-    && export CC=arm-linux-gnueabihf-gcc \
-    && export CC_armv7_unknown_linux_gnueabihf=arm-linux-gnueabihf-gcc \
-    && export CARGO_TARGET_ARMV7_UNKNOWN_LINUX_GNUEABIHF_LINKER=arm-linux-gnueabihf-gcc \
     && cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} ${BUILD_ARG} \
-    # Conditionally rebuild `stacks-signer` if GIT_BRANCH does NOT contain "signer"
-    && if echo "${GIT_BRANCH}" | grep -vq "signer"; then \
-        STACKS_NODE_VERSION="${STACKS_NODE_VERSION}.0"; \
-        cargo build --features monitoring_prom,slog_json --release --workspace --target ${TARGET} --bin stacks-signer; \
-    fi \
-    # End conditional
     && mkdir -p /out \
     && find ${BUILD_DIR}/target/${TARGET}/release/ -maxdepth 1 -executable -type f | xargs cp -at /out/
 
