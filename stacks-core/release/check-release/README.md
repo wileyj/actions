@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Check Release
         id: check_release
-        uses: stacks-network/actions/stacks-core/release/check-release@main
+        uses: stacks-network/actions/stacks-core/release/check-release@feat/release-signer-alongside-node
         with:
           tag: "release/2.5.0.0.5-rc6"
 ```
