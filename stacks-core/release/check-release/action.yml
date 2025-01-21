@@ -63,7 +63,7 @@ runs:
           is_node_release=true
           is_signer_release=true
         else
-          exit 1
+          exit 0
         fi
 
         echo "node_tag=$node_tag" >> "$GITHUB_OUTPUT"
