@@ -42,13 +42,13 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.GH_TOKEN }}
       with:
-        name: Release ${{ inputs.tag || github.ref }}
+        name: [DRAFT] Release ${{ inputs.tag || github.ref }}
         tag_name: ${{ inputs.tag || github.ref }}
         draft: false
         prerelease: true
         fail_on_unmatched_files: true
         target_commitish: ${{ github.sha }}
-        generate_release_notes: true
+        generate_release_notes: false
         files: |
           release/*.zip
           CHECKSUMS.txt
