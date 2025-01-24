@@ -42,7 +42,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.GH_TOKEN }}
       with:
-        name: [DRAFT] Release ${{ inputs.tag || github.ref }}
+        name: "[DRAFT] Release ${{ inputs.tag || github.ref }}"
         tag_name: ${{ inputs.tag || github.ref }}
         draft: false
         prerelease: true
