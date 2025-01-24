@@ -1,4 +1,4 @@
-# Docker Image action
+# Create Docker Image action
 
 Creates a docker image for the given tag and uploads it to dockerhub.
 

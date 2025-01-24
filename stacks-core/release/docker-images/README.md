@@ -1,4 +1,4 @@
-# Create Docker Images action
+# Docker Images action
 
 Creates docker images for the node and the signer.
 

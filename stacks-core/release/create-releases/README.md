@@ -1,6 +1,6 @@
-# Create Github Releases action
+# Create Releases action
 
-Creates github releases for the node and the signer.
+Creates releases for the node and the signer.
 
 ## Documentation
 

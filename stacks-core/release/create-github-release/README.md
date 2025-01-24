@@ -1,4 +1,4 @@
-# Create Release action
+# Create Github Release action
 
 Creates a github release for the given tag.
 
