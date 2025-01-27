@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Create Github Releases
         id: create_github_releases
-        uses: stacks-network/actions/stacks-core/release/create-releases@feat/release-signer-alongside-node
+        uses: stacks-network/actions/stacks-core/release/create-releases@main
         with:
           node_tag: 3.0.0.0.1-rc1
           node_docker_tag: 3.0.0.0.1-rc1

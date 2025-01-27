@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Create Release
         id: create_release
-        uses: stacks-network/actions/stacks-core/release/create-release@feat/release-signer-alongside-node
+        uses: stacks-network/actions/stacks-core/release/create-release@main
         with:
           tag: signer-3.0.0.0.1.0-rc1
           docker_tag: 3.0.0.0.1.0-rc1

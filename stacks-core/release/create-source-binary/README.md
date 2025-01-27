@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Build Binary
         id: build_binary
-        uses: stacks-network/actions/stacks-core/release/create-source-binary@feat/release-signer-alongside-node
+        uses: stacks-network/actions/stacks-core/release/create-source-binary@main
         with:
           arch: linux-glibc
           cpu: x86-64
