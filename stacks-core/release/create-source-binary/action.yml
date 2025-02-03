@@ -31,7 +31,7 @@ runs:
     ## Setup Docker for the builds
     - name: Docker setup
       id: docker_setup
-      uses: stacks-network/actions/docker@main
+      uses: stacks-network/actions/docker@feat/release-signer-alongside-node
 
     ## Set env vars based on the type of arch build
     - name: Set local env vars
@@ -108,7 +108,7 @@ runs:
       if: |
         inputs.is_node_release == 'true'
       id: extract_signer_binary
-      uses: stacks-network/actions/stacks-core/release/extract-signer-binary@main
+      uses: stacks-network/actions/stacks-core/release/extract-signer-binary@feat/release-signer-alongside-node
       with:
         arch: ${{ inputs.arch }}
         cpu: ${{ inputs.cpu }}
