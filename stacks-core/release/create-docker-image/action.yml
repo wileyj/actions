@@ -35,13 +35,15 @@ runs:
 
     ## if the repo owner is not `stacks-network`, default to a docker-org of the repo owner (i.e. github user id)
     ## this allows forks to run the docker push workflows without having to hardcode a dockerhub org (but it does require docker hub user to match github username)
-    - name: Set Local env vars
-      id: set_env
-      if: |
-        github.repository_owner != 'stacks-network'
+    - name: Set Docker Org
+      id: set_docker_org
       shell: bash
       run: |
-        echo "docker-org=${{ github.repository_owner }}" >> "$GITHUB_ENV"
+        if [[ "${{ github.repository_owner }}" != "stacks-network" ]]; then
+          echo "docker-org=${{ github.repository_owner }}" >> "$GITHUB_ENV"
+        else
+          echo "docker-org=blockstack" >> "$GITHUB_ENV"
+        fi
 
     - name: Check Signer Release
       id: check_signer_release
