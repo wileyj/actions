@@ -20,17 +20,17 @@ runs:
     ## cleanup runner
     - name: Cleanup Runner
       id: runner_cleanup
-      uses: stacks-network/actions/cleanup/disk@main
+      uses: stacks-network/actions/cleanup/disk@chore/update-actions-versions
 
     ## Checkout the code
     - name: Checkout the latest code
       id: git_checkout
-      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     ## Install rust toolchain (llvm-tools-preview)
     - name: Setup Rust Toolchain
       id: setup_rust_toolchain
-      uses: actions-rust-lang/setup-rust-toolchain@b113a30d27a8e59c969077c0a0168cc13dab5ffc # v1.8.0
+      uses: actions-rust-lang/setup-rust-toolchain@11df97af8e8102fd60b60a77dfbf58d40cd843b8 # v1.10.1
       with:
         toolchain: stable
         components: llvm-tools-preview
@@ -39,21 +39,21 @@ runs:
     ## Restore cargo cache data
     - name: Restore Cargo Cache
       id: restore_cargo_cache
-      uses: stacks-network/actions/stacks-core/cache/cargo@main
+      uses: stacks-network/actions/stacks-core/cache/cargo@chore/update-actions-versions
       with:
         action: restore
 
     ## Restore nextest target cache data
     - name: Restore Target Cache
       id: restore_target_cache
-      uses: stacks-network/actions/stacks-core/cache/target@main
+      uses: stacks-network/actions/stacks-core/cache/target@chore/update-actions-versions
       with:
         action: restore
 
     ## Restore bitcoin cache data
     - name: Restore Bitcoin Binary Cache
       id: restore_bitcoin_cache
-      uses: stacks-network/actions/stacks-core/cache/bitcoin@main
+      uses: stacks-network/actions/stacks-core/cache/bitcoin@chore/update-actions-versions
       with:
         action: restore
         btc-version: ${{ inputs.btc-version }}
@@ -71,7 +71,7 @@ runs:
       if: |
         inputs.genesis != 'true'
       id: restore_test_cache
-      uses: stacks-network/actions/stacks-core/cache/test-archive@main
+      uses: stacks-network/actions/stacks-core/cache/test-archive@chore/update-actions-versions
       with:
         action: restore
 
@@ -80,6 +80,6 @@ runs:
       if: |
         inputs.genesis == 'true'
       id: restore_genesis_test_cache
-      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@main
+      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@chore/update-actions-versions
       with:
         action: restore
