@@ -15,17 +15,17 @@ runs:
   steps:
     ## Perform a lookup to check if the caches already exist
     - name: Check Cargo Target Cache
-      uses: stacks-network/actions/stacks-core/cache/target@chore/update-actions-versions
+      uses: stacks-network/actions/stacks-core/cache/target@main
       id: check_target_cache
 
     - name: Check Test Archive Cache
-      uses: stacks-network/actions/stacks-core/cache/test-archive@chore/update-actions-versions
+      uses: stacks-network/actions/stacks-core/cache/test-archive@main
       id: check_test_archive_cache
 
     - name: Check Genesis Test Archive Cache
       if: |
         inputs.genesis == 'true'
-      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@chore/update-actions-versions
+      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@main
       id: check_genesis_test_archive_cache
 
     ## Build the test archive cache(s)
@@ -56,7 +56,7 @@ runs:
         steps.check_test_archive_cache.outputs.cache-hit != 'true' ||
         steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
       id: restore_cargo_cache
-      uses: stacks-network/actions/stacks-core/cache/cargo@chore/update-actions-versions
+      uses: stacks-network/actions/stacks-core/cache/cargo@main
       with:
         action: restore
 
@@ -106,7 +106,7 @@ runs:
         steps.check_test_archive_cache.outputs.cache-hit != 'true' || 
         steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
       id: save_target_cache
-      uses: stacks-network/actions/stacks-core/cache/target@chore/update-actions-versions
+      uses: stacks-network/actions/stacks-core/cache/target@main
       with:
         action: save
 
@@ -116,7 +116,7 @@ runs:
         steps.check_test_archive_cache.outputs.cache-hit != 'true' || 
         steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
       id: save_nextest_cache
-      uses: stacks-network/actions/stacks-core/cache/test-archive@chore/update-actions-versions
+      uses: stacks-network/actions/stacks-core/cache/test-archive@main
       with:
         action: save
 
@@ -126,6 +126,6 @@ runs:
         steps.check_test_archive_cache.outputs.cache-hit != 'true' || 
         steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
       id: save_genesis_cache
-      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@chore/update-actions-versions
+      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@main
       with:
         action: save
