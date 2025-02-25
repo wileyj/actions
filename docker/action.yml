@@ -20,7 +20,7 @@ runs:
     ## cleanup runner
     - name: Cleanup Runner
       id: runner_cleanup
-      uses: stacks-network/actions/cleanup/disk@main
+      uses: stacks-network/actions/cleanup/disk@chore/update-actions-versions
 
     ## Checkout the code
     - name: Checkout the latest code
