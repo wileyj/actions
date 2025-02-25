@@ -120,7 +120,7 @@ runs:
         gh api \
           --paginate \
           -H "Accept: application/vnd.github+json" \
-          repos/${{ github.repository }}/actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1s |
+          repos/${{ github.repository }}/actions/caches |
         for ID in `
           ## Pipe the results through jq, setting the TS var (in jq) to the TS variable already defined
           jq -r --arg TS "$TS" '
@@ -140,7 +140,7 @@ runs:
           gh api \
             -H "Accept: application/vnd.github.v3+json" \
             -X DELETE \
-            repos/${{ github.repository }}/actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1s/$ID \
+            repos/${{ github.repository }}/actions/caches/$ID \
           | echo;
         done
         echo "Done"
