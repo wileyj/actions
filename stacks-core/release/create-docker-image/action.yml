@@ -28,7 +28,7 @@ runs:
     ## Setup Docker for the builds
     - name: Docker setup
       id: docker_setup
-      uses: stacks-network/actions/docker@chore/update-actions-versions
+      uses: stacks-network/actions/docker@main
       with:
         username: ${{ inputs.DOCKERHUB_USERNAME }}
         password: ${{ inputs.DOCKERHUB_PASSWORD }}
