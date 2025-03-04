@@ -68,7 +68,7 @@ runs:
               | jq -r .html_url
             )
             PR_NUM=$(basename ${PR}) # parse the PR number from the url
-            MSG="PR [$PR_NUM]($PR) already exists and is open" # output message to display
+            MSG="PR [$PR_NUM]($PR) (\"${PR_TITLE}\") already exists and is open" # output message to display
             message_out "${MSG}" # store message as annotation
             continue ## break out of the loop, since trying to open a PR when it already exists will cause an error
           fi
