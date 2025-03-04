@@ -96,7 +96,7 @@ runs:
                 --body "Automatic PR to Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
             )
             PR_NUM=$(basename "$PR") # parse the PR number from the url
-            MSG="PR [$PR_NUM]($PR) created" # output message to display
+            MSG="\`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\` PR [$PR_NUM]($PR) created" # output message to display
             message_out "${MSG}" # store message as annotation
           else
             ## if the diff does not contain at least 1 change, exit successfully with a message
