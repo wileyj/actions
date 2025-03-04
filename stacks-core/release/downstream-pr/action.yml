@@ -49,7 +49,6 @@ runs:
         ## set TARGET_BRANCH depending on SOURCE_BRANCH
         for TARGET_BRANCH in {develop,master}; do
           PR_TITLE="Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
-
           ## Check if a PR is open and exists already
           ##   - only look at open PR's
           ##   - jq to check .title for PR_TITLE (with -e option to record exit code)
@@ -58,7 +57,7 @@ runs:
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" \
             | jq -e ".[] | select(.title | contains(\"${PR_TITLE}\"))" > /dev/null 2>&1; echo $?
-          )        
+          )     
           ## if a PR exists, retrieve the PR url
           if [ "${EXISTING_PR}" -eq "0" ];then
             PR=$(gh api \
@@ -71,6 +70,7 @@ runs:
             PR_NUM=$(basename ${PR}) # parse the PR number from the url
             MSG="PR [$PR_NUM]($PR) already exists and is open" # output message to display
             message_out "${MSG}" # store message as annotation
+            break ## break out of the loop, since trying to open a PR when it already exists will cause an error
           fi
 
           ## Check if the target branch exists
