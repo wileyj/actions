@@ -47,7 +47,7 @@ runs:
         ## Set default exit code to 0, increment if we have an error for final status (since we're creating PR's in a loop)
         EXIT_CODE=0
         ## set TARGET_BRANCH depending on SOURCE_BRANCH
-        for TARGET_BRANCH in {develop,master}; do
+        for TARGET_BRANCH in {develop-wileyj,master}; do
           PR_TITLE="Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
           ## Check if a PR is open and exists already
           ##   - only look at open PR's
