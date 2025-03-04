@@ -36,15 +36,16 @@ runs:
         DIFF_OUT="/tmp/diff" # output file to store git diff data
 
         ## simple function to exit and display some output
-        exit_script() {
+        message_out() {
           MSG=${1}
-          EXIT_CODE=${2}
           cat <<EOF >> $GITHUB_STEP_SUMMARY
         $MSG
         EOF
-        exit ${EXIT_CODE}
+        # exit ${EXIT_CODE}
         }
 
+        ## Set default exit code to 0, increment if we have an error for final status (since we're creating PR's in a loop)
+        EXIT_CODE=0
         ## set TARGET_BRANCH depending on SOURCE_BRANCH
         for TARGET_BRANCH in {develop,master}; do
           PR_TITLE="Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
@@ -69,15 +70,14 @@ runs:
             )
             PR_NUM=$(basename ${PR}) # parse the PR number from the url
             MSG="PR [$PR_NUM]($PR) already exists and is open" # output message to display
-            EXIT_CODE=0  # exit code
-            exit_script "${MSG}" "${EXIT_CODE}" # exit with message and exit code
+            message_out "${MSG}" # store message as annotation
           fi
 
           ## Check if the target branch exists
           if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
             MSG="Target Branch \`${TARGET_BRANCH}\` does not exist." # output message to display
-            EXIT_CODE=1 # exit code
-            exit_script "${MSG}" "${EXIT_CODE}" # exit with message and exit code
+            EXIT_CODE=$((EXIT_CODE+1)) # exit code (error)
+            message_out "${MSG}" # store message as annotation
           fi
 
           ## fetch the target branch and create a diff
@@ -97,15 +97,12 @@ runs:
             )
             PR_NUM=$(basename "$PR") # parse the PR number from the url
             MSG="PR [$PR_NUM]($PR) created" # output message to display
-            EXIT_CODE=0 # exit code
-            exit_script "${MSG}" "${EXIT_CODE}" # exit with message and exit code
+            message_out "${MSG}" # store message as annotation
           else
             ## if the diff does not contain at least 1 change, exit successfully with a message
             MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`" # output message to display
-            EXIT_CODE=0 # exit code
-            exit_script "${MSG}" "${EXIT_CODE}" # exit with message and exit code
-          fi
-
-          ## if no other conditions are met, exit with an error
-          exit 1
+            message_out "${MSG}"  # store message as annotation
+          fi 
         done
+        ## exit the script using return code from loop
+        exit ${EXIT_CODE}
