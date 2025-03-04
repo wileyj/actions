@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Open Downstream PR
         id: create-pr
-        uses: wileyj/actions/stacks-core/downstream-pr@main
+        uses: stacks-network/actions/stacks-core/downstream-pr@main
         with:
           token: ${{ secrets.GH_TOKEN }}
 ```
