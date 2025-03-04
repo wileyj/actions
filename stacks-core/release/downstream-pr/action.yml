@@ -26,7 +26,6 @@ runs:
       env:
         GH_TOKEN: ${{ inputs.token }}
       run: |
-
         ## set some defaults
         SOURCE_BRANCH=${{ github.ref_name }} # use the source branch that called this workflow
         TARGET_BRANCH=""
