@@ -1,0 +1,106 @@
+name: "Create Downstream PR"
+description: "Create Downstream PR"
+branding:
+  icon: "git-pull-request"
+  color: "gray-dark"
+
+inputs:
+  token:
+    description: "GH_TOKEN"
+    required: true
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout the latest code
+      id: git_checkout
+      uses: actions/checkout@44c2b7a8a4ea60a981eaca3cf939b5f4305c123b # v4.1.5
+      with:
+        fetch-depth: 0
+        ref: ${{ github.ref_name }}
+
+    - name: Create PR
+      id: create-pr
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+      run: |
+        ## set some defaults
+        SOURCE_BRANCH=${{ github.ref_name }} # use the source branch that called this workflow
+        TARGET_BRANCH=""
+        COMMIT_HASH=$(git log -1 '--pretty=%H') # retrieve the branch commit hash (used to determine who to assign the PR to)
+        EXIT_CODE=0  # default exit code
+        MSG=""
+        DIFF_OUT="/tmp/diff" # output file to store git diff data
+
+        ## simple function to exit and display some output
+        message_out() {
+          MSG=${1}
+          cat <<EOF >> $GITHUB_STEP_SUMMARY
+        $MSG
+        EOF
+        }
+
+        ## Set default exit code to 0, increment if we have an error for final status (since we're creating PR's in a loop)
+        EXIT_CODE=0
+        ## set TARGET_BRANCH depending on SOURCE_BRANCH
+        for TARGET_BRANCH in {develop,master}; do
+          PR_TITLE="Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
+          ## Check if a PR is open and exists already
+          ##   - only look at open PR's
+          ##   - jq to check .title for PR_TITLE (with -e option to record exit code)
+          EXISTING_PR=$(gh api \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" \
+            | jq -e ".[] | select(.title | contains(\"${PR_TITLE}\"))" > /dev/null 2>&1; echo $?
+          )     
+          ## if a PR exists, retrieve the PR url
+          if [ "${EXISTING_PR}" -eq "0" ];then
+            PR=$(gh api \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "/repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls?state=open" \
+              | jq -e ".[] | select(.title | contains(\"${PR_TITLE}\"))" \
+              | jq -r .html_url
+            )
+            PR_NUM=$(basename ${PR}) # parse the PR number from the url
+            MSG="PR [$PR_NUM]($PR) (\`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`) already exists and is open" # output message to display
+            message_out "${MSG}" # store message as annotation
+            continue ## break out of the loop, since trying to open a PR when it already exists will cause an error
+          fi
+
+          ## Check if the target branch exists
+          if ! git ls-remote --exit-code --quiet --heads origin ${TARGET_BRANCH}; then
+            MSG="Target Branch \`${TARGET_BRANCH}\` does not exist." # output message to display
+            EXIT_CODE=$((EXIT_CODE+1)) # exit code (error)
+            message_out "${MSG}" # store message as annotation
+          fi
+
+          ## fetch the target branch and create a diff
+          git fetch origin ${TARGET_BRANCH}
+          git diff --name-only origin/${TARGET_BRANCH}..origin/${SOURCE_BRANCH} > ${DIFF_OUT}
+          ## check how many lines are in the diff (how many lines have changed)
+          DIFF_NUM=$(sed -n '$=' ${DIFF_OUT})
+
+          ## Finally, create the PR if at least 1 line has changed
+          if [ "${DIFF_NUM}" -gt 0 ]; then
+            PR=$(
+              gh pr create \
+                --head "${SOURCE_BRANCH}" \
+                --base "${TARGET_BRANCH}" \
+                --title "${PR_TITLE}" \
+                --body "Release PR to Merge \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`"
+            )
+            PR_NUM=$(basename "$PR") # parse the PR number from the url
+            MSG="PR [$PR_NUM]($PR) (\`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`) created" # output message to display
+            message_out "${MSG}" # store message as annotation
+          else
+            ## if the diff does not contain at least 1 change, exit successfully with a message
+            MSG="No changes detected between \`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`" # output message to display
+            message_out "${MSG}"  # store message as annotation
+          fi 
+        done
+        ## exit the script using return code from loop
+        exit ${EXIT_CODE}
