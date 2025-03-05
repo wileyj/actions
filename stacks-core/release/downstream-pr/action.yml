@@ -40,7 +40,6 @@ runs:
           cat <<EOF >> $GITHUB_STEP_SUMMARY
         $MSG
         EOF
-        # exit ${EXIT_CODE}
         }
 
         ## Set default exit code to 0, increment if we have an error for final status (since we're creating PR's in a loop)

@@ -9,6 +9,13 @@ If a PR already exists, or there are no changes between branches the action will
 
 ## Documentation
 
+### Inputs
+
+| Input        | Description        | Required | Default |
+| ------------ | ------------------ | -------- | ------- |
+| `token`      | GitHub Token       | `true`   | null    |
+
+
 ## Usage
 
 ```yaml
