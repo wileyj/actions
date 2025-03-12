@@ -29,11 +29,19 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Checkout the latest code
+      id: git_checkout
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
     - name: Set Release Outputs
       id: check_release
       shell: bash
       run: |
         branch_name=${{ inputs.tag }}
+
+        versions_file="versions.toml"
+        node_key="stacks_node_version"
+        signer_key="stacks_signer_version"
 
         stacks_core_version_regex="([0-9]+\.){4}[0-9]+(-rc[0-9]+)?"  # matches x.x.x.x.x || x.x.x.x.x-rcx
         signer_version_regex="([0-9]+\.){5}[0-9]+(-rc[0-9]+)?"   # matches x.x.x.x.x.x || x.x.x.x.x.x-rcx
@@ -72,5 +80,36 @@ runs:
         echo "signer_docker_tag=$signer_docker_tag" >> "$GITHUB_OUTPUT"
         echo "is_node_release=$is_node_release" >> "$GITHUB_OUTPUT"
         echo "is_signer_release=$is_signer_release" >> "$GITHUB_OUTPUT"
+
+        if [[ ! -f "$versions_file" ]]; then
+          echo "Error: $versions_file not found!" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+        fi
+
+        node_version=$(grep "^$node_key" "$versions_file" | sed -E 's/.*=\s*"([^"]+)"/\1/')
+        signer_version=$(grep "^$signer_key" "$versions_file" | sed -E 's/.*=\s*"([^"]+)"/\1/')
+
+        if [[ -z "$node_version" ]]; then
+          echo "Error: $node_key not found in $versions_file" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+        fi
+
+        if [[ -z "$signer_version" ]]; then
+          echo "Error: $signer_key not found in $versions_file" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+        fi
+
+        if [[ "$is_node_release" == "true" && "$node_version" != "$node_docker_tag" ]]; then
+          echo "Error: node version doesn't match in $versions_file" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+        fi
+
+        if [[ "$signer_version" != "$signer_docker_tag" ]]; then
+          echo "Error: signer version doesn't match in $versions_file" >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+        fi
+
+        echo "Node version: $node_version"
+        echo "Signer version: $signer_version"
 
         exit 0
