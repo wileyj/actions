@@ -50,7 +50,6 @@ runs:
         DOCKERHUB_USERNAME: ${{ inputs.DOCKERHUB_USERNAME }}
         DOCKERHUB_PASSWORD: ${{ inputs.DOCKERHUB_PASSWORD }}
         dist: ${{ inputs.dist }}
-	
 
     ## Creates the signer docker image
     - name: Create Signer Docker Image
