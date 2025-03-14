@@ -42,8 +42,7 @@ runs:
       if: |
         inputs.is_node_release == 'true'
       id: create_node_release
-      uses: wileyj/actions/stacks-core/release/create-docker-image@fix/docker_platforms
-      #uses: stacks-network/actions/stacks-core/release/create-docker-image@main
+      uses: stacks-network/actions/stacks-core/release/create-docker-image@main
       with:
         tag: ${{ inputs.node_tag }}
         docker_tag: ${{ inputs.node_docker_tag }}
@@ -56,8 +55,7 @@ runs:
       if: |
         inputs.is_signer_release == 'true'
       id: create_signer_release
-      uses: wileyj/actions/stacks-core/release/create-docker-image@fix/docker_platforms
-      #uses: stacks-network/actions/stacks-core/release/create-docker-image@main
+      uses: stacks-network/actions/stacks-core/release/create-docker-image@main
       with:
         tag: ${{ inputs.signer_tag }}
         docker_tag: ${{ inputs.signer_docker_tag }}
