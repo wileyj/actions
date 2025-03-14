@@ -13,6 +13,7 @@ Creates a docker image for the given tag and uploads it to dockerhub.
 | `DOCKERHUB_USERNAME` | Docker username for publishing images | `true`   | null    |
 | `DOCKERHUB_PASSWORD` | Docker password for publishing images | `true`   | null    |
 | `dist`               | Linux Distribution to build for       | `true`   | null    |
+| `platforms`          | Docker platforms to build for         | `false`  | `linux/arm64, linux/arm/v7, linux/amd64, linux/amd64/v3` |
 
 ## Usage
 
