@@ -110,7 +110,8 @@ runs:
       uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
       with:
         file: ./.github/actions/dockerfiles/Dockerfile.${{ matrix.dist }}-binary
-        platforms: ${{ env.docker_platforms }}
+	# define the platforms we're building for
+        platforms: "linux/arm64, linux/arm/v7, linux/amd64, linux/amd64/v3"
         tags: ${{ steps.docker_metadata_signer.outputs.tags }}
         labels: ${{ steps.docker_metadata_signer.outputs.labels }}
         build-args: |
@@ -128,7 +129,8 @@ runs:
       uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
       with:
         file: ./.github/actions/dockerfiles/Dockerfile.${{ matrix.dist }}-binary
-        platforms: ${{ env.docker_platforms }}
+	# define the platforms we're building for
+        platforms: "linux/arm64, linux/arm/v7, linux/amd64, linux/amd64/v3"
         tags: ${{ steps.docker_metadata_node.outputs.tags }}
         labels: ${{ steps.docker_metadata_node.outputs.labels }}
         build-args: |
