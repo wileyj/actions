@@ -24,7 +24,7 @@ inputs:
   platforms:
     description: "Docker platforms to build for"
     required: false
-    default: "linux/arm64, linux/arm/v7, linux/amd64, linux/amd64/v3"
+    default: "linux/arm64, linux/amd64, linux/amd64/v3"
 
 runs:
   using: "composite"
