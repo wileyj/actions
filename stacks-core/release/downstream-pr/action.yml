@@ -33,6 +33,8 @@ runs:
         EXIT_CODE=0  # default exit code
         MSG=""
         DIFF_OUT="/tmp/diff" # output file to store git diff data
+        ## PR target branches  (default to develop & master)
+        PR_TARGETS=(develop master)
 
         ## simple function to exit and display some output
         message_out() {
@@ -42,10 +44,18 @@ runs:
         EOF
         }
 
+        ## check if the branch name matches a release candidate
+        stacks_core_regex="release/([0-9]+\.){4}[0-9]-rc[0-9]*$"
+        signer_regex="release/signer-([0-9]+\.){5}[0-9]-rc[0-9]*$"
+        if [[ "$branch_name" =~ ^${signer_regex}$ || "$branch_name" =~ ^${stacks_core_regex}$ ]]; then
+          ## if the branch matches an rc pattern, only PR back to develop
+          PR_TARGETS=(develop)
+        fi
+
         ## Set default exit code to 0, increment if we have an error for final status (since we're creating PR's in a loop)
         EXIT_CODE=0
         ## set TARGET_BRANCH depending on SOURCE_BRANCH
-        for TARGET_BRANCH in {develop,master}; do
+        for TARGET_BRANCH in ${PR_TARGETS[@]}; do
           PR_TITLE="Merge ${SOURCE_BRANCH} to ${TARGET_BRANCH}"
           ## Check if a PR is open and exists already
           ##   - only look at open PR's
