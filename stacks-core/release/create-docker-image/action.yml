@@ -30,6 +30,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: echo user
+      shell: bash
+      run: |
+        echo "user: ${{ inputs.DOCKERHUB_USERNAME }}"
+
     ## Setup Docker for the builds
     - name: Docker setup
       id: docker_setup

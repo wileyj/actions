@@ -37,7 +37,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Do something with my secret
+    - name: echo user
       shell: bash
       run: |
         echo "user: ${{ inputs.DOCKERHUB_USERNAME }}"
