@@ -37,6 +37,11 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Do something with my secret
+      shell: bash
+      run: |
+        echo "user: ${{ inputs.DOCKERHUB_USERNAME }}"
+
     ## Creates the node docker image
     - name: Create Node Docker Image
       if: |
