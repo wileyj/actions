@@ -73,7 +73,7 @@ runs:
           echo "docker_tag_rc=false" >> $GITHUB_ENV
         fi
 
-    ## Set docker metatdata
+    ## Set docker metadata
     ## - depending on the matrix.dist, different tags will be enabled
     ## ex. debian will have this tag: `type=ref,event=tag,enable=${{ matrix.dist == 'debian' }}`
     - name: Docker Metadata ( ${{matrix.dist}} )
