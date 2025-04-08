@@ -163,9 +163,11 @@ runs:
           STACKS_NODE_VERSION=${{ inputs.tag || env.GITHUB_SHA_SHORT }}
           GIT_BRANCH=${{ env.GITHUB_REF_SHORT }}
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
-        push: ${{ env.DOCKER_PUSH }}
+        push: true
+        # push: ${{ env.DOCKER_PUSH }}
 
     - name: Echo
+      if: ${{ env.is-signer-release == 'false' }}
       id: echo_digest
       shell: bash
       run: |
