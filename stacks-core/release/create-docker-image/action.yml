@@ -161,7 +161,14 @@ runs:
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
         push: ${{ env.DOCKER_PUSH }}
 
-    - name: Generate artifact attestation (${{matrix.dist}} ${{ github.event.repository.name }})
+    - name: Echo
+      id: echo_digest
+      shell: bash
+      run: |
+        echo "digest: ${{ steps.docker_build_node.outputs.digest }}"
+
+    ## Generate docker image attestation(s)
+    - name: Generate artifact attestation (${{ github.event.repository.name }})
       uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
       with:
         # subject-name: index.docker.io/${{ env.docker-org }}/${{ github.event.repository.name }}
@@ -170,7 +177,7 @@ runs:
         subject-digest: ${{ steps.docker_build_node.outputs.digest }}
         push-to-registry: true
 
-    - name: Generate artifact attestation (${{matrix.dist}} stacks-blockchain)
+    - name: Generate artifact attestation (stacks-blockchain)
       uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
       with:
         # subject-name: index.docker.io/${{ env.docker-org }}/${{ github.event.repository.name }}
