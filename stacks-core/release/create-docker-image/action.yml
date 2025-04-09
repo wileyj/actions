@@ -125,6 +125,11 @@ runs:
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
         push: ${{ env.DOCKER_PUSH }}
 
+    - name: echo_1
+      id: echo_1
+      shell: bash
+      run: |
+        echo "echo_1"
     ## Generate docker image attestation(s)
     ## attest repo-name:tag
     - name: Generate artifact attestation (${{ github.event.repository.name }})
@@ -137,16 +142,21 @@ runs:
         subject-digest: ${{ steps.docker_build_node.outputs.digest }}
         push-to-registry: true
 
-    ## attest stacks-blockchain:tag
-    - name: Generate artifact attestation (stacks-blockchain)
-      if: ${{ env.is-signer-release == 'false' }}
-      id: attest_node_secondary
-      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-      with:
-        subject-name: |
-          index.docker.io/${{env.docker-org}}/stacks-blockchain
-        subject-digest: ${{ steps.docker_build_node.outputs.digest }}
-        push-to-registry: true
+    # - name: echo_2
+    #   id: echo_2
+    #   shell: bash
+    #   run: |
+    #     echo "echo_2"
+    # ## attest stacks-blockchain:tag
+    # - name: Generate artifact attestation (stacks-blockchain)
+    #   if: ${{ env.is-signer-release == 'false' }}
+    #   id: attest_node_secondary
+    #   uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+    #   with:
+    #     subject-name: |
+    #       index.docker.io/${{env.docker-org}}/stacks-blockchain
+    #     subject-digest: ${{ steps.docker_build_node.outputs.digest }}
+    #     push-to-registry: true
 
     ## Build and attest docker image for signer release
     - name: Build and Push ( ${{matrix.dist}} )
@@ -166,14 +176,19 @@ runs:
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
         push: ${{ env.DOCKER_PUSH }}
 
-    # ## Generate docker image attestation(s)
-    # ## attest stacks-signer:tag
-    # - name: Generate artifact attestation (${{matrix.dist}} stacks-signer )
-    #   if: ${{ env.is-signer-release == 'true' }}
-    #   id: attest_signer_primary
-    #   uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-    #   with:
-    #     subject-name: |
-    #       index.docker.io/${{env.docker-org}}/stacks-signer
-    #     subject-digest: ${{ steps.docker_build_signer.outputs.digest }}
-    #     push-to-registry: true
+    - name: echo_3
+      id: echo_3
+      shell: bash
+      run: |
+        echo "echo_3"
+    ## Generate docker image attestation(s)
+    ## attest stacks-signer:tag
+    - name: Generate artifact attestation (${{matrix.dist}} stacks-signer )
+      if: ${{ env.is-signer-release == 'true' }}
+      id: attest_signer_primary
+      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+      with:
+        subject-name: |
+          index.docker.io/${{env.docker-org}}/stacks-signer
+        subject-digest: ${{ steps.docker_build_signer.outputs.digest }}
+        push-to-registry: true
