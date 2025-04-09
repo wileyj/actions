@@ -176,19 +176,19 @@ runs:
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
         push: ${{ env.DOCKER_PUSH }}
 
-    - name: echo_3
-      id: echo_3
-      shell: bash
-      run: |
-        echo "echo_3"
-    ## Generate docker image attestation(s)
-    ## attest stacks-signer:tag
-    - name: Generate artifact attestation (${{matrix.dist}} stacks-signer )
-      if: ${{ env.is-signer-release == 'true' }}
-      id: attest_signer_primary
-      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-      with:
-        subject-name: |
-          index.docker.io/${{env.docker-org}}/stacks-signer
-        subject-digest: ${{ steps.docker_build_signer.outputs.digest }}
-        push-to-registry: true
+    # - name: echo_3
+    #   id: echo_3
+    #   shell: bash
+    #   run: |
+    #     echo "echo_3"
+    # ## Generate docker image attestation(s)
+    # ## attest stacks-signer:tag
+    # - name: Generate artifact attestation (${{matrix.dist}} stacks-signer )
+    #   if: ${{ env.is-signer-release == 'true' }}
+    #   id: attest_signer_primary
+    #   uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+    #   with:
+    #     subject-name: |
+    #       index.docker.io/${{env.docker-org}}/stacks-signer
+    #     subject-digest: ${{ steps.docker_build_signer.outputs.digest }}
+    #     push-to-registry: true
