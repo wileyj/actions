@@ -47,7 +47,7 @@ runs:
         ## check if the branch name matches a release candidate
         stacks_core_regex="release/([0-9]+\.){4}[0-9]-rc[0-9]*$"
         signer_regex="release/signer-([0-9]+\.){5}[0-9]-rc[0-9]*$"
-        if [[ "$SOURCE_BRANCH" =~ ^${signer_regex}$ || "$branch_name" =~ ^${stacks_core_regex}$ ]]; then
+        if [[ "$SOURCE_BRANCH" =~ ^${signer_regex}$ || "$SOURCE_BRANCH" =~ ^${stacks_core_regex}$ ]]; then
           ## if the branch matches an rc pattern, only PR back to develop
           PR_TARGETS=(develop)
         fi
