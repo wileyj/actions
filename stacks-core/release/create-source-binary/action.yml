@@ -115,6 +115,7 @@ runs:
         signer_docker_tag: ${{ inputs.signer_docker_tag }}
         node_tag: ${{ inputs.node_tag }}
 
+    ## Attest the release binaries
     - name: Attest release artifact
       uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 #v2.2.3
       with:
