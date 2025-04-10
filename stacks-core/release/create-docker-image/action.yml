@@ -107,6 +107,47 @@ runs:
           type=raw,value=latest-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && env.docker_tag_rc != 'true' && matrix.dist == 'alpine' }}
           type=raw,value=${{ inputs.docker_tag }}-${{ matrix.dist }},enable=${{ inputs.docker_tag != '' && matrix.dist == 'alpine' }}
 
+    ## Build docker image for node release
+    - name: Build and Push ( ${{matrix.dist}} )
+      if: ${{ env.is-signer-release == 'false' }}
+      id: docker_build_node
+      uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
+      with:
+        file: ./.github/actions/dockerfiles/Dockerfile.${{ matrix.dist }}-binary
+        platforms: ${{ inputs.platforms }}
+        tags: ${{ steps.docker_metadata_node.outputs.tags }}
+        labels: ${{ steps.docker_metadata_node.outputs.labels }}
+        build-args: |
+          TAG=${{ inputs.tag }}
+          REPO=${{ github.repository_owner }}/${{ github.event.repository.name }}
+          STACKS_NODE_VERSION=${{ inputs.tag || env.GITHUB_SHA_SHORT }}
+          GIT_BRANCH=${{ env.GITHUB_REF_SHORT }}
+          GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
+        push: ${{ env.DOCKER_PUSH }}
+
+    ## Generate docker image attestation(s)
+    ## attest repo-name:tag
+    - name: Generate artifact attestation (${{ github.event.repository.name }})
+      if: ${{ env.is-signer-release == 'false' }}
+      id: attest_node_primary
+      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+      with:
+        subject-name: |
+          index.docker.io/${{env.docker-org}}/${{ github.event.repository.name }}
+        subject-digest: ${{ steps.docker_build_node.outputs.digest }}
+        push-to-registry: true
+
+    ## attest stacks-blockchain:tag
+    - name: Generate artifact attestation (stacks-blockchain)
+      if: ${{ env.is-signer-release == 'false' }}
+      id: attest_node_secondary
+      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+      with:
+        subject-name: |
+          index.docker.io/${{env.docker-org}}/stacks-blockchain
+        subject-digest: ${{ steps.docker_build_node.outputs.digest }}
+        push-to-registry: true
+
     ## Build docker image for signer release
     - name: Build and Push ( ${{matrix.dist}} )
       if: ${{ env.is-signer-release == 'true' }}
@@ -125,20 +166,14 @@ runs:
           GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
         push: ${{ env.DOCKER_PUSH }}
 
-    ## Build docker image for node release
-    - name: Build and Push ( ${{matrix.dist}} )
-      if: ${{ env.is-signer-release == 'false' }}
-      id: docker_build_node
-      uses: docker/build-push-action@ca877d9245402d1537745e0e356eab47c3520991 # v6.13.0
+    ## Generate docker image attestation(s)
+    ## attest stacks-signer:tag
+    - name: Generate artifact attestation (${{matrix.dist}} stacks-signer )
+      if: ${{ env.is-signer-release == 'true' }}
+      id: attest_signer_primary
+      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
       with:
-        file: ./.github/actions/dockerfiles/Dockerfile.${{ matrix.dist }}-binary
-        platforms: ${{ inputs.platforms }}
-        tags: ${{ steps.docker_metadata_node.outputs.tags }}
-        labels: ${{ steps.docker_metadata_node.outputs.labels }}
-        build-args: |
-          TAG=${{ inputs.tag }}
-          REPO=${{ github.repository_owner }}/${{ github.event.repository.name }}
-          STACKS_NODE_VERSION=${{ inputs.tag || env.GITHUB_SHA_SHORT }}
-          GIT_BRANCH=${{ env.GITHUB_REF_SHORT }}
-          GIT_COMMIT=${{ env.GITHUB_SHA_SHORT }}
-        push: ${{ env.DOCKER_PUSH }}
+        subject-name: |
+          index.docker.io/${{env.docker-org}}/stacks-signer
+        subject-digest: ${{ steps.docker_build_signer.outputs.digest }}
+        push-to-registry: true
