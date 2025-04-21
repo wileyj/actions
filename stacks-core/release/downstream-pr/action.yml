@@ -110,7 +110,6 @@ runs:
             # ##   https://github.com/orgs/community/discussions/57484
             # gh pr close "${PR_NUM}"
             # gh pr reopen "${PR_NUM}"
-            gh workflow run "ci.yml" --ref "${SOURCE_BRANCH}"
             message_out "${MSG}" # store message as annotation
           else
             ## if the diff does not contain at least 1 change, exit successfully with a message
@@ -120,3 +119,19 @@ runs:
         done
         ## exit the script using return code from loop
         exit ${EXIT_CODE}
+
+    # - name: echo
+    #   id: echo
+    #   shell: bash
+    #   run: |
+    #     echo "head_ref: ${{ github.head_ref }}"
+    - name: Trigger Workflow
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'ci.yml',
+            ref: '${{ github.ref_name }}'
+          })
