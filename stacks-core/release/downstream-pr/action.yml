@@ -59,6 +59,10 @@ runs:
           PR_TARGETS=(develop)
         fi
 
+        ## set gh config
+        git config --global user.name '${{ inputs.user-name }}'
+        git config --global user.email '${{ inputs.user-email }}'
+
         ## Set default exit code to 0, increment if we have an error for final status (since we're creating PR's in a loop)
         EXIT_CODE=0
         ## set TARGET_BRANCH depending on SOURCE_BRANCH
@@ -113,10 +117,10 @@ runs:
             PR_NUM=$(basename "$PR") # parse the PR number from the url
             MSG="PR [$PR_NUM]($PR) (\`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`) created" # output message to display
             ## to trigger the status checks:
-            git config --global user.name '${{ inputs.user-name }}'
-            git config --global user.email '${{ inputs.user-email }}'
+            # git config --global user.name '${{ inputs.user-name }}'
+            # git config --global user.email '${{ inputs.user-email }}'
             # git commands like commit work using the bot user
-            gh workflow run -r "ci.yml" "${{ github.ref_name }}"
+            # gh workflow run -r "ci.yml" "${{ github.ref_name }}"
 
 
             message_out "${MSG}" # store message as annotation
