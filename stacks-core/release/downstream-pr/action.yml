@@ -105,6 +105,11 @@ runs:
             )
             PR_NUM=$(basename "$PR") # parse the PR number from the url
             MSG="PR [$PR_NUM]($PR) (\`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`) created" # output message to display
+            ## to trigger the status checks, we need to close then re-open the created PR (this is documented to prevent accidentally creating recursive workflow runs)
+            ##   https://github.com/orgs/community/discussions/65321
+            ##   https://github.com/orgs/community/discussions/57484
+            gh cli close "${PR_NUM}"
+            gh cli reopen "${PR_NUM}"
             message_out "${MSG}" # store message as annotation
           else
             ## if the diff does not contain at least 1 change, exit successfully with a message
