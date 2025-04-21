@@ -9,7 +9,14 @@ inputs:
     description: "GH_TOKEN"
     required: true
     default: ""
-
+  user-name:
+    description: "user.name"
+    required: true
+    default: ""
+  user-email:
+    description: "user email"
+    required: true
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -105,12 +112,13 @@ runs:
             )
             PR_NUM=$(basename "$PR") # parse the PR number from the url
             MSG="PR [$PR_NUM]($PR) (\`${SOURCE_BRANCH}\`->\`${TARGET_BRANCH}\`) created" # output message to display
-            # ## to trigger the status checks, we need to close then re-open the created PR (this is documented to prevent accidentally creating recursive workflow runs)
-            # ##   https://github.com/orgs/community/discussions/65321
-            # ##   https://github.com/orgs/community/discussions/57484
-            # gh pr close "${PR_NUM}"
-            # gh pr reopen "${PR_NUM}"
-            # gh pr ready "${PR_NUM}"
+            ## to trigger the status checks:
+            git config --global user.name '${{ inputs.user-name }}'
+            git config --global user.email '${{ inputs.user-email }}'
+            # git commands like commit work using the bot user
+            gh workflow run -r "${{ github.ref_name }}"
+
+
             message_out "${MSG}" # store message as annotation
           else
             ## if the diff does not contain at least 1 change, exit successfully with a message
