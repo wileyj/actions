@@ -116,7 +116,7 @@ runs:
             git config --global user.name '${{ inputs.user-name }}'
             git config --global user.email '${{ inputs.user-email }}'
             # git commands like commit work using the bot user
-            gh workflow run -r "${{ github.ref_name }}"
+            gh workflow run -r "ci.yml" "${{ github.ref_name }}"
 
 
             message_out "${MSG}" # store message as annotation
