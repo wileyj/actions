@@ -125,13 +125,13 @@ runs:
     #   shell: bash
     #   run: |
     #     echo "head_ref: ${{ github.head_ref }}"
-    - name: Trigger Workflow
-      uses: actions/github-script@v6
-      with:
-        script: |
-          github.rest.actions.createWorkflowDispatch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: 'ci.yml',
-            ref: '${{ github.ref_name }}'
-          })
+    # - name: Trigger Workflow
+    #  uses: actions/github-script@v6
+    #  with:
+    #    script: |
+    #      github.rest.actions.createWorkflowDispatch({
+    #        owner: context.repo.owner,
+    #        repo: context.repo.repo,
+    #        workflow_id: 'ci.yml',
+    #        ref: '${{ github.ref_name }}'
+    #      })
