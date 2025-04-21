@@ -98,6 +98,7 @@ runs:
           if [ "${DIFF_NUM}" -gt 0 ]; then
             PR=$(
               gh pr create \
+                -d \
                 --head "${SOURCE_BRANCH}" \
                 --base "${TARGET_BRANCH}" \
                 --title "${PR_TITLE}" \
@@ -110,6 +111,7 @@ runs:
             # ##   https://github.com/orgs/community/discussions/57484
             # gh pr close "${PR_NUM}"
             # gh pr reopen "${PR_NUM}"
+            gh pr ready "${PR_NUM}"
             message_out "${MSG}" # store message as annotation
           else
             ## if the diff does not contain at least 1 change, exit successfully with a message
