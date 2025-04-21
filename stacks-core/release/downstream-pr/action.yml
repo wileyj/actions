@@ -9,14 +9,18 @@ inputs:
     description: "GH_TOKEN"
     required: true
     default: ""
-  user-name:
-    description: "user.name"
-    required: true
-    default: ""
-  user-email:
-    description: "user email"
-    required: true
-    default: ""
+  # app-token:
+  #   description: "app token"
+  #   required: true
+  #   default: ""
+  # user-name:
+  #   description: "user.name"
+  #   required: true
+  #   default: ""
+  # user-email:
+  #   description: "user email"
+  #   required: true
+  #   default: ""
 runs:
   using: "composite"
   steps:
@@ -36,6 +40,8 @@ runs:
         ## set some defaults
         SOURCE_BRANCH=${{ github.ref_name }} # use the source branch that called this workflow
         TARGET_BRANCH=""
+        ## check if branch is release branch. if not, exit
+
         COMMIT_HASH=$(git log -1 '--pretty=%H') # retrieve the branch commit hash (used to determine who to assign the PR to)
         EXIT_CODE=0  # default exit code
         MSG=""
@@ -58,10 +64,6 @@ runs:
           ## if the branch matches an rc pattern, only PR back to develop
           PR_TARGETS=(develop)
         fi
-
-        ## set gh config
-        git config --global user.name '${{ inputs.user-name }}'
-        git config --global user.email '${{ inputs.user-email }}'
 
         ## Set default exit code to 0, increment if we have an error for final status (since we're creating PR's in a loop)
         EXIT_CODE=0
@@ -121,6 +123,7 @@ runs:
             # git config --global user.email '${{ inputs.user-email }}'
             # git commands like commit work using the bot user
             # gh workflow run -r "ci.yml" "${{ github.ref_name }}"
+
 
 
             message_out "${MSG}" # store message as annotation
