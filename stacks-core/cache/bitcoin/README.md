@@ -9,20 +9,21 @@ Generic cache operations for the bitcoin cache:
 ## Documentation
 
 ### Inputs
-| Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `action` | Type of cache action - one of: `check`, `restore`, `save` | true | `check` |
-| `cache-key` | Cache Key name | false | `${{ github.event.repository.name }}-${{ github.sha }}-test-archive` |
-| `fail_ci_if_error` | Fail the workflow on an error | false | `false` |
-| `retries` | Number of times to retry codecov upload | false | `3` |
-| `retry-delay` | Time in ms between upload retries | false | `10000` |
-| `btc-version` | The version of Bitcoin to use | false | `0.20.0` |
+
+| Input              | Description                                               | Required | Default                                                              |
+| ------------------ | --------------------------------------------------------- | -------- | -------------------------------------------------------------------- |
+| `action`           | Type of cache action - one of: `check`, `restore`, `save` | true     | `check`                                                              |
+| `cache-key`        | Cache Key name                                            | false    | `${{ github.event.repository.name }}-${{ github.sha }}-test-archive` |
+| `fail_ci_if_error` | Fail the workflow on an error                             | false    | `false`                                                              |
+| `retries`          | Number of times to retry codecov upload                   | false    | `3`                                                                  |
+| `retry-delay`      | Time in ms between upload retries                         | false    | `10000`                                                              |
+| `btc-version`      | The version of Bitcoin to use                             | false    | `0.25.0`                                                             |
 
 ### Outputs
-| Output | Description |
-| ------------------------------- | ----------------------------------------------------- | 
-| `cache-hit` | Returns a boolean if a cache is found (_only applicable in the `check` input action_) |
 
+| Output      | Description                                                                           |
+| ----------- | ------------------------------------------------------------------------------------- |
+| `cache-hit` | Returns a boolean if a cache is found (_only applicable in the `check` input action_) |
 
 ## Usage
 

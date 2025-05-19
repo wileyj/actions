@@ -12,7 +12,7 @@ inputs:
   btc-version:
     description: "Bitcoin version"
     required: false
-    default: "0.20.0"
+    default: "0.25.0"
 
 runs:
   using: "composite"
@@ -53,7 +53,8 @@ runs:
     ## Restore bitcoin cache data
     - name: Restore Bitcoin Binary Cache
       id: restore_bitcoin_cache
-      uses: stacks-network/actions/stacks-core/cache/bitcoin@main
+      # uses: stacks-network/actions/stacks-core/cache/bitcoin@main
+      uses: wileyj/actions/stacks-core/cache/bitcoin@fix/bitcoin_cache
       with:
         action: restore
         btc-version: ${{ inputs.btc-version }}
