@@ -12,7 +12,7 @@ inputs:
   btc-version:
     description: "Bitcoin version"
     required: false
-    default: "0.20.0"
+    default: "25.0"
 
 runs:
   using: "composite"
