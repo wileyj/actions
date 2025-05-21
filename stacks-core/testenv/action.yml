@@ -34,7 +34,7 @@ runs:
       shell: bash
       id: define_rust_toolchain
       run: |
-        if [ ${{ inputs.rust-toolchain != "" ]; then
+        if [ ${{ inputs.rust-toolchain }} != "" ]; then
           echo "RUST_TOOLCHAIN=${{ inputs.rust-toolchain }}" >> $GITHUB_ENV
           exit 0
         else
