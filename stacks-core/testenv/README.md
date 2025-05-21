@@ -7,10 +7,11 @@
 ## Documentation
 
 ### Inputs
-| Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `genesis` | Restore genesis test cache | `true` | false` |
 
+| Input            | Description                | Required | Default  |
+| ---------------- | -------------------------- | -------- | -------- |
+| `genesis`        | Restore genesis test cache | true     | `false`  |
+| `rust-toolchain` | Rust toolchain to use      | false    | `stable` |
 
 ## Usage
 

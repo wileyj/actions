@@ -15,6 +15,10 @@ inputs:
     description: "Fmt alias to run"
     required: false
     default: "fmt"
+  rust-toolchain:
+    description: "Rust toolchain to use"
+    required: false
+    default: "stable"
 
 runs:
   using: composite
@@ -23,10 +27,22 @@ runs:
       id: git_checkout
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
+    - name: Define Rust Toolchain
+      shell: bash
+      id: define_rust_toolchain
+      run: |
+        if [ ${{ inputs.rust-toolchain != "" ]; then
+          echo "RUST_TOOLCHAIN=${{ inputs.rust-toolchain }}" >> $GITHUB_ENV
+          exit 0
+        else
+          echo "RUST_TOOLCHAIN=$(cat ./rust-toolchain)" >> $GITHUB_ENV
+        fi
+
     - name: Setup Rust Toolchain
       id: setup_rust_toolchain
       uses: actions-rust-lang/setup-rust-toolchain@11df97af8e8102fd60b60a77dfbf58d40cd843b8 # v1.10.1
       with:
+        toolchain: ${{ env.RUST_TOOLCHAIN || 'stable' }}
         components: rustfmt
         cache: false
 

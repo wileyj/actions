@@ -1,131 +1,94 @@
-name: "Build Test Archive Caches"
-description: "Build Test Archive Caches"
+name: "Bitcoin Cache"
+description: "Bitcoin binary cache"
 branding:
   icon: "archive"
   color: "gray-dark"
 
 inputs:
-  genesis:
-    description: "Run steps for genesis test archive"
+  action:
+    description: "Type of operation (check,restore,save)"
     required: false
-    default: "false"
+    default: "check"
+  fail-on-cache-miss:
+    description: "Fail workflow if cache is not restorable"
+    required: false
+    default: "true"
+  retries:
+    description: "Number of attempts"
+    required: false
+    default: "3"
+  retry-delay:
+    description: "Time to wait to retry"
+    required: false
+    default: "10000"
+  cache-key:
+    description: "Cache Key name"
+    required: false
+    default: ${{ github.event.repository.name }}-${{ github.event.pull_request.head.sha || github.sha }}-bitcoin-binaries
+  btc-version:
+    description: "Bitcoin version"
+    required: false
+    default: "25.0"
+
+outputs:
+  cache-hit:
+    description: "Cache Hit"
+    value: ${{ steps.check_cache.outputs.cache-hit }}
 
 runs:
   using: "composite"
   steps:
-    ## Perform a lookup to check if the caches already exist
-    - name: Check Cargo Target Cache
-      uses: stacks-network/actions/stacks-core/cache/target@main
-      id: check_target_cache
-
-    - name: Check Test Archive Cache
-      uses: stacks-network/actions/stacks-core/cache/test-archive@main
-      id: check_test_archive_cache
-
-    - name: Check Genesis Test Archive Cache
+    ## Check if cache data exists
+    - name: Check Cache
       if: |
-        inputs.genesis == 'true'
-      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@main
-      id: check_genesis_test_archive_cache
-
-    ## Build the test archive cache(s)
-    ##   - if inputs.genesis == true, optionally build the genesis test archive
-    - name: Checkout the latest code
-      if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' ||
-        steps.check_test_archive_cache.outputs.cache-hit != 'true' ||
-        steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
-      id: git_checkout
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-
-    - name: Setup Rust Toolchain
-      if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' ||
-        steps.check_test_archive_cache.outputs.cache-hit != 'true' ||
-        steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
-      id: setup_rust_toolchain
-      uses: actions-rust-lang/setup-rust-toolchain@11df97af8e8102fd60b60a77dfbf58d40cd843b8 # v1.10.1
+        inputs.action == 'check' ||
+        inputs.action == 'save'
+      uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+      id: check_cache
       with:
-        toolchain: stable
-        components: llvm-tools-preview
-        cache: false
+        lookup-only: true
+        path: ~/bitcoin
+        key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
 
-    - name: Restore Cargo Cache
+    ## Restore cache data
+    ## Use wretry action, to retry on a failed upload
+    - name: Restore Cache
       if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' ||
-        steps.check_test_archive_cache.outputs.cache-hit != 'true' ||
-        steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
-      id: restore_cargo_cache
-      uses: stacks-network/actions/stacks-core/cache/cargo@main
+        inputs.action == 'restore'
+      id: restore_cache
+      uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
       with:
-        action: restore
+        action: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+        with: |
+          fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
+          path: ~/bitcoin
+          key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
+        attempt_limit: ${{ inputs.retries}}
+        attempt_delay: ${{ inputs.retry-delay}}
 
-    - name: Build and Archive Tests
+    ## Save cache data
+    ## If cache is not found, download and extract it
+    - name: Install Bitcoin Binary
       if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' ||
-        steps.check_test_archive_cache.outputs.cache-hit != 'true' ||
-        steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
-      id: archive_tests
+        inputs.action == 'save' &&
+        steps.check_cache.outputs.cache-hit != 'true'
+      id: install_bitcoin
       shell: bash
       run: |
-        cargo nextest archive \
-          --build-jobs 8 \
-          --workspace \
-          --tests \
-          --locked \
-          --features monitoring_prom \
-          --archive-file ~/test_archive.tar.zst
+        curl -LSf -# https://github.com/stacks-network/bitcoin/releases/download/v${{ inputs.btc-version }}/bitcoin-${{ inputs.btc-version }}-x86_64-linux-gnu.tar.gz | tar zxf - -C ~
+        mv ~/bitcoin-${{ inputs.btc-version }} ~/bitcoin
 
-    - name: Build and Archive Genesis Tests
+    ## Use wretry action to retry on a failed upload
+    - name: Save Cache
       if: |
-        inputs.genesis == 'true' && (
-          steps.check_target_cache.outputs.cache-hit != 'true' ||
-          steps.check_test_archive_cache.outputs.cache-hit != 'true' ||
-          steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
-        )
-      id: archive_genesis_tests
-      shell: bash
-      run: |
-        cd testnet/stacks-node && cargo nextest archive \
-          --build-jobs 8 \
-          --workspace \
-          --tests \
-          --locked \
-          --features prod-genesis-chainstate \
-          --features monitoring_prom \
-          --archive-file ~/genesis_archive.tar.zst
-
-    ## Save Caches
-    ## If any of the caches are not found, save cargo target cache
-    ##   - Target cache
-    ##   - Nextest archive cache
-    ##   - Nextest genesis archive cache
-    - name: Cache Cargo Target
-      if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' || 
-        steps.check_test_archive_cache.outputs.cache-hit != 'true' || 
-        steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
-      id: save_target_cache
-      uses: stacks-network/actions/stacks-core/cache/target@main
+        inputs.action == 'save' &&
+        steps.check_cache.outputs.cache-hit != 'true'
+      id: save_cache
+      uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
       with:
-        action: save
-
-    - name: Cache Test Archive
-      if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' || 
-        steps.check_test_archive_cache.outputs.cache-hit != 'true' || 
-        steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
-      id: save_nextest_cache
-      uses: stacks-network/actions/stacks-core/cache/test-archive@main
-      with:
-        action: save
-
-    - name: Cache Genesis Archive
-      if: |
-        steps.check_target_cache.outputs.cache-hit != 'true' || 
-        steps.check_test_archive_cache.outputs.cache-hit != 'true' || 
-        steps.check_genesis_test_archive_cache.outputs.cache-hit != 'true'
-      id: save_genesis_cache
-      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@main
-      with:
-        action: save
+        action: actions/cache/save@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+        with: |
+          path: ~/bitcoin
+          key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
+        attempt_limit: ${{ inputs.retries}}
+        attempt_delay: ${{ inputs.retry-delay}}
