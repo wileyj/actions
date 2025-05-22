@@ -55,7 +55,7 @@ runs:
       uses: wileyj/actions/rust-toolchain@chore/6107
       with:
         rust-toolchain: ${{ inputs.rust-toolchain }}
-        component: "llvm-tools-preview"
+        components: "llvm-tools-preview"
 
     ## Restore cargo cache data
     - name: Restore Cargo Cache
