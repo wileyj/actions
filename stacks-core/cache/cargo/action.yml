@@ -77,18 +77,17 @@ runs:
         inputs.action == 'save' &&
         steps.check_cache.outputs.cache-hit != 'true'
       id: install_nextest
-      uses: taiki-e/install-action@54b836426b3fa9aef432e760885ea0419ab50dab # v2.48.15
+      uses: taiki-e/install-action@d12e869b89167df346dd0ff65da342d1fb1202fb # v2.53.2
       with:
         tool: nextest # can be versioned, ex: tool@1.1.1.1
 
     ## If cargo cache is not found, install grcov
-    ##  - cargo-llvm-cov instead? https://github.com/taiki-e/cargo-llvm-cov
     - name: Install grcov
       if: |
         inputs.action == 'save' &&
         steps.check_cache.outputs.cache-hit != 'true'
       id: install_grcov
-      uses: taiki-e/install-action@54b836426b3fa9aef432e760885ea0419ab50dab # v2.48.15
+      uses: taiki-e/install-action@d12e869b89167df346dd0ff65da342d1fb1202fb # v2.53.2
       with:
         tool: grcov # can be versioned, ex: tool@1.1.1.1
 
