@@ -39,7 +39,7 @@ runs:
       if: |
         inputs.action == 'check' ||
         inputs.action == 'save'
-      uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+      uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
       id: check_cache
       with:
         lookup-only: true
@@ -52,23 +52,36 @@ runs:
 
     ## Restore cache data
     ## Use wretry action, to retry on a failed upload
+    # - name: Restore Cache
+    #   if: |
+    #     inputs.action == 'restore'
+    #   id: restore_cache
+    #   uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+    #   with:
+    #     action: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+    #     with: |
+    #       fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
+    #       path: |
+    #         ~/.cargo/bin/
+    #         ~/.cargo/registry/index/
+    #         ~/.cargo/registry/cache/
+    #         ~/.cargo/git/db/
+    #       key: ${{ inputs.cache-key }}
+    #     attempt_limit: ${{ inputs.retries}}
+    #     attempt_delay: ${{ inputs.retry-delay}}
     - name: Restore Cache
       if: |
         inputs.action == 'restore'
       id: restore_cache
-      uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+      uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
       with:
-        action: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
-        with: |
-          fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ inputs.cache-key }}
-        attempt_limit: ${{ inputs.retries}}
-        attempt_delay: ${{ inputs.retry-delay}}
+        fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        key: ${{ inputs.cache-key }}
 
     ## Restore cache data
     ## If cache is not found, install nextest
@@ -93,20 +106,33 @@ runs:
         tool: grcov # can be versioned, ex: tool@1.1.1.1
 
     ## Use wretry action to retry on a failed upload
+    # - name: Save Cache
+    #   if: |
+    #     inputs.action == 'save' &&
+    #     steps.check_cache.outputs.cache-hit != 'true'
+    #   id: save_cache
+    #   uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+    #   with:
+    #     action: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+    #     with: |
+    #       path: |
+    #         ~/.cargo/bin/
+    #         ~/.cargo/registry/index/
+    #         ~/.cargo/registry/cache/
+    #         ~/.cargo/git/db/
+    #       key: ${{ inputs.cache-key }}
+    #     attempt_limit: ${{ inputs.retries}}
+    #     attempt_delay: ${{ inputs.retry-delay}}
     - name: Save Cache
       if: |
         inputs.action == 'save' &&
         steps.check_cache.outputs.cache-hit != 'true'
       id: save_cache
-      uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+      uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
       with:
-        action: actions/cache/save@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
-        with: |
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ inputs.cache-key }}
-        attempt_limit: ${{ inputs.retries}}
-        attempt_delay: ${{ inputs.retry-delay}}
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+        key: ${{ inputs.cache-key }}
