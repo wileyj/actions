@@ -41,7 +41,7 @@ runs:
       run: |
         cargo install --version 24.7.1 cargo-mutants --locked # v24.7.1
 
-    - uses: taiki-e/install-action@54b836426b3fa9aef432e760885ea0419ab50dab # v2.48.15
+    - uses: taiki-e/install-action@d12e869b89167df346dd0ff65da342d1fb1202fb # v2.53.2
       name: Install cargo-nextest
       id: install_cargo_nextest
       with:
