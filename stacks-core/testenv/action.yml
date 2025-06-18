@@ -39,7 +39,7 @@ runs:
     ## Restore cargo cache data
     - name: Restore Cargo Cache
       id: restore_cargo_cache
-      uses: stacks-network/actions/stacks-core/cache/cargo@chore/cache_fix
+      uses: wileyj/actions/stacks-core/cache/cargo@chore/cache_fix
       # uses: stacks-network/actions/stacks-core/cache/cargo@main
       with:
         action: restore
@@ -47,7 +47,7 @@ runs:
     ## Restore nextest target cache data
     - name: Restore Target Cache
       id: restore_target_cache
-      uses: stacks-network/actions/stacks-core/cache/target@chore/cache_fix
+      uses: wileyj/actions/stacks-core/cache/target@chore/cache_fix
       # uses: stacks-network/actions/stacks-core/cache/target@main
       with:
         action: restore
@@ -55,7 +55,7 @@ runs:
     ## Restore bitcoin cache data
     - name: Restore Bitcoin Binary Cache
       id: restore_bitcoin_cache
-      uses: stacks-network/actions/stacks-core/cache/bitcoin@chore/cache_fix
+      uses: wileyj/actions/stacks-core/cache/bitcoin@chore/cache_fix
       # uses: stacks-network/actions/stacks-core/cache/bitcoin@main
       with:
         action: restore
@@ -74,7 +74,7 @@ runs:
       if: |
         inputs.genesis != 'true'
       id: restore_test_cache
-      uses: stacks-network/actions/stacks-core/cache/test-archive@chore/cache_fix
+      uses: wileyj/actions/stacks-core/cache/test-archive@chore/cache_fix
       # uses: stacks-network/actions/stacks-core/cache/test-archive@main
       with:
         action: restore
@@ -84,7 +84,7 @@ runs:
       if: |
         inputs.genesis == 'true'
       id: restore_genesis_test_cache
-      uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@chore/cache_fix
+      uses: wileyj/actions/stacks-core/cache/genesis-test-archive@chore/cache_fix
       # uses: stacks-network/actions/stacks-core/cache/genesis-test-archive@main
       with:
         action: restore
