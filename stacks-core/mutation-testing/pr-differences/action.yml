@@ -45,7 +45,7 @@ runs:
       name: Install cargo-nextest
       id: install_cargo_nextest
       with:
-        tool: nextest # Latest version
+        tool: cargo-nextest # Latest version
 
     - name: Update git diff
       id: update_git_diff
