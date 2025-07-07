@@ -87,6 +87,7 @@ runs:
       shell: bash
       run: |
         # TEMPORARY FALLBACK: Support both old and new directory layouts until full rollout is complete
+        # issue reference: https://github.com/stacks-network/actions/issues/79
         if [ -d testnet/stacks-node ]; then
           cd testnet/stacks-node
         elif [ -d stacks-node ]; then
