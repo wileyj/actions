@@ -50,7 +50,7 @@ runs:
 
     - name: Validate OpenAPI spec
       id: validate_spec
-      if: inputs.validate == "true"
+      if: inputs.validate == 'true'
       shell: bash
       run: |
         echo "Validating OpenAPI specification..."
