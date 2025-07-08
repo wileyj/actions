@@ -76,7 +76,11 @@ runs:
       id: check_result
       shell: bash
       run: |
-        test -f ${{ inputs.output }} || (echo "❌ Missing ${{ inputs.output }} from previous step." && exit 1)
+        echo "Checking if documentation file exists..."
+        if [ ! -f ${{ inputs.output }} ]; then
+          echo "❌ Missing ${{ inputs.output }} from previous step."
+          exit 1
+        fi
         echo "✅ Generated documentation file is valid"
         echo "📄 File size: $(du -h ${{ inputs.output }} | cut -f1)"
 
