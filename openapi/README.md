@@ -13,6 +13,8 @@ Generates an HTML artifact of a provided openapi.yml file using `redoc`, checks 
 | `validate`        | Validate OpenAPI spec before generating docs          | `false`  | `true`                 |
 | `redocly-version` | The version of Redocly CLI to use (e.g. 1.34)         | `false`  | `latest`               |
 | `config`          | Path to the Redocly config file for linting           | `false`  | `(none)`               |
+| `node-version`    | Node.js version to use                                | `false`  | `22`                   |
+| `retention-days`  | Number of days to retain the artifact                 | `false`  | `90`                   |
 
 ## Usage
 
