@@ -23,6 +23,14 @@ inputs:
   config:
     description: "Path to the Redocly config file for linting"
     required: false
+  node-version:
+    description: "Node.js version to use"
+    required: false
+    default: "22"
+  retention-days:
+    description: "Number of days to retain the artifact"
+    required: false
+    default: "90"
 
 runs:
   using: "composite"
@@ -34,7 +42,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
-        node-version: "20"
+        node-version: "${{ inputs.node-version }}"
 
     - name: Install Redocly CLI
       id: install_redocly
@@ -92,4 +100,4 @@ runs:
         name: open-api-bundle
         path: |
           ${{ inputs.output }}
-        retention-days: 30
+        retention-days: ${{ inputs.retention-days }}
