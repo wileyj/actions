@@ -49,8 +49,7 @@ runs:
       shell: bash
       run: |
         npm install -g @redocly/cli@${{ inputs.redocly-version }}
-        fi
-        echo "Redocly CLI version: $(redocly --version)"
+        echo "✅ Redocly CLI version: $(redocly --version)"
 
     - name: Validate OpenAPI spec
       id: validate_spec
