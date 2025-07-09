@@ -40,10 +40,7 @@ runs:
       id: install_redocly
       shell: bash
       run: |
-        if [ "${{ inputs.redocly-version }}" = "latest" ]; then
-          npm install -g @redocly/cli
-        else
-          npm install -g @redocly/cli@${{ inputs.redocly-version }}
+        npm install -g @redocly/cli@${{ inputs.redocly-version }}
         fi
         echo "Redocly CLI version: $(redocly --version)"
 
