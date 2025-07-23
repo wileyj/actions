@@ -81,13 +81,9 @@ runs:
         echo "Check zipfile contents"
         zipinfo ./release/${{ env.ZIPFILE }}.zip
         echo "Remove all except stacks-signer"
-        zip -d ./release/${{ env.ZIPFILE }}.zip "blockstack-cli"
-        zip -d ./release/${{ env.ZIPFILE }}.zip "clarity-cli"
-        zip -d ./release/${{ env.ZIPFILE }}.zip "extract-docs"
-        zip -d ./release/${{ env.ZIPFILE }}.zip "generate-markdown"
-        zip -d ./release/${{ env.ZIPFILE }}.zip "provenance.json"
-        zip -d ./release/${{ env.ZIPFILE }}.zip "stacks-events"
-        zip -d ./release/${{ env.ZIPFILE }}.zip "stacks-inspect"
+        for FILE in $(zipinfo -1 ./release/${{ env.ZIPFILE }}.zip -x "stacks-signer*"); do
+          zip -d ./release/${{ env.ZIPFILE }}.zip "$FILE"
+        done
         echo "Checking for stacks-signer in zipfile"
         zipinfo ./release/${{ env.ZIPFILE }}.zip
 
