@@ -84,6 +84,10 @@ runs:
         echo "unzipping file to temp dir"
         unzip ./release/${{ env.ZIPFILE }}.zip -d /tmp/binaries
         echo "recreate zipfile"
+        if [ -f "./release/${{ env.ZIPFILE }}.zip" ]; then
+          echo "Deleting archive before recreating it"
+          rm -f "./release/${{ env.ZIPFILE }}.zip"
+        fi
         zip --junk-paths ./release/${{ env.ZIPFILE }}.zip /tmp/binaries/stacks-signer* /tmp/binaries/provenance.json 
 
 
