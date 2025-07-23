@@ -108,7 +108,8 @@ runs:
       if: |
         inputs.is_node_release == 'true'
       id: extract_signer_binary
-      uses: stacks-network/actions/stacks-core/release/extract-signer-binary@main
+      # uses: stacks-network/actions/stacks-core/release/extract-signer-binary@main
+      uses: wileyj/actions/stacks-core/release/extract-signer-binary@chore/remove_macos_build
       with:
         arch: ${{ inputs.arch }}
         cpu: ${{ inputs.cpu }}
