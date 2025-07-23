@@ -60,12 +60,12 @@ runs:
         path: release
         merge-multiple: true
 
-    ## Remove everything but the signer from the archive
-    - name: Remove binaries
-      id: remove_binaries
-      shell: bash
-      run: |
-        zipinfo -1 ./release/${{ env.ZIPFILE }}.zip | grep -v 'stacks-signer' | xargs -I {} zip -d ./release/${{ env.ZIPFILE }}.zip "{}"
+    # ## Remove everything but the signer from the archive
+    # - name: Remove binaries
+    #   id: remove_binaries
+    #   shell: bash
+    #   run: |
+    #     zipinfo -1 ./release/${{ env.ZIPFILE }}.zip | grep -v 'stacks-signer' | xargs -I {} zip -d ./release/${{ env.ZIPFILE }}.zip "{}"
 
     ## Upload the binary artifact to the github action (used in `github-release.yml` to create a release)
     - name: Upload artifact
