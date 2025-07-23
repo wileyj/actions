@@ -80,10 +80,17 @@ runs:
         zip --version
         echo "Check zipfile contents"
         zipinfo ./release/${{ env.ZIPFILE }}.zip
-        echo "Remove all except stacks-signer"
-        for FILE in $(zipinfo -1 ./release/${{ env.ZIPFILE }}.zip -x "stacks-signer*"); do
-          zip -d ./release/${{ env.ZIPFILE }}.zip "$FILE"
-        done
+
+        echo "unzipping file to temp dir"
+        unzip ./release/${{ env.ZIPFILE }}.zip -d /tmp/binaries
+        echo "recreate zipfile"
+        zip --junk-paths ./release/${{ env.ZIPFILE }}.zip /tmp/binaries/stacks-signer* /tmp/binaries/provenance.json 
+
+
+        # echo "Remove all except stacks-signer"
+        # for FILE in $(zipinfo -1 ./release/${{ env.ZIPFILE }}.zip -x "stacks-signer"); do
+        #   zip -d ./release/${{ env.ZIPFILE }}.zip "$FILE"
+        # done
         echo "Checking for stacks-signer in zipfile"
         zipinfo ./release/${{ env.ZIPFILE }}.zip
 
