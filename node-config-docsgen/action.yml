@@ -46,7 +46,6 @@ runs:
         echo "Generating configuration documentation..."
 
         # Navigate to the script directory and run
-        chmod +x contrib/tools/config-docs-generator/generate-config-docs.sh
         bash contrib/tools/config-docs-generator/generate-config-docs.sh
 
         # Verify output was generated
