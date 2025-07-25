@@ -45,6 +45,7 @@ runs:
       env:
         OUTPUT_FILE: ${{ inputs.output }}
         PROJECT_ROOT: $(pwd)
+        RUST_NIGHTLY_VERSION: ${{ inputs.rust-nightly-version }}
       run: |
         echo "Generating configuration documentation..."
 
