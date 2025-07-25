@@ -17,6 +17,10 @@ inputs:
     description: "Specific nightly version to use (e.g., 'nightly-2025-06-17')"
     required: false
     default: "nightly-2025-06-17"
+  retention-days:
+    description: "Number of days to retain the artifact"
+    required: false
+    default: "90"
 
 runs:
   using: "composite"
@@ -102,7 +106,7 @@ runs:
       with:
         name: node-parameters-bundle
         path: ${{ inputs.output }}
-        retention-days: 30
+        retention-days: ${{ inputs.retention-days }}
         if-no-files-found: error
 
     ## Generate job summary
