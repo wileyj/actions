@@ -39,27 +39,12 @@ runs:
       id: git_checkout
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-    - name: Detect OpenAPI spec version
-      id: detect_spec
-      shell: bash
-      run: |
-        echo "Detecting if new Redocly-based spec exists..."
-        if [ -f ./docs/rpc/redocly.yaml ]; then
-          echo "use_redocly_cli=true" >> "$GITHUB_OUTPUT"
-          echo "✅ Detected new Redocly spec"
-        else
-          echo "use_redocly_cli=false" >> "$GITHUB_OUTPUT"
-          echo "ℹ️  Falling back to legacy Redoc flow"
-        fi
-
     - name: Setup Node.js
-      if: steps.detect_spec.outputs.use_redocly_cli == 'true'
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
         node-version: "${{ inputs.node-version }}"
 
     - name: Install Redocly CLI
-      if: steps.detect_spec.outputs.use_redocly_cli == 'true'
       id: install_redocly
       shell: bash
       run: |
@@ -67,8 +52,8 @@ runs:
         echo "✅ Redocly CLI version: $(redocly --version)"
 
     - name: Validate OpenAPI spec
-      if: inputs.validate == 'true' && steps.detect_spec.outputs.use_redocly_cli == 'true'
       id: validate_spec
+      if: inputs.validate == 'true'
       shell: bash
       run: |
         echo "Validating OpenAPI specification..."
@@ -80,7 +65,6 @@ runs:
         echo "✅ OpenAPI specification is valid"
 
     - name: Generate OpenAPI docs
-      if: steps.detect_spec.outputs.use_redocly_cli == 'true'
       id: generate_docs
       shell: bash
       run: |
@@ -93,7 +77,6 @@ runs:
         echo "✅ Documentation generated successfully"
 
     - name: Check result
-      if: steps.detect_spec.outputs.use_redocly_cli == 'true'
       id: check_result
       shell: bash
       run: |
@@ -104,20 +87,6 @@ runs:
         fi
         echo "✅ Generated documentation file is valid"
         echo "📄 File size: $(du -h ${{ inputs.output }} | cut -f1)"
-
-    - name: Redoc (legacy)
-      id: run_redoc
-      if: steps.detect_spec.outputs.use_redocly_cli == 'false'
-      uses: seeebiii/redoc-cli-github-action@c9649b33918da5eb290b81cd03a943caea091540 # v10
-      with:
-        args: "bundle -o ${{ inputs.output }} ${{ inputs.input }}"
-
-    - name: Check result (legacy)
-      id: check_redoc
-      if: steps.detect_spec.outputs.use_redocly_cli == 'false'
-      shell: bash
-      run: |
-        test -f ${{ inputs.output }} || (echo "Missing ${{ inputs.output }} from previous step." && exit 1)
 
     ## Upload the html file artifact
     - name: Upload bundled html
