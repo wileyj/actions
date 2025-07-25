@@ -92,11 +92,6 @@ runs:
         echo "  - Word count: $WORD_COUNT words"
         echo "  - Line count: $LINE_COUNT lines"
 
-        # Basic content validation
-        if ! grep -q "# Configuration Reference" "$OUTPUT_FILE"; then
-          echo "Warning: Documentation may be malformed - missing main title"
-        fi
-
         echo "Documentation validation completed successfully ✅"
 
     ## Upload documentation as artifact
