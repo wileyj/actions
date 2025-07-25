@@ -9,6 +9,7 @@ Generates and uploads Stacks Core configuration documentation.
 | `output` | Output file for generated documentation | no | `./node-parameters.md` |
 | `min-doc-size` | Minimum file size in bytes – build fails if below | no | `50000` |
 | `rust-nightly-version` | Rust nightly toolchain version used to build the generator | no | `nightly-2025-06-17` |
+| `retention-days` | Number of days to retain the artifact | no | `90` |
 
 ## Usage
 
