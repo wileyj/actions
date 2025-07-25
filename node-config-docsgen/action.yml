@@ -26,11 +26,10 @@ runs:
       id: git_checkout
       uses: actions/checkout@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
 
-
     ## Install Rust nightly toolchain (required for rustdoc JSON output)
     - name: Install Rust nightly toolchain
       id: install_rust
-      uses: dtolnay/rust-toolchain@b3b07ba8b418998c39fb20f53e8b695cdcc8de1b
+      uses: actions-rust-lang/setup-rust-toolchain@fb51252c7ba57d633bc668f941da052e410add48 # v1.13.0
       with:
         toolchain: ${{ inputs.rust-nightly-version }}
         components: rustdoc
