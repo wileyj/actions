@@ -97,10 +97,6 @@ runs:
           echo "Warning: Documentation may be malformed - missing main title"
         fi
 
-        if [[ $WORD_COUNT -lt 1000 ]]; then
-          echo "Warning: Documentation seems very short ($WORD_COUNT words)"
-        fi
-
         echo "Documentation validation completed successfully ✅"
 
     ## Upload documentation as artifact
