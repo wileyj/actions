@@ -21,6 +21,10 @@ inputs:
     description: "Number of days to retain the artifact"
     required: false
     default: "90"
+  artifact-name:
+    description: "Name for the uploaded artifact"
+    required: false
+    default: "node-parameters-bundle"
 
 runs:
   using: "composite"
@@ -101,7 +105,7 @@ runs:
       id: upload_artifact
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
-        name: node-parameters-bundle
+        name: ${{ inputs.artifact-name }}
         path: ${{ inputs.output }}
         retention-days: ${{ inputs.retention-days }}
         if-no-files-found: error
@@ -111,30 +115,21 @@ runs:
       id: summary
       shell: bash
       run: |
+        OUTPUT_FILE="${{ inputs.output }}"
+
         echo "## Configuration Documentation Generated ✅" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "The Stacks Core configuration documentation has been successfully generated and uploaded." >> $GITHUB_STEP_SUMMARY
+        echo "Stacks Core configuration documentation has been generated and uploaded as artifact." >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
 
-        # Add file statistics if available
-        OUTPUT_FILE="${{ inputs.output }}"
+        # Add basic file statistics
         if [[ -f "$OUTPUT_FILE" ]]; then
           FILE_SIZE=$(wc -c < "$OUTPUT_FILE")
           WORD_COUNT=$(wc -w < "$OUTPUT_FILE")
+          FORMATTED_SIZE=$(numfmt --to=iec-i --suffix=B "$FILE_SIZE")
 
-          echo "### 📊 Generation Statistics:" >> $GITHUB_STEP_SUMMARY
-          echo "- **File Size**: $(numfmt --to=iec-i --suffix=B $FILE_SIZE)" >> $GITHUB_STEP_SUMMARY
-          echo "- **Word Count**: $WORD_COUNT words" >> $GITHUB_STEP_SUMMARY
-          echo "- **Rust Toolchain**: ${{ inputs.rust-nightly-version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**File Size**: $FORMATTED_SIZE | **Words**: $(printf "%'d" $WORD_COUNT) | **Toolchain**: \`${{ inputs.rust-nightly-version }}\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
         fi
 
-        echo "### 📄 Generated Files:" >> $GITHUB_STEP_SUMMARY
-        echo "- \`${{ inputs.artifact-name }}\` - Complete configuration documentation" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### 📦 Artifact Details:" >> $GITHUB_STEP_SUMMARY
-        echo "- **Name**: \`${{ inputs.artifact-name }}\`" >> $GITHUB_STEP_SUMMARY
-        echo "- **Retention**: 30 days" >> $GITHUB_STEP_SUMMARY
-        echo "- **Location**: Available in workflow run artifacts section" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "> 💡 **Tip**: Download the artifact to access the generated documentation files" >> $GITHUB_STEP_SUMMARY
+        echo "**Artifact**: \`${{ inputs.artifact-name }}\` (retained for ${{ inputs.retention-days }} days)" >> $GITHUB_STEP_SUMMARY
