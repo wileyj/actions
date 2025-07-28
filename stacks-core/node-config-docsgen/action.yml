@@ -48,6 +48,9 @@ runs:
         RUST_NIGHTLY_VERSION: ${{ inputs.rust-nightly-version }}
       run: |
         echo "Generating configuration documentation..."
+        echo "Project root: $PROJECT_ROOT"
+        echo "Rust nightly version: $RUST_NIGHTLY_VERSION"
+        echo "Output file: $OUTPUT_FILE"
 
         # Navigate to the script directory and run
         bash contrib/tools/config-docs-generator/generate-config-docs.sh
