@@ -1,9 +1,8 @@
 name: "Generate and upload openAPI docs"
-description: "Generate and upload openAPI docs"
+description: "Generate and upload openAPI docs using Redocly CLI"
 branding:
   icon: "globe"
   color: "gray-dark"
-
 inputs:
   output:
     description: "openAPI output file"
@@ -13,34 +12,88 @@ inputs:
     description: "Input file to use to generate openAPI docs"
     required: true
     default: ""
+  validate:
+    description: "Validate OpenAPI spec before generating docs"
+    required: false
+    default: "true"
+  redocly-version:
+    description: "Version of Redocly CLI to use"
+    required: false
+    default: "latest"
+  config:
+    description: "Path to the Redocly config file for linting"
+    required: false
+  node-version:
+    description: "Node.js version to use"
+    required: false
+    default: "22"
+  retention-days:
+    description: "Number of days to retain the artifact"
+    required: false
+    default: "90"
 
 runs:
   using: "composite"
   steps:
-    ## checkout the code
     - name: Checkout the latest code
       id: git_checkout
       uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-    ## Use redoc to generate HTML of openapi.yml
-    - name: Redoc
-      id: run_redoc
-      uses: seeebiii/redoc-cli-github-action@c9649b33918da5eb290b81cd03a943caea091540 # v10
+    - name: Setup Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
       with:
-        args: "bundle -o ${{ inputs.output }} ${{ inputs.input }}"
+        node-version: "${{ inputs.node-version }}"
 
-    ## Test the resultant html
-    - name: check result
-      id: check_redoc
+    - name: Install Redocly CLI
+      id: install_redocly
       shell: bash
       run: |
-        test -f ${{ inputs.output }} || (echo "Missing ${{ inputs.output }} from previous step." && exit 1)
+        npm install -g @redocly/cli@${{ inputs.redocly-version }}
+        echo "✅ Redocly CLI version: $(redocly --version)"
+
+    - name: Validate OpenAPI spec
+      id: validate_spec
+      if: inputs.validate == 'true'
+      shell: bash
+      run: |
+        echo "Validating OpenAPI specification..."
+        CONFIG_ARG=""
+        if [ -n "${{ inputs.config }}" ]; then
+          CONFIG_ARG="--config ${{ inputs.config }}"
+        fi
+        redocly lint ${{ inputs.input }} $CONFIG_ARG
+        echo "✅ OpenAPI specification is valid"
+
+    - name: Generate OpenAPI docs
+      id: generate_docs
+      shell: bash
+      run: |
+        echo "Generating OpenAPI documentation..."
+        CONFIG_ARG=""
+        if [ -n "${{ inputs.config }}" ]; then
+          CONFIG_ARG="--config ${{ inputs.config }}"
+        fi
+        redocly build-docs ${{ inputs.input }} --output ${{ inputs.output }} $CONFIG_ARG
+        echo "✅ Documentation generated successfully"
+
+    - name: Check result
+      id: check_result
+      shell: bash
+      run: |
+        echo "Checking if documentation file exists..."
+        if [ ! -f ${{ inputs.output }} ]; then
+          echo "❌ Missing ${{ inputs.output }} from previous step."
+          exit 1
+        fi
+        echo "✅ Generated documentation file is valid"
+        echo "📄 File size: $(du -h ${{ inputs.output }} | cut -f1)"
 
     ## Upload the html file artifact
     - name: Upload bundled html
       id: upload_html_artifact
-      uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: open-api-bundle
         path: |
           ${{ inputs.output }}
+        retention-days: ${{ inputs.retention-days }}

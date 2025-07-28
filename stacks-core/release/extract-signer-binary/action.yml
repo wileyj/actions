@@ -65,7 +65,14 @@ runs:
       id: remove_binaries
       shell: bash
       run: |
-        zipinfo -1 ./release/${{ env.ZIPFILE }}.zip | grep -v 'stacks-signer' | xargs -I {} zip -d ./release/${{ env.ZIPFILE }}.zip "{}"
+        echo "Extract to temp dir /tmp/binaries"
+        unzip ./release/${{ env.ZIPFILE }}.zip -d /tmp/binaries
+        if [ -f "./release/${{ env.ZIPFILE }}.zip" ]; then
+          echo "Deleting archive before recreating it"
+          rm -f "./release/${{ env.ZIPFILE }}.zip"
+        fi
+        echo "Recreate binary archive with only stacks-signer and provenance.json"
+        zip --junk-paths ./release/${{ env.ZIPFILE }}.zip /tmp/binaries/stacks-signer* /tmp/binaries/provenance.json
 
     ## Upload the binary artifact to the github action (used in `github-release.yml` to create a release)
     - name: Upload artifact
