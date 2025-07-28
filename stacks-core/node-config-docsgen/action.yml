@@ -44,7 +44,7 @@ runs:
       shell: bash
       env:
         OUTPUT_FILE: ${{ inputs.output }}
-        PROJECT_ROOT: $(pwd)
+        PROJECT_ROOT: ${{ github.workspace }}
         RUST_NIGHTLY_VERSION: ${{ inputs.rust-nightly-version }}
       run: |
         echo "Generating configuration documentation..."
