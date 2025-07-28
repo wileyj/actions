@@ -45,7 +45,6 @@ runs:
       env:
         OUTPUT_FILE: ${{ inputs.output }}
         PROJECT_ROOT: ${{ github.workspace }}
-        RUST_NIGHTLY_VERSION: ${{ inputs.rust-nightly-version }}
       run: |
         echo "Generating configuration documentation..."
 
@@ -138,4 +137,4 @@ runs:
         echo "- **Retention**: 30 days" >> $GITHUB_STEP_SUMMARY
         echo "- **Location**: Available in workflow run artifacts section" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "> 💡 **Tip**: Download the artifact to access the generated documentation files"
+        echo "> 💡 **Tip**: Download the artifact to access the generated documentation files" >> $GITHUB_STEP_SUMMARY
