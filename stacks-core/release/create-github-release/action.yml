@@ -44,7 +44,7 @@ runs:
       with:
         name: "[DRAFT] Release ${{ inputs.tag || github.ref }}"
         tag_name: ${{ inputs.tag || github.ref }}
-        draft: false
+        draft: true
         prerelease: true
         fail_on_unmatched_files: true
         target_commitish: ${{ github.sha }}
