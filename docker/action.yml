@@ -13,22 +13,13 @@ inputs:
     description: "Docker password"
     required: false
     default: ""
-
+  registry:
+    description: "Docker Registry"
+    required: false
+    default: "registry-1.docker.io"
 runs:
   using: "composite"
   steps:
-    ## cleanup runner
-    - name: Cleanup Runner
-      id: runner_cleanup
-      uses: stacks-network/actions/cleanup/disk@main
-
-    ## Checkout the code
-    - name: Checkout the latest code
-      id: git_checkout
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      with:
-        persist-credentials: false
-
     ## Set some vars to be used in the build process
     - name: Set Vars
       id: set_vars
@@ -68,5 +59,6 @@ runs:
       id: docker_login
       uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
       with:
+        registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
