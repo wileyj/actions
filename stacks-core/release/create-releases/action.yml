@@ -38,7 +38,7 @@ runs:
       # if: |
       #   inputs.is_node_release == 'true'
       id: create_node_release
-      uses: stacks-network/actions/stacks-core/release/create-github-release@chore/update_docker_comp
+      uses: wileyj/actions/stacks-core/release/create-github-release@chore/update_docker_comp
       # uses: stacks-network/actions/stacks-core/release/create-github-release@main
       with:
         tag: ${{ inputs.node_tag }}
@@ -52,7 +52,7 @@ runs:
       # if: |
       #   inputs.is_signer_release == 'true'
       id: create_signer_release
-      uses: stacks-network/actions/stacks-core/release/create-github-release@chore/update_docker_comp
+      uses: wileyj/actions/stacks-core/release/create-github-release@chore/update_docker_comp
       # uses: stacks-network/actions/stacks-core/release/create-github-release@main
       with:
         tag: ${{ inputs.signer_tag }}
