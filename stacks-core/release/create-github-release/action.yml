@@ -35,7 +35,7 @@ runs:
       id: generate_checksum
       uses: stacks-network/actions/generate-checksum@main
       with:
-        artifact_download_pattern: "${{github.sha}}-${{ inputs.release_type }}" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
+        artifact_download_pattern: "${{github.sha}}-${{ inputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
         # artifact_download_pattern: "${{ inputs.docker_tag }}-binary-build-*"
 
     ## Upload the release archives with the checksums file
@@ -45,7 +45,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.GH_TOKEN }}
       with:
-        name: "[DRAFT] Release ${{ inputs.tag || github.ref }}"
+        name: "Release ${{ inputs.tag || github.ref }}"
         tag_name: ${{ inputs.tag || github.ref }}
         draft: true
         prerelease: true
