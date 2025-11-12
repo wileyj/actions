@@ -24,7 +24,7 @@ runs:
   steps:
     - name: Check Release Type
       id: check_release_type
-      uses: bash
+      shell: bash
       run: |
         count=$(echo ${{ inputs.tag}} |tr -d ".|\n" | wc -c)
         echo "count: $count"
