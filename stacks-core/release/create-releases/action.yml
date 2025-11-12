@@ -42,7 +42,7 @@ runs:
       # uses: stacks-network/actions/stacks-core/release/create-github-release@main
       with:
         tag: ${{ inputs.node_tag }}
-        release_type: stacks-node
+        # release_type: stacks-node
         # docker_tag: ${{ inputs.node_docker_tag }}
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
 
@@ -57,6 +57,6 @@ runs:
       # uses: stacks-network/actions/stacks-core/release/create-github-release@main
       with:
         tag: ${{ inputs.signer_tag }}
-        release_type: stacks-signer
+        # release_type: stacks-signer
         # docker_tag: ${{ inputs.signer_docker_tag }}
         GH_TOKEN: ${{ inputs.GH_TOKEN }}
