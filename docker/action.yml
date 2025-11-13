@@ -13,10 +13,10 @@ inputs:
     description: "Docker password"
     required: false
     default: ""
-  # registry:
-  #   description: "Docker Registry"
-  #   required: false
-  #   default: "registry-1.docker.io"
+  registry:
+    description: "Docker Registry"
+    required: false
+    default: "docker.io"
 runs:
   using: "composite"
   steps:
@@ -63,6 +63,7 @@ runs:
       id: docker_login
       uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
       with:
-        # registry: ${{ inputs.registry }}
+        registry: ${{ inputs.registry }} # something about this doesn't work for dockerhub
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
+        logout: true
