@@ -9,9 +9,6 @@ inputs:
   tag:
     description: "Release Tag"
     required: true
-  docker_tag:
-    description: "Release Docker Tag"
-    required: true
   GH_TOKEN:
     description: "GitHub Token"
     required: true
@@ -19,12 +16,26 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Check Release Type
+      id: check_release_type
+      shell: bash
+      run: |
+        count=$(echo ${{ inputs.tag}} |tr -d ".|\n" | wc -c)
+        echo "count: $count"
+        if [[ "${count}" -gt 5 ]]; then
+            echo "stacks signer: ${{inputs.tag}}"
+            echo "release_type=stacks-signer" >> $GITHUB_OUTPUT
+        else
+            echo "stacks node: ${{inputs.tag}}"
+            echo "release_type=stacks-node" >> $GITHUB_OUTPUT
+        fi
+
     ## Downloads the artifacts built in `create-source-binary`
     - name: Download Artifacts
       id: download_artifacts
-      uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+      uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
       with:
-        pattern: ${{ inputs.docker_tag }}-binary-build-*
+        pattern: "${{github.sha}}-${{ steps.check_release_type.outputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
         path: release
         merge-multiple: true
 
@@ -33,7 +44,7 @@ runs:
       id: generate_checksum
       uses: stacks-network/actions/generate-checksum@main
       with:
-        artifact_download_pattern: "${{ inputs.docker_tag }}-binary-build-*"
+        artifact_download_pattern: "${{github.sha}}-${{ steps.check_release_type.outputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
 
     ## Upload the release archives with the checksums file
     - name: Upload Release
@@ -42,7 +53,7 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.GH_TOKEN }}
       with:
-        name: "[DRAFT] Release ${{ inputs.tag || github.ref }}"
+        name: "Release ${{ inputs.tag || github.ref }}"
         tag_name: ${{ inputs.tag || github.ref }}
         draft: true
         prerelease: true

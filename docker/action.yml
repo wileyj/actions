@@ -13,22 +13,13 @@ inputs:
     description: "Docker password"
     required: false
     default: ""
-
+  registry:
+    description: "Docker Registry"
+    required: false
+    default: "docker.io"
 runs:
   using: "composite"
   steps:
-    ## cleanup runner
-    - name: Cleanup Runner
-      id: runner_cleanup
-      uses: stacks-network/actions/cleanup/disk@main
-
-    ## Checkout the code
-    - name: Checkout the latest code
-      id: git_checkout
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      with:
-        persist-credentials: false
-
     ## Set some vars to be used in the build process
     - name: Set Vars
       id: set_vars
@@ -53,12 +44,16 @@ runs:
     ## Setup QEMU for multi-arch builds
     - name: Set up QEMU
       id: docker_qemu
-      uses: docker/setup-qemu-action@4574d27a4764455b42196d70a065bc6853246a25 # v3.4.0
+      uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+      with:
+        cache-image: false # don't cache the binfmt image
 
     ## Setup docker buildx
     - name: Set up Docker Buildx
       id: docker_buildx
-      uses: docker/setup-buildx-action@f7ce87c1d6bead3e36075b2ce75da1f6cc28aaca # v3.9.0
+      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+      with:
+        cache-binary: false
 
     ## Login to dockerhub
     - name: Login to DockerHub
@@ -66,7 +61,9 @@ runs:
         inputs.username != '' &&
         inputs.password != ''
       id: docker_login
-      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
       with:
+        registry: ${{ inputs.registry }}
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
+        logout: true
