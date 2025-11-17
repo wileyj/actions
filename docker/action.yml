@@ -1,69 +1,69 @@
 name: "Docker image build defaults"
 description: "Defaults for building docker images"
 branding:
-  icon: "box"
-  color: "gray-dark"
+    icon: "box"
+    color: "gray-dark"
 
 inputs:
-  username:
-    description: "Docker username"
-    required: false
-    default: ""
-  password:
-    description: "Docker password"
-    required: false
-    default: ""
-  registry:
-    description: "Docker Registry"
-    required: false
-    default: "docker.io"
+    username:
+        description: "Docker username"
+        required: false
+        default: ""
+    password:
+        description: "Docker password"
+        required: false
+        default: ""
+    registry:
+        description: "Docker Registry"
+        required: false
+        default: "docker.io"
 runs:
-  using: "composite"
-  steps:
-    ## Set some vars to be used in the build process
-    - name: Set Vars
-      id: set_vars
-      shell: bash
-      run: |
-        event=${{ github.event_name }}
-        case ${event} in
-          pull_request|pull_request_target|pull_request_review)
-            echo "[PR]: true"
-            branch=${{ github.event.pull_request.head.ref }}
-            ;;
-          *)
-            echo "[PR]: false"
-            branch=${GITHUB_REF#refs/heads/}
-            ;;
-        esac
-        echo "BRANCH_NAME=$branch" >> $GITHUB_ENV
-        echo "GITHUB_SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
-        echo "GITHUB_REF_SHORT=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-        echo "DOCKER_PUSH=${{ (inputs.username != '') && (inputs.password != '') }}" >> $GITHUB_ENV
+    using: "composite"
+    steps:
+        ## Set some vars to be used in the build process
+        - name: Set Vars
+          id: set_vars
+          shell: bash
+          run: |
+              event=${{ github.event_name }}
+              case ${event} in
+                pull_request|pull_request_target|pull_request_review)
+                  echo "[PR]: true"
+                  branch=${{ github.event.pull_request.head.ref }}
+                  ;;
+                *)
+                  echo "[PR]: false"
+                  branch=${GITHUB_REF#refs/heads/}
+                  ;;
+              esac
+              echo "BRANCH_NAME=$branch" >> $GITHUB_ENV
+              echo "GITHUB_SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+              echo "GITHUB_REF_SHORT=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+              echo "DOCKER_PUSH=${{ (inputs.username != '') && (inputs.password != '') }}" >> $GITHUB_ENV
 
-    ## Setup QEMU for multi-arch builds
-    - name: Set up QEMU
-      id: docker_qemu
-      uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
-      with:
-        cache-image: false # don't cache the binfmt image
+        ## Setup QEMU for multi-arch builds
+        - name: Set up QEMU
+          id: docker_qemu
+          uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+          with:
+              cache-image: false # don't cache the binfmt image
 
-    ## Setup docker buildx
-    - name: Set up Docker Buildx
-      id: docker_buildx
-      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
-      with:
-        cache-binary: false
+        ## Setup docker buildx
+        - name: Set up Docker Buildx
+          id: docker_buildx
+          uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
+          with:
+              cache-binary: false
 
-    ## Login to dockerhub
-    - name: Login to DockerHub
-      if: |
-        inputs.username != '' &&
-        inputs.password != ''
-      id: docker_login
-      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
-      with:
-        registry: ${{ inputs.registry }} # something about this doesn't work for dockerhub
-        username: ${{ inputs.username }}
-        password: ${{ inputs.password }}
-        logout: true
+        ## Login to dockerhub
+        - name: Login to DockerHub
+          if: |
+              inputs.username != '' &&
+              inputs.password != ''
+          id: docker_login
+          uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+          with:
+              registry: ${{ inputs.registry }}
+              username: ${{ inputs.username }}
+              password: ${{ inputs.password }}
+              logout: true
