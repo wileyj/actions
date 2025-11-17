@@ -55,8 +55,8 @@ runs:
           with:
               cache-binary: false
 
-        ## Login to dockerhub
-        - name: Login to DockerHub
+        ## Login to docker registry
+        - name: Docker Login
           if: |
               inputs.username != '' &&
               inputs.password != ''
