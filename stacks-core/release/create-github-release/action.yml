@@ -20,7 +20,10 @@ runs:
           id: check_release_type
           shell: bash
           run: |
-              count=$(echo ${{ inputs.tag}} |tr -d ".|\n" | wc -c)
+              # Get the char count of the tag, discarding any `-rc*` at the end of the tag
+              #   - signer releases will have a char count of 6
+              #   - stacks-core releases will have a char count of 5
+              count=$(echo ${{ inputs.tag}} |tr -d ".|\n" | sed -e 's|-rc[0-9]*$||g' | wc -c)
               echo "count: $count"
               if [[ "${count}" -gt 5 ]]; then
                   echo "stacks signer: ${{inputs.tag}}"
