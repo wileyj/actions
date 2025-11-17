@@ -24,7 +24,7 @@ runs:
           if: |
               inputs.node_tag != ''
           id: create_node_release
-          uses: wileyj/actions/stacks-core/release/create-github-release@chore/update_docker_comp
+          uses: stacks-network/actions/stacks-core/release/create-github-release@main
           with:
               tag: ${{ inputs.node_tag }}
               GH_TOKEN: ${{ inputs.GH_TOKEN }}
@@ -34,7 +34,7 @@ runs:
           if: |
               inputs.signer_tag != ''
           id: create_signer_release
-          uses: wileyj/actions/stacks-core/release/create-github-release@chore/update_docker_comp
+          uses: stacks-network/actions/stacks-core/release/create-github-release@main
           with:
               tag: ${{ inputs.signer_tag }}
               GH_TOKEN: ${{ inputs.GH_TOKEN }}
