@@ -45,12 +45,14 @@ runs:
           jq -r --arg TS "$TS" '
             ## Loop over the items in the workflow_runs array
             .workflow_runs[]
-            ## Retrieve the keys: id (used for deleting), updated_at (used for comparison), status (used for comparison), conclusion (unused), head_branch (branch the action is from)
-            | { id,updated_at,status,conclusion,head_branch }
+            ## Retrieve the keys: id (used for deleting), updated_at (used for comparison), status (used for comparison), conclusion (used for comparison), head_branch (branch the action is from), name (name of the workflow)
+            | { id,updated_at,status,conclusion,head_branch,name }
             ## Filter out the id based on (updated_at < TS and is completed)
             | select((.updated_at < $TS) and .status == "completed")
-            ## Filter out release branches
-            | select(.head_branch | test("release/") | not)
+            # ## Filter out release branches
+            # | select(.head_branch | test("release/") | not)
+            ## Filter out release branches (include any PRs etc made against a release branch)
+            | select((.head_branch | test("release/")) and (.name | test("release/") | not) or (.head_branch | test("release/") | not) )
             ## If an item matches our conditional, store the id as ID in the for loop
             | {id}
             | .[]
@@ -86,12 +88,14 @@ runs:
           jq -r --arg TS "$TS" '
             ## Loop over the items in the workflow_runs array
             .workflow_runs[]
-            ## Retrieve the keys: id (used for deleting), updated_at (used for comparison), status (used for comparison), conclusion (used for comparison), head_branch (branch the action is from)
-            | { id,updated_at,status,conclusion,head_branch }
+            ## Retrieve the keys: id (used for deleting), updated_at (used for comparison), status (used for comparison), conclusion (used for comparison), head_branch (branch the action is from), name (name of the workflow)
+            | { id,updated_at,status,conclusion,head_branch,name }
             ## Filter out the id based on (updated_at < TS and (action was unsuccessful and is completed)
             | select((.updated_at < $TS) and (.conclusion != "success" and .status == "completed"))
-            ## Filter out release branches
-            | select(.head_branch | test("release/") | not)
+            # ## Filter out release branches
+            # | select(.head_branch | test("release/") | not)
+            ## Filter out release branches (include any PRs etc made against a release branch)
+            | select((.head_branch | test("release/")) and (.name | test("release/") | not) or (.head_branch | test("release/") | not) )
             ## If an item matches our conditional, store the id as ID in the for loop
             | {id}
             | .[]
