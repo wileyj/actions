@@ -9,6 +9,9 @@ inputs:
     tag:
         description: "Release Tag"
         required: true
+    release_type:
+        description: "Release Type"
+        required: true
     GH_TOKEN:
         description: "GitHub Token"
         required: true
@@ -16,29 +19,30 @@ inputs:
 runs:
     using: "composite"
     steps:
-        - name: Check Release Type
-          id: check_release_type
-          shell: bash
-          run: |
-              # Get the char count of the tag, discarding any `-rc*` at the end of the tag
-              #   - signer releases will have a char count of 6
-              #   - stacks-core releases will have a char count of 5
-              count=$(echo ${{ inputs.tag}} |tr -d ".|\n" | sed -e 's|-rc[0-9]*$||g' | wc -c)
-              echo "count: $count"
-              if [[ "${count}" -gt 5 ]]; then
-                  echo "stacks signer: ${{inputs.tag}}"
-                  echo "release_type=stacks-signer" >> $GITHUB_OUTPUT # if this is a signer release, use the stacks-signer as the release type
-              else
-                  echo "stacks node: ${{inputs.tag}}"
-                  echo "release_type=stacks-core" >> $GITHUB_OUTPUT # if this is a full release, use the repo name as the release type
-              fi
+        # - name: Check Release Type
+        #   id: check_release_type
+        #   shell: bash
+        #   run: |
+        #       # Get the char count of the tag, discarding any `-rc*` at the end of the tag
+        #       #   - signer releases will have a char count of 6
+        #       #   - stacks-core releases will have a char count of 5
+        #       count=$(echo ${{ inputs.tag}} |tr -d ".|\n" | sed -e 's|-rc[0-9]*$||g' | wc -c)
+        #       echo "count: $count"
+        #       if [[ "${count}" -gt 5 ]]; then
+        #           echo "stacks signer: ${{inputs.tag}}"
+        #           echo "release_type=stacks-signer" >> $GITHUB_OUTPUT # if this is a signer release, use the stacks-signer as the release type
+        #       else
+        #           echo "stacks node: ${{inputs.tag}}"
+        #           echo "release_type=stacks-core" >> $GITHUB_OUTPUT # if this is a full release, use the repo name as the release type
+        #       fi
 
         ## Downloads the artifacts built in `create-source-binary`
         - name: Download Artifacts
           id: download_artifacts
           uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
           with:
-              pattern: "${{github.sha}}-${{ steps.check_release_type.outputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
+              # pattern: "${{github.sha}}-${{ steps.check_release_type.outputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
+              pattern: "${{github.sha}}-${{ inputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
               path: release
               merge-multiple: true
 
@@ -47,7 +51,8 @@ runs:
           id: generate_checksum
           uses: stacks-network/actions/generate-checksum@main
           with:
-              artifact_download_pattern: "${{github.sha}}-${{ steps.check_release_type.outputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
+              artifact_download_pattern: "${{github.sha}}-${{ inputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
+              # artifact_download_pattern: "${{github.sha}}-${{ steps.check_release_type.outputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
 
         ## Upload the release archives with the checksums file
         - name: Upload Release
