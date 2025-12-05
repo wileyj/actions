@@ -10,6 +10,7 @@ Creates a github release for the given tag.
 | ------------ | ------------------ | -------- | ------- |
 | `tag`        | Release Tag        | `true`   | null    |
 | `GH_TOKEN`   | GitHub Token       | `true`   | null    |
+| `release_type`   | Release type (one of: stacks-core or stacks-signer) | `true`   | null    |
 
 ## Usage
 
@@ -27,4 +28,5 @@ jobs:
         with:
           tag: signer-3.0.0.0.1.0-rc1
           GH_TOKEN: ${{ inputs.GH_TOKEN }}
+          release_type: stacks-signer
 ```

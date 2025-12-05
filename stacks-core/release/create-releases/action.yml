@@ -28,6 +28,7 @@ runs:
           with:
               tag: ${{ inputs.node_tag }}
               GH_TOKEN: ${{ inputs.GH_TOKEN }}
+              release_type: stacks-core
 
         ## Creates the signer release
         - name: Create Signer Release
@@ -38,3 +39,4 @@ runs:
           with:
               tag: ${{ inputs.signer_tag }}
               GH_TOKEN: ${{ inputs.GH_TOKEN }}
+              release_type: stacks-signer
