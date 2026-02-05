@@ -2,7 +2,6 @@
 
 Generic docker setup
 
-- runs [cleanup](../cleanup/)
 - sets some basic env vars based on workflow trigger (i.e. PR)
 - Sets up QEMU, buildx and logs into docker
 
@@ -13,6 +12,7 @@ Generic docker setup
 | ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
 | `username` | Docker repo username | true | null |
 | `password` | Docker repo password | true | null |
+| `registry` | Docker registry | false | docker.io |
 
 ## Usage
 
@@ -29,4 +29,5 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          registry: "ghcr.io"
 ```
