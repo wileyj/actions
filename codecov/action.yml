@@ -54,13 +54,14 @@ runs:
           --ignore-not-existing \
           --ignore "../*" \
           --ignore "/*" \
-          --ignore ".github/**/*" \
-          --ignore ".vscode/**/*" \
-          --ignore "contrib/**/*" \
-          --ignore "**/.cargo/**/*" \
-          --ignore "**/benches/**/*" \
-          --ignore "**/tests/**/*.rs" \
-          --ignore "**/*tests.rs" \
+          --ignore ".github/**" \
+          --ignore ".vscode/**" \
+          --ignore "contrib/**" \
+          --ignore "**/.cargo/**" \
+          --ignore "**/benches/**" \
+          --ignore "**/test{,s}/**" \
+          --ignore "**/test{,s}.rs" \
+          --ignore "**/*_test{,s}.rs" \
           --ignore "**/*.clar" \
           --ignore "**/*.json" \
           --ignore "**/*.md" \
