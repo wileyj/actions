@@ -67,5 +67,5 @@ runs:
         path: ${{ steps.generate_test_file_name.outputs.result }}
         if-no-files-found: error
         retention-days: 1
-        compression-level: 6 # 0 (none) - 9 (most)
+        compression-level: 0 # 0 (none) - 9 (most)
         overwrite: true
