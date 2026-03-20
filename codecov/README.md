@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Generate Code Coverage
         id: codecov
-        uses: stacks-network/actions/codecov@main
+        uses: wileyj/actions/codecov@test_retry
         with:
           test-name: sample_test
 ```

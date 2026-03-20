@@ -37,7 +37,7 @@ jobs:
     steps:
       - name: Check Right Permissions To Trigger This
         id: check_right_permissions
-        uses: stacks-network/actions/stacks-core/team-membership@main
+        uses: wileyj/actions/stacks-core/team-membership@test_retry
         with:
           username: ${{ github.actor }}
           team: 'Admin'

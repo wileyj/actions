@@ -40,5 +40,5 @@ jobs:
           components: rustfmt
 
       - name: Rustfmt Check
-        uses: stacks-network/actions/rustfmt@main
+        uses: wileyj/actions/rustfmt@test_retry
 ```

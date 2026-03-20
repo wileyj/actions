@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: Lock Threads
         id: lock-threads
-        uses: stacks-network/actions/lock-threads@main
+        uses: wileyj/actions/lock-threads@test_retry
         with:
           github-token`: ${{ secrets.GH_TOKEN }}
           pr-inactive-days: 7

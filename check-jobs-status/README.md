@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: Check Jobs
         id: check_jobs
-        uses: stacks-network/actions/check-jobs-status@main
+        uses: wileyj/actions/check-jobs-status@test_retry
         with:
           jobs: ${{ toJson(needs) }}
           summary_print: "true"

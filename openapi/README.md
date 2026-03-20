@@ -28,7 +28,7 @@ jobs:
     steps:
       - name: OpenAPI
         id: openapi
-        uses: stacks-network/actions/openapi@main
+        uses: wileyj/actions/openapi@test_retry
         with:
           input: ./docs/rpc/openapi.yaml
 ```

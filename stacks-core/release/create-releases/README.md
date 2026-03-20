@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Create Github Releases
         id: create_github_releases
-        uses: stacks-network/actions/stacks-core/release/create-releases@test_retry
+        uses: wileyj/actions/stacks-core/release/create-releases@test_retry
         with:
           node_tag: 3.0.0.0.1-rc1
           signer_tag: signer-3.0.0.0.1.0-rc1

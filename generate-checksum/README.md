@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Generate Checksum
         id: generate_checksum
-        uses: stacks-network/actions/generate-checksum@main
+        uses: wileyj/actions/generate-checksum@test_retry
         with:
           hashfile_name: "hashes.txt"
           artifact_download_pattern: "binary-build-*"
