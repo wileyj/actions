@@ -39,7 +39,7 @@ runs:
       if: |
         inputs.action == 'check' ||
         inputs.action == 'save'
-      uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       id: check_cache
       with:
         lookup-only: true
@@ -56,7 +56,7 @@ runs:
       if: |
         inputs.action == 'restore'
       id: restore_cache
-      uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+      uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
         path: |
@@ -93,7 +93,7 @@ runs:
         inputs.action == 'save' &&
         steps.check_cache.outputs.cache-hit != 'true'
       id: save_cache
-      uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+      uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
         path: |
           ~/.cargo/bin/
