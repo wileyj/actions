@@ -56,15 +56,11 @@ runs:
       if: |
         inputs.action == 'restore'
       id: restore_cache
-      uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+      uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
       with:
-        action: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with: |
-          fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
-          path: ~/bitcoin
-          key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
-        attempt_limit: ${{ inputs.retries}}
-        attempt_delay: ${{ inputs.retry-delay}}
+        fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
+        path: ~/bitcoin
+        key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
 
     ## Save cache data
     ## If cache is not found, download and extract it
@@ -84,11 +80,7 @@ runs:
         inputs.action == 'save' &&
         steps.check_cache.outputs.cache-hit != 'true'
       id: save_cache
-      uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+      uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
       with:
-        action: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with: |
-          path: ~/bitcoin
-          key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
-        attempt_limit: ${{ inputs.retries}}
-        attempt_delay: ${{ inputs.retry-delay}}
+        path: ~/bitcoin
+        key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
