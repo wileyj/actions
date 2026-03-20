@@ -22,7 +22,7 @@ jobs:
     steps:
       - name: Test Archives
         id: test-archives
-        uses: stacks-network/actions/stacks-core/cache/build-cache@main
+        uses: wileyj/actions/stacks-core/cache/build-cache@test_retry
 ```
 
 ### Genesis Tests
@@ -36,7 +36,7 @@ jobs:
     steps:
       - name: Test Archives
         id: test-archives
-        uses: stacks-network/actions/stacks-core/cache/build-cache@main
+        uses: wileyj/actions/stacks-core/cache/build-cache@test_retry
         with:
           genesis: true
 ```

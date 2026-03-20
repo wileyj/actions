@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Create Docker Images
         id: create_docker_images
-        uses: stacks-network/actions/stacks-core/release/docker-images@main
+        uses: wileyj/actions/stacks-core/release/docker-images@test_retry
         with:
           node_tag: 3.0.0.0.1-rc1
           node_docker_tag: 3.0.0.0.1-rc1

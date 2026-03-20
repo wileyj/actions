@@ -19,13 +19,13 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: stacks-network/actions/node-config-docsgen@main
+      - uses: wileyj/actions/node-config-docsgen@test_retry
 ```
 
 ### Custom example
 
 ```yaml
-- uses: stacks-network/actions/node-config-docsgen@main
+- uses: wileyj/actions/node-config-docsgen@test_retry
   with:
     artifact-name: "node-docs-${{ github.sha }}"
     min-doc-size: "75000"

@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Create Release
         id: create_release
-        uses: stacks-network/actions/stacks-core/release/create-release@main
+        uses: wileyj/actions/stacks-core/release/create-release@test_retry
         with:
           tag: signer-3.0.0.0.1.0-rc1
           GH_TOKEN: ${{ inputs.GH_TOKEN }}

@@ -25,7 +25,7 @@ jobs:
     steps:
       - name: Extract Signer Binary
         id: extract_signer_binary
-        uses: stacks-network/actions/stacks-core/release/extract-signer-binary@main
+        uses: wileyj/actions/stacks-core/release/extract-signer-binary@test_retry
         with:
           arch: linux-glibc
           cpu: x86-64

@@ -32,7 +32,7 @@ jobs:
       - name: Run Tests
         id: run_tests
         timeout-minutes: 30
-        uses: stacks-network/actions/stacks-core/run-tests@main
+        uses: wileyj/actions/stacks-core/run-tests@test_retry
         with:
           test-name: test::name
 ```
@@ -50,7 +50,7 @@ jobs:
       - name: Run Tests
         id: run_tests
         timeout-minutes: 30
-        uses: stacks-network/actions/stacks-core/run-tests@main
+        uses: wileyj/actions/stacks-core/run-tests@test_retry
         with:
           test-name: test::name
           threads: 1

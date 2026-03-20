@@ -27,7 +27,7 @@ jobs:
     steps:
       - name: Docker Image
         id: docker_image
-        uses: stacks-network/actions/stacks-core/release/docker-image@main
+        uses: wileyj/actions/stacks-core/release/docker-image@test_retry
         with:
           tag: signer-3.0.0.0.1.0-rc1
           docker_tag: 3.0.0.0.1.0-rc1

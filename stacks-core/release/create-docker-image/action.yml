@@ -32,7 +32,7 @@ runs:
     ## Setup Docker for the builds
     - name: Docker setup
       id: docker_setup
-      uses: stacks-network/actions/docker@main
+      uses: wileyj/actions/docker@test_retry
       with:
         username: ${{ inputs.DOCKERHUB_USERNAME }}
         password: ${{ inputs.DOCKERHUB_PASSWORD }}

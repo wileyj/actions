@@ -34,7 +34,7 @@ jobs:
       - name: Run Tests
         id: run-tests
         timeout-minutes: 30
-        uses: stacks-network/actions/stacks-core/run-tests/partition@main
+        uses: wileyj/actions/stacks-core/run-tests/partition@test_retry
         with:
           partition: ${{ matrix.partition }}
           total-partitions: 8 # total number of partitions in the matrix

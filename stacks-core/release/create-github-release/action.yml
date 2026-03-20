@@ -31,7 +31,7 @@ runs:
         ## Generate a checksums file to be added to the release page
         - name: Generate Checksums
           id: generate_checksum
-          uses: stacks-network/actions/generate-checksum@main
+          uses: wileyj/actions/generate-checksum@test_retry
           with:
               artifact_download_pattern: "${{github.sha}}-${{ inputs.release_type }}*" # matches artifact names like 727043a37fbc90f1c7eb391b590bde460ca0e36a-linux-glibc-arm64
 
