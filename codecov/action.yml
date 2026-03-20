@@ -1,48 +1,32 @@
-name: "Generate and Upload codecov"
-description: "Generates and uploads codecov data"
+name: "Generate and Upload codecov artifact"
+description: "Generates code coverage data and uploads it to GitHub CI artifact storage"
 branding:
   icon: "check-circle"
   color: "gray-dark"
 
 inputs:
+  test-name:
+    description: "Test Name for codecov"
+    required: true
   binary-path:
     description: "Binary Path"
     required: false
     default: "./target/debug/"
-  test-name:
-    description: "Test Name for codecov"
-    required: true
-  verbose:
-    description: "codecov upload verbosity"
-    required: false
-    default: "false"
-  fail_ci_if_error:
-    description: "Fail on error"
-    required: false
-    default: "false"
-  upload-only:
-    description: "Skip grcov, and upload existing coverage file"
-    required: false
-    default: "false"
 
 runs:
   using: "composite"
   steps:
     ## Modify test-name input to be a valid filename, since we use it to name the coverage file
-    - name: Sanitize test-name for grcov filename usage
-      if : |
-        inputs.upload-only != true
-      id: sanitize_testname
+    - name: Generate sanitized test file name for grcov
+      id: generate_test_file_name
       shell: bash
       run: |
-        SANITIZED_TESTNAME=$(echo "${{ inputs.test-name }}" | sed 's/[\\/:\*\?"<>|]/_/g')
-        echo "sanitized=$SANITIZED_TESTNAME" >> $GITHUB_OUTPUT
+        SANITIZED_FILE_NAME=$(echo "lcov_${{ inputs.test-name }}.info" | sed 's/[\\/:\*\?"<>|]/_/g')
+        echo "sanitized_file_name=$SANITIZED_FILE_NAME" >> $GITHUB_OUTPUT
   
     ## Generate code coverage using grcov
     ## Resulting coverage filenames must be unique, so use test-name input to name the file
     - name: Run grcov
-      if: |
-        inputs.upload-only != 'true'
       id: run_grcov
       shell: bash
       run: |
@@ -56,6 +40,7 @@ runs:
           --ignore "/*" \
           --ignore ".github/**" \
           --ignore ".vscode/**" \
+          --ignore "changelog.d/**" \
           --ignore "contrib/**" \
           --ignore "**/.cargo/**" \
           --ignore "**/benches/**" \
@@ -70,16 +55,17 @@ runs:
           --ignore "**/*.toml" \
           --ignore "**/*.txt" \
           --ignore "**/*.yml" \
-          -o ./lcov_${{ steps.sanitize_testname.outputs.sanitized }}.info \
+          -o ${{ steps.sanitize_testname.outputs.sanitized_file_name }} \
         || exit 1
 
-    ## Upload coverage to codecov
-    - name: Upload Code Coverage
-      id: code_coverage
-      uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+    ## Store coverage file in GitHub CI artifacts (with SHA prefix)
+    - name: Store Code Coverage as Artifact
+      id: store_coverage
+      uses: actions/upload-artifact@7.0.0
       with:
-        files: ./*.info
-        name: ${{ inputs.test-name }}
-        fail_ci_if_error: ${{ inputs.fail_ci_if_error }}
-        verbose: ${{ inputs.verbose }}
-      
+        name: ${{ github.sha }}-${{ steps.sanitize_testname.outputs.sanitized_file_name }}
+        path: ${{ steps.sanitize_testname.outputs.sanitized_file_name }}
+        if-no-files-found: error
+        retention-days: 1
+        compression-level: 6   # 0 (none) - 9 (most)
+        overwrite: true
