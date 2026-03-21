@@ -21,7 +21,7 @@ runs:
       id: generate_test_file_name
       shell: bash
       run: |
-        SANITIZED_FILE_NAME=$(echo "cobertura_${{ inputs.test-name }}.xml" | sed 's/[\\/:\*\?"<>|]/_/g')
+        SANITIZED_FILE_NAME=$(echo "lcov_${{ inputs.test-name }}.info" | sed 's/[\\/:\*\?"<>|]/_/g')
         echo "result=$SANITIZED_FILE_NAME" >> $GITHUB_OUTPUT
   
     ## Generate code coverage using grcov
@@ -33,7 +33,7 @@ runs:
         grcov . \
           -b ${{ inputs.binary-path }} \
           -s . \
-          -t cobertura \
+          -t lcov \
           --branch \
           --ignore-not-existing \
           --ignore "../*" \
@@ -67,5 +67,5 @@ runs:
         path: ${{ steps.generate_test_file_name.outputs.result }}
         if-no-files-found: error
         retention-days: 1
-        compression-level: 6 # 0 (none) - 9 (most)
+        compression-level: 0 # 0 (none) - 9 (most)
         overwrite: true
