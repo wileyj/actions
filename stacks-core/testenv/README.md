@@ -1,6 +1,5 @@
 # Stacks Blockchain Test Environment
 
-- runs [cleanup](../cleanup/)
 - restores caches used for tests (cargo, bitcoin, cargo target, [nextest](https://nexte.st) archive)
 - optionally restores the genesis [nextest](https://nexte.st) archive cache
 
