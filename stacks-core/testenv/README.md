@@ -10,7 +10,7 @@
 
 | Input | Description | Required | Default |
 | ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `genesis` | Restore genesis test cache | `true` | `false` |
+| `genesis` | Restore genesis test cache | `false` | `false` |
 
 ## Usage
 
