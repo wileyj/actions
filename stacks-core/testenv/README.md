@@ -9,8 +9,9 @@
 ### Inputs
 
 | Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
+| ----- | ----------- | -------- | ------- |
 | `genesis` | Restore genesis test cache | `false` | `false` |
+| `btc-version` | Bitcoin Core version to use in the test environment | `false` | `""` |
 
 ## Usage
 

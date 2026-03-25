@@ -9,8 +9,8 @@ The action installs the Rust toolchain from the consuming repository's `rust-too
 ### Inputs
 
 | Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `genesis` | Builds the [nextest](https://nexte.st) archive for genesis tests | false | `false` |
+| ----- | ----------- | -------- | ------- |
+| `genesis` | Builds the [nextest](https://nexte.st) archive for genesis tests | `false` | `false` |
 
 ## Usage
 
