@@ -1,8 +1,8 @@
-# Stacks Network github actions
+# Stacks Network GitHub Actions
 
 Monorepo of [composite actions](https://docs.github.com/en/actions/creating-actions/creating-a-composite-action) used in the [stacks-network](https://github.com/stacks-network) org
 
-- [codecov](./codecov) - Uploads codecov reports with a retry if it fails (optionally it can run grcov to generate a report to send)
+- [codecov](./codecov) - Generates code coverage reports and uploads them to GitHub artifacts to be used later in the CI pipeline
 - [openapi](./openapi) - Generates and uploads an [OpenAPI](https://spec.openapis.org/oas/latest.html) artifact
 - [docker](./docker) - Generic Docker setup workflows
 - [generate-checksum](./generate-checksum/) - Generate a 512-bit `sha` hash of the uploaded artifacts

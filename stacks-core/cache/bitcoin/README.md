@@ -12,12 +12,10 @@ Generic cache operations for the bitcoin cache:
 
 | Input              | Description                                               | Required | Default                                                                   |
 | ------------------ | --------------------------------------------------------- | -------- | ------------------------------------------------------------------------- |
-| `action`           | Type of cache action - one of: `check`, `restore`, `save` | true     | `check`                                                                   |
-| `cache-key`        | Cache Key name                                            | false    | `$${{ github.event.repository.name }}-${{ github.sha }}-bitcoin-binaries` |
-| `fail_ci_if_error` | Fail the workflow on an error                             | false    | `false`                                                                   |
-| `retries`          | Number of times to retry codecov upload                   | false    | `3`                                                                       |
-| `retry-delay`      | Time in ms between upload retries                         | false    | `10000`                                                                   |
-| `btc-version`      | The version of Bitcoin to use                             | false    | `25.0`                                                                    |
+| `action`             | Type of cache action - one of: `check`, `restore`, `save` | true     | `check` |
+| `cache-key`          | Cache Key name                                            | false    | `${{ github.event.repository.name }}-${{ github.event.pull_request.head.sha || github.sha }}-bitcoin-binaries`   |
+| `fail-on-cache-miss` | Fail the workflow if the cache is not found               | false    | `true` |
+| `btc-version`        | The version of Bitcoin to use                             | false    | `25.0` |
 
 ### Outputs
 

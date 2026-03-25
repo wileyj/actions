@@ -13,14 +13,6 @@ inputs:
     description: "Fail workflow if cache is not restorable"
     required: false
     default: "true"
-  retries:
-    description: "Number of attempts"
-    required: false
-    default: "3"
-  retry-delay:
-    description: "Time to wait to retry"
-    required: false
-    default: "10000"
   cache-key:
     description: "Cache Key name"
     required: false
@@ -43,7 +35,7 @@ runs:
       if: |
         inputs.action == 'check' ||
         inputs.action == 'save'
-      uses: actions/cache@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4.2.1
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       id: check_cache
       with:
         lookup-only: true
@@ -51,23 +43,17 @@ runs:
         key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
 
     ## Restore cache data
-    ## Use wretry action, to retry on a failed upload
     - name: Restore Cache
       if: |
         inputs.action == 'restore'
       id: restore_cache
-      uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+      uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
-        action: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with: |
-          fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
-          path: ~/bitcoin
-          key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
-        attempt_limit: ${{ inputs.retries}}
-        attempt_delay: ${{ inputs.retry-delay}}
+        fail-on-cache-miss: ${{ inputs.fail-on-cache-miss }}
+        path: ~/bitcoin
+        key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
 
-    ## Save cache data
-    ## If cache is not found, download and extract it
+    ## Install Bitcoin binary
     - name: Install Bitcoin Binary
       if: |
         inputs.action == 'save' &&
@@ -78,17 +64,13 @@ runs:
         curl -LSf -# https://github.com/stacks-network/bitcoin/releases/download/v${{ inputs.btc-version }}/bitcoin-${{ inputs.btc-version }}-x86_64-linux-gnu.tar.gz | tar zxf - -C ~
         mv ~/bitcoin-${{ inputs.btc-version }} ~/bitcoin
 
-    ## Use wretry action to retry on a failed upload
+    ## Save cache data
     - name: Save Cache
       if: |
         inputs.action == 'save' &&
         steps.check_cache.outputs.cache-hit != 'true'
       id: save_cache
-      uses: Wandalen/wretry.action@e68c23e6309f2871ca8ae4763e7629b9c258e1ea # v3.8.0
+      uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
       with:
-        action: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
-        with: |
-          path: ~/bitcoin
-          key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
-        attempt_limit: ${{ inputs.retries}}
-        attempt_delay: ${{ inputs.retry-delay}}
+        path: ~/bitcoin
+        key: ${{ inputs.cache-key }}-${{ inputs.btc-version }}
