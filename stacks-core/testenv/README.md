@@ -2,14 +2,16 @@
 
 - restores caches used for tests (cargo, bitcoin, cargo target, [nextest](https://nexte.st) archive)
 - optionally restores the genesis [nextest](https://nexte.st) archive cache
+- installs the Rust toolchain from the consuming repository's `rust-toolchain.toml` or `rust-toolchain` when present, otherwise falls back to the setup action's default toolchain resolution (which is `stable`).
 
 ## Documentation
 
 ### Inputs
-| Input | Description | Required | Default |
-| ------------------------------- | ----------------------------------------------------- | ------------------------- | ------------------------- |
-| `genesis` | Restore genesis test cache | `true` | false` |
 
+| Input | Description | Required | Default |
+| ----- | ----------- | -------- | ------- |
+| `genesis` | Restore genesis test cache | `false` | `false` |
+| `btc-version` | Bitcoin Core version to use in the test environment | `false` | `"25.0"` |
 
 ## Usage
 
