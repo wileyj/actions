@@ -19,10 +19,14 @@ inputs:
     description: "Archive file to use for tests"
     required: true
     default: "~/test_archive.tar.zst"
+  failure-output:
+    description: "Failure output"
+    required: false
+    default: "final"
   success-output:
     description: "Success output"
     required: false
-    default: "immediate-final"
+    default: "never"
   status-level:
     description: "Output status level"
     required: false
@@ -43,8 +47,8 @@ runs:
         cargo nextest run \
           --test-threads ${{ inputs.threads}} \
           --retries ${{ inputs.retries }} \
-          --final-status-level ${{ inputs.status-level }} \
           --fail-fast \
+          --failure-output ${{ inputs.failure-output }} \
           --success-output ${{ inputs.success-output }} \
           --status-level ${{ inputs.status-level }} \
           --archive-file ${{ inputs.archive-file }} \
