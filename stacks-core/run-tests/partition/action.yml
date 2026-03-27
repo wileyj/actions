@@ -11,10 +11,6 @@ inputs:
   total-partitions:
     description: "Total number of partitions"
     required: true
-  threads:
-    description: "Number of test threads"
-    required: false
-    default: "num-cpus"
   archive-file:
     description: "Archive file to use for tests"
     required: true
@@ -45,7 +41,6 @@ runs:
       run: |
         export LLVM_PROFILE_FILE="test-results-%p-%m.profraw" && \
         cargo nextest run \
-          --test-threads ${{ inputs.threads}} \
           --retries ${{ inputs.retries }} \
           --fail-fast \
           --failure-output ${{ inputs.failure-output }} \

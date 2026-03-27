@@ -8,10 +8,6 @@ inputs:
   test-name:
     description: "Test name to run"
     required: true
-  threads:
-    description: "Number of test threads"
-    required: false
-    default: "num-cpus"
   archive-file:
     description: "Archive file to use for tests"
     required: true
@@ -43,11 +39,10 @@ runs:
         export LLVM_PROFILE_FILE="test-results-%p-%m.profraw" && \
         cargo nextest run \
           --archive-file ${{ inputs.archive-file }} \
-          ${{ inputs.threads == '1' && '--no-capture' || format('--test-threads {0}', inputs.threads) }} \
           --retries ${{ inputs.retries }} \
           --run-ignored all \
           --fail-fast \
-          ${{ inputs.threads != '1' && format('--failure-output {0}', inputs.failure-output) || '' }} \
-          ${{ inputs.threads != '1' && format('--success-output {0}', inputs.success-output) || '' }} \
+          --failure-output ${{ inputs.failure-output }} \
+          --success-output ${{ inputs.success-output }} \
           --status-level ${{ inputs.status-level }} \
           -E "test(=${{ inputs.test-name }})"

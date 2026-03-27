@@ -12,7 +12,6 @@ For running tests using a partition, [use this action ](./partition/) instead.
 | ---------------- | ----------------------------- | -------- | ------------------------ |
 | `test-name`      | Test name to run              | `true`   | null                     |
 | `archive-file`   | Archive file to use for tests | `true`   | `~/test_archive.tar.zst` |
-| `threads`        | Number of test threads        | `false`  | `num-cpus`               |
 | `failure-output` | Failure output                | `false`  | `final`                  |
 | `success-output` | Success output                | `false`  | `never`                  |
 | `status-level`   | Output status level           | `false`  | `fail`                   |
