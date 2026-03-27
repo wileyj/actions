@@ -12,7 +12,8 @@ Runs stacks-core tests using a [nextest](https://nexte.st) archive with a [parti
 | `total-partitions` | Total number of partitions    | `true`   | null                     |
 | `archive-file`     | Archive file to use for tests | `true`   | `~/test_archive.tar.zst` |
 | `threads`          | Number of test threads        | `false`  | `num-cpus`               |
-| `success-output`   | Success output                | `false`  | `immediate-final`        |
+| `failure-output`   | Failure output                | `false`  | `final`                  |
+| `success-output`   | Success output                | `false`  | `never`                  |
 | `status-level`     | Output status level           | `false`  | `fail`                   |
 | `retries`          | Number of test retries        | `false`  | `2`                      |
 

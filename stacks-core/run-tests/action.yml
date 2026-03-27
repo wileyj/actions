@@ -16,10 +16,14 @@ inputs:
     description: "Archive file to use for tests"
     required: true
     default: "~/test_archive.tar.zst"
+  failure-output:
+    description: "Failure output"
+    required: false
+    default: "final"
   success-output:
     description: "Success output"
     required: false
-    default: "immediate-final"
+    default: "never"
   status-level:
     description: "Output status level"
     required: false
@@ -38,12 +42,12 @@ runs:
       run: |
         export LLVM_PROFILE_FILE="test-results-%p-%m.profraw" && \
         cargo nextest run \
-          --verbose \
           --archive-file ${{ inputs.archive-file }} \
           ${{ inputs.threads == '1' && '--no-capture' || format('--test-threads {0}', inputs.threads) }} \
           --retries ${{ inputs.retries }} \
           --run-ignored all \
           --fail-fast \
+          ${{ inputs.threads != '1' && format('--failure-output {0}', inputs.failure-output) || '' }} \
           ${{ inputs.threads != '1' && format('--success-output {0}', inputs.success-output) || '' }} \
           --status-level ${{ inputs.status-level }} \
           -E "test(=${{ inputs.test-name }})"
